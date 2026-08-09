@@ -1,0 +1,72 @@
+{
+  "_comment": "Shared illustrative scenario. Source of truth for the generated SVG figures (tools/render_figures.py) and the interactive canvas. usage_log rows are (Event_ID, Query_ID) pairs; a row's presence means the query selected that event. Absence means it did not.",
+
+  "events": [
+    { "id": "white-tee",   "attrs": ["casual", "cotton", "all-season"] },
+    { "id": "blue-jeans",  "attrs": ["casual", "denim", "all-season"] },
+    { "id": "sneakers",    "attrs": ["casual", "footwear", "all-season"] },
+    { "id": "wool-coat",   "attrs": ["winter", "wool", "outerwear"] },
+    { "id": "scarf",       "attrs": ["winter", "wool", "accessory"] },
+    { "id": "gloves",      "attrs": ["winter", "wool", "accessory"] },
+    { "id": "tuxedo",      "attrs": ["formal", "evening"] },
+    { "id": "dress-shoes", "attrs": ["formal", "evening", "footwear"] },
+    { "id": "gala-dress",  "attrs": ["formal", "evening"] },
+    { "id": "ski-jacket",  "attrs": ["winter", "sport", "outerwear"] },
+    { "id": "straw-hat",   "attrs": ["summer", "accessory"] },
+    { "id": "raincoat",    "attrs": ["rain", "outerwear"] }
+  ],
+
+  "queries": [
+    { "id": 101, "label": "Mon commute" },
+    { "id": 102, "label": "Tue commute" },
+    { "id": 103, "label": "Cold snap" },
+    { "id": 104, "label": "Wed commute" },
+    { "id": 105, "label": "Thu commute" },
+    { "id": 106, "label": "Cold rain" },
+    { "id": 107, "label": "Fri commute" },
+    { "id": 108, "label": "Black-tie evening" }
+  ],
+
+  "usage_log": [
+    ["white-tee", 101], ["blue-jeans", 101], ["sneakers", 101],
+    ["white-tee", 102], ["blue-jeans", 102], ["sneakers", 102],
+    ["wool-coat", 103], ["scarf", 103], ["gloves", 103],
+    ["white-tee", 104], ["blue-jeans", 104], ["sneakers", 104],
+    ["white-tee", 105], ["blue-jeans", 105], ["sneakers", 105], ["straw-hat", 105],
+    ["wool-coat", 106], ["scarf", 106], ["raincoat", 106],
+    ["white-tee", 107], ["blue-jeans", 107], ["sneakers", 107],
+    ["tuxedo", 108], ["dress-shoes", 108]
+  ],
+
+  "layouts": [
+    {
+      "key": "as-built",
+      "name": "As built",
+      "caption": "Events placed wherever there was room when they arrived.",
+      "containers": [
+        { "tag": 1, "labels": ["casual", "winter", "formal"], "events": ["white-tee", "wool-coat", "tuxedo"] },
+        { "tag": 2, "labels": ["casual", "winter", "sport"],  "events": ["blue-jeans", "scarf", "ski-jacket"] },
+        { "tag": 3, "labels": ["casual", "winter", "summer"], "events": ["sneakers", "gloves", "straw-hat"] },
+        { "tag": 4, "labels": ["formal", "rain"],             "events": ["dress-shoes", "gala-dress", "raincoat"] }
+      ]
+    },
+    {
+      "key": "clustered",
+      "name": "Clustered",
+      "caption": "Events grouped by the queries that select them.",
+      "containers": [
+        { "tag": 1, "labels": ["casual", "all-season"],     "events": ["white-tee", "blue-jeans", "sneakers"] },
+        { "tag": 2, "labels": ["winter", "wool"],           "events": ["wool-coat", "scarf", "gloves"] },
+        { "tag": 3, "labels": ["formal", "evening"],        "events": ["tuxedo", "dress-shoes", "gala-dress"] },
+        { "tag": 4, "labels": ["sport", "summer", "rain"],  "events": ["ski-jacket", "straw-hat", "raincoat"] }
+      ]
+    }
+  ],
+
+  "zoom": {
+    "layout": "clustered",
+    "query": 106,
+    "activated_tag": 4,
+    "bypassed_tag": 3
+  }
+}
