@@ -1,0 +1,46 @@
+# Declared rather than inferred (10.3.9).  Without it, setuptools' flat-layout discovery
+# meets `simulator/` beside `project_metadata/` and `data/` and refuses to guess, so the
+# documented `pip install -e .` fails on a clean checkout.  One package ships; the
+# specification, the figures and the generated data are not it.
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["simulator*"]
+
+[project]
+name = "dataclustering-solver"
+version = "0.1.0"
+requires-python = ">=3.12"
+# 10.3.1 splits the dependency set in two, and this is the **exhibit** half: what a
+# deployed instance installs to serve the page.  It is the named minimal ASGI stack and
+# nothing beyond it, because the page presents figures computed ahead of serving (8.11)
+# and the serving process has no scoring to do (12.2.5).  Keeping the numeric stack out
+# is what makes that prohibition structural — the libraries a violation would need are
+# not installed — and it is 174 MB a 24/7 instance does not carry, patch or have audited.
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+# The **harness** half of 10.3.1: what generates a corpus, scores a layout and renders a
+# report.  `generate`, `run` and `catalog` need it; `gui` never does, and fails naming
+# this group rather than raising an ImportError (10.3.9).
+harness = ["numpy>=2.0", "pyarrow>=15", "matplotlib>=3.8"]
+# Everything `python -m pytest` needs to run the *whole* suite (10.3.9).  It pulls in
+# `harness` because most of the suite scores something, and `docs` because the pre-render
+# tests import that tooling: without either, those tests are silently not collected — and
+# a documented command that quietly runs less than it appears to is the same defect as one
+# that does not run at all.
+dev = ["dataclustering-solver[harness,docs]", "pytest>=8"]
+# Tooling needed only to *produce* a committed artifact, never at runtime (10.3.6).
+# Pre-renders problem-statement.md to HTML + native MathML for the GUI's Section A.
+# Its output is committed, which is what lets a default install serve the GUI: the
+# extra is needed to *rebuild* simulator/gui/static/formulation.html, never to read it.
+docs = ["markdown-it-py>=3", "latex2mathml>=3.77"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests"]

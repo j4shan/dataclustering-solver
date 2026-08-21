@@ -1,6 +1,3 @@
-# Local working notes and design metadata — not part of the published repo
-project_metadata/
-
 # macOS
 .DS_Store
 .AppleDouble
@@ -35,8 +32,35 @@ venv/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
+# setuptools' scratch tree, left behind by `pip install .` on some pip versions.
+/build/
 
-# Generated datasets and derived artifacts — reproducible from a manifest,
-# never committed (see the simulator design, §4)
-data/generated/
+# Generated datasets, metric tables and rendered reports.  All reproducible from a
+# manifest and a seed, so the manifest is what gets versioned, not the data.
+# A curated dataset is different: it lives in simulator/providers/curated/ and IS committed.
+# Anchored to the root: an unanchored `data/` matches a directory of that name at any
+# depth, which also swallowed project_metadata/data/ — the committed scenario file the
+# explainer figures are generated from (9.1).
+/data/
 *.npy
+
+# Deliberately NOT ignored: simulator/gui/static/formulation.html.  It is generated, but
+# by the optional `docs` extra (10.3.6), and committing it is what lets a default install
+# — numpy, pyarrow, matplotlib and nothing else — serve the GUI.  Rebuild it with
+# `python -m tools.render_formulation` after editing problem-statement.md.
+# Everything the GUI writes at runtime goes under data/ and is covered above.
+
+# Execution plans.  A plan is a transient working artifact — it tracks progress through
+# one piece of work and is stale the moment that work lands.  It may be persisted here
+# so a run survives a session, but it is never versioned and never cited as a source of
+# requirements; the spec is what carries those forward.
+project_metadata/plans/
+
+# Agent tooling state and per-developer editor config.  None of it is a product artifact,
+# and `.superpowers/` holds live session state — pids, logs, ports and a server token —
+# which must never reach a public repository.  `docs/superpowers/` is the same category of
+# transient plan that `project_metadata/plans/` above is already excluded for.
+.superpowers/
+docs/superpowers/
+.cursor/
+.agents/

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Simulator architecture — components, seams, and data</title>
+
+<style>
+  :root {
+    color-scheme: light;
+    --plane:        #f9f9f7;
+    --surface:      #fcfcfb;
+    --surface-2:    #f0efec;
+    --ink:          #0b0b0b;
+    --ink-2:        #52514e;
+    --muted:        #898781;
+    --grid:         #e1e0d9;
+    --rule:         #e6e5df;
+    --data:         #2a78d6;
+    --data-soft:    #e7f0fc;
+    --seam:         #b8531f;
+    --seam-soft:    #fbeee5;
+    --spec:         #898781;
+    --spec-soft:    #f0efec;
+
+    --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --plane:        #0d0d0d;
+      --surface:      #1a1a19;
+      --surface-2:    #26261f;
+      --ink:          #ffffff;
+      --ink-2:        #c3c2b7;
+      --muted:        #898781;
+      --grid:         #2c2c2a;
+      --rule:         #333331;
+      --data:         #3987e5;
+      --data-soft:    #17293f;
+      --seam:         #e08a4c;
+      --seam-soft:    #33220f;
+      --spec:         #898781;
+      --spec-soft:    #26261f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane:        #0d0d0d;
+    --surface:      #1a1a19;
+    --surface-2:    #26261f;
+    --ink:          #ffffff;
+    --ink-2:        #c3c2b7;
+    --muted:        #898781;
+    --grid:         #2c2c2a;
+    --rule:         #333331;
+    --data:         #3987e5;
+    --data-soft:    #17293f;
+    --seam:         #e08a4c;
+    --seam-soft:    #33220f;
+    --spec:         #898781;
+    --spec-soft:    #26261f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 32px 24px 80px;
+    background: var(--plane);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; }
+
+  header.page { margin-bottom: 8px; }
+  h1 { font-size: 21px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--ink-2); font-size: 13.5px; margin: 0 0 4px; max-width: 76ch; }
+  .meta { color: var(--muted); font-size: 12px; margin: 0; }
+
+  .toolbar { display: flex; gap: 8px; margin: 18px 0 26px; }
+  button {
+    font: inherit; font-size: 12.5px; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 6px; padding: 5px 11px; cursor: pointer;
+  }
+  button:hover { border-color: var(--muted); color: var(--ink); }
+
+  /* ---- legend ---- */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 18px 26px;
+    padding: 14px 16px; margin-bottom: 30px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 8px;
+  }
+  .legend div { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--ink-2); }
+  .swatch { width: 26px; height: 16px; border-radius: 4px; flex: none; }
+  .sw-comp { background: var(--surface-2); border: 1px solid var(--rule); }
+  .sw-data { background: var(--data-soft); border: 1px dashed var(--data); }
+  .sw-seam { background: var(--seam-soft); border: 1px solid var(--seam); }
+  .sw-spec { background: var(--spec-soft); border: 1px dotted var(--spec); }
+
+  /* ---- bands ---- */
+  .band { margin: 0; }
+  .band-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 10px;
+  }
+  .band-n {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: 1px 6px; flex: none;
+  }
+  .band-title { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; }
+  .band-note { font-size: 12.5px; color: var(--muted); }
+
+  .row { display: grid; gap: 14px; }
+  .c1 { grid-template-columns: 1fr; }
+  .c2 { grid-template-columns: repeat(2, 1fr); }
+  .c3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 760px) {
+    .c2, .c3 { grid-template-columns: 1fr; }
+  }
+
+  .box {
+    background: var(--surface-2); border: 1px solid var(--rule);
+    border-radius: 8px; padding: 13px 15px;
+  }
+  .box h3 {
+    margin: 0 0 3px; font-size: 14px; font-weight: 600;
+  }
+  .box .path {
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    margin: 0 0 7px; word-break: break-all;
+  }
+  .box p { margin: 0; font-size: 12.5px; color: var(--ink-2); }
+  .box ul { margin: 6px 0 0; padding-left: 17px; font-size: 12.5px; color: var(--ink-2); }
+  .box li { margin: 2px 0; }
+  .box code {
+    font-family: var(--mono); font-size: 11.5px;
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 3px; padding: 0 3px;
+  }
+
+  .data {
+    background: var(--data-soft); border: 1px dashed var(--data);
+  }
+  .data h3 { color: var(--data); }
+  .data .tag {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; color: var(--data);
+    border: 1px solid var(--data); border-radius: 3px;
+    padding: 0 4px; margin-bottom: 6px;
+  }
+  .data ul { list-style: none; padding-left: 0; }
+  .data li { font-family: var(--mono); font-size: 11.5px; }
+
+  .seam { background: var(--seam-soft); border: 1px solid var(--seam); }
+  .seam h3 { color: var(--seam); }
+  .seam .tag {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; color: var(--seam);
+    border: 1px solid var(--seam); border-radius: 3px;
+    padding: 0 4px; margin-bottom: 6px;
+  }
+
+  .spec { background: var(--spec-soft); border: 1px dotted var(--spec); }
+  .spec h3 { color: var(--spec); }
+  .spec .tag {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; color: var(--spec);
+    border: 1px solid var(--spec); border-radius: 3px;
+    padding: 0 4px; margin-bottom: 6px;
+  }
+
+  /* ---- flow arrow between bands ---- */
+  .flow {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; padding: 9px 0; color: var(--muted);
+  }
+  .flow svg { flex: none; display: block; }
+  .flow span { font-size: 12px; font-family: var(--mono); }
+
+  /* ---- the sweep loop callout ---- */
+  .loop {
+    border-left: 3px solid var(--seam);
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px; margin: 14px 0;
+    font-size: 12.5px; color: var(--ink-2);
+  }
+  .loop strong { color: var(--ink); font-weight: 600; }
+
+  table.k {
+    width: 100%; border-collapse: collapse; margin-top: 8px;
+    font-size: 12.5px;
+  }
+  table.k th, table.k td {
+    text-align: left; padding: 6px 10px 6px 0;
+    border-bottom: 1px solid var(--rule); vertical-align: top;
+  }
+  table.k th { color: var(--muted); font-weight: 500; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  table.k td:first-child { font-family: var(--mono); font-size: 11.5px; white-space: nowrap; }
+
+  section.notes {
+    margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--rule);
+  }
+  section.notes h2 { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+  section.notes p { font-size: 13px; color: var(--ink-2); max-width: 82ch; }
+</style>
+
+<div class="wrap">
+
+<header class="page">
+  <h1>Simulator architecture</h1>
+  <p class="sub">
+    How a corpus becomes a score. Data flows top to bottom; every component is named by its
+    module path so this page can be checked against the code rather than believed.
+  </p>
+  <p class="meta">
+    Two plugin seams, one primitive operation — <em>(dataset, strategy, parameters) → metric rows</em>.
+  </p>
+</header>
+
+<div class="toolbar">
+  <button id="theme">Toggle theme</button>
+</div>
+
+<div class="legend">
+  <div><span class="swatch sw-comp"></span> component — code that runs</div>
+  <div><span class="swatch sw-data"></span> data block — bytes on disk or in memory</div>
+  <div><span class="swatch sw-seam"></span> plugin seam — third-party code attaches here</div>
+  <div><span class="swatch sw-spec"></span> specified, not built</div>
+</div>
+
+<!-- ============ BAND 1 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">1</span>
+    <span class="band-title">Input</span>
+    <span class="band-note">what a run is given</span>
+  </div>
+  <div class="row c3">
+    <div class="box data">
+      <span class="tag">DATA · IN</span>
+      <h3>Generator parameters</h3>
+      <p class="path">providers/synthetic/config.py</p>
+      <p><code>DatasetConfig</code> — seed, event count, feature cardinalities, size model,
+      selection rates, brand count and demand scale. The dataset id is a hash over these,
+      so any change is a new corpus.</p>
+    </div>
+    <div class="box data">
+      <span class="tag">DATA · IN</span>
+      <h3>Foreign CSV export</h3>
+      <p class="path">--source DIR</p>
+      <p>The alternative to generating: three CSVs produced somewhere else. Adopted through
+      the same contract, with arbitrary keys renumbered on ingest.</p>
+    </div>
+    <div class="box data">
+      <span class="tag">DATA · IN</span>
+      <h3>Run parameters</h3>
+      <p class="path">config/__init__.py · core/management_cost.py</p>
+      <p><code>SweepConfig</code> — the swept variable and its 8 values, and which strategies
+      to run. <code>CostWeights</code> — the abstract units the cost model charges.</p>
+    </div>
+  </div>
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>provider selected by name</span>
+</div>
+
+<!-- ============ BAND 2 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">2</span>
+    <span class="band-title">Providers</span>
+    <span class="band-note">seam 1 — anything that can write the contract</span>
+  </div>
+  <div class="row c3">
+    <div class="box seam">
+      <span class="tag">SEAM</span>
+      <h3>Provider registry</h3>
+      <p class="path">providers/__init__.py</p>
+      <p><code>register</code> / <code>get</code> / <code>available</code>. The simulator
+      selects a provider by name and knows nothing else about it.</p>
+    </div>
+    <div class="box">
+      <h3>synthetic</h3>
+      <p class="path">providers/synthetic/</p>
+      <ul>
+        <li><code>features.py</code> — ids, brands, feature columns</li>
+        <li><code>sizes.py</code> — blob bytes, never the blob</li>
+        <li><code>workload.py</code> — daily reports, Bernoulli draw</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>external</h3>
+      <p class="path">providers/external/</p>
+      <p>Validates a foreign export, renumbers keys to dense bigints, keeps originals as
+      <code>_source_*</code>, derives supports and per-query byte totals. Generates nothing.</p>
+    </div>
+  </div>
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>writes a dataset directory</span>
+</div>
+
+<!-- ============ BAND 3 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">3</span>
+    <span class="band-title">The dataset — the contract</span>
+    <span class="band-note">the only thing the simulator above this line knows about</span>
+  </div>
+  <div class="row c2">
+    <div class="box data">
+      <span class="tag">DATA · ARTIFACT</span>
+      <h3>Three authored files + manifest</h3>
+      <ul>
+        <li>events.csv — record_id, brand_id, feature_*, blob_*, _hidden</li>
+        <li>queries.csv — query_id, query_time, set_name, _hidden</li>
+        <li>selections.csv — record_id, query_id · positives only</li>
+        <li>manifest.json — id, config, cached |S<sub>q</sub>| in bytes</li>
+        <li style="color:var(--muted)">event_support.npy — derived, rebuilt if absent</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Contract</h3>
+      <p class="path">core/contract.py</p>
+      <p>Column roles by <strong>convention, not enumeration</strong>, so a corpus with
+      unfamiliar names loads with no code change.</p>
+      <table class="k">
+        <tr><th>pattern</th><th>role</th></tr>
+        <tr><td>record_id</td><td>identity</td></tr>
+        <tr><td>blob_*_compressed_bytes</td><td>size — enforced</td></tr>
+        <tr><td>_prefixed</td><td>hidden generator truth</td></tr>
+        <tr><td>anything else</td><td>partitionable feature</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>read once per run</span>
+</div>
+
+<!-- ============ BAND 4 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">4</span>
+    <span class="band-title">Load</span>
+    <span class="band-note">parsed once, reused by every layout</span>
+  </div>
+  <div class="row c2">
+    <div class="box">
+      <h3>Loader</h3>
+      <p class="path">core/dataset.py</p>
+      <p>Classifies columns by role and returns a <code>Dataset</code>: features and blob
+      size columns by name, summed byte totals, packed supports, query times and set names.
+      Names no provider's column.</p>
+    </div>
+    <div class="box">
+      <h3>Packed support</h3>
+      <p class="path">core/packed_support.py</p>
+      <p>supp(<em>e</em>) as one bit per query, 64 to a word. Buys exactly two operations:
+      OR-reduce member supports into supp(<em>c</em>), and popcount that into demand
+      breadth <em>d<sub>c</sub></em>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>validation queries cleared before hand-off</span>
+</div>
+
+<!-- ============ BAND 5 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">5</span>
+    <span class="band-title">Assignment</span>
+    <span class="band-note">seam 2 — where a layout is decided</span>
+  </div>
+  <div class="row c3">
+    <div class="box">
+      <h3>Training view</h3>
+      <p class="path">strategies/registry.py</p>
+      <p><code>build_view</code> → <code>TrainingView</code>. Validation support bits are
+      <strong>physically zero</strong>, so leakage is impossible by construction. Columns are
+      reached by dynamic key: <code>features[name]</code>, <code>size_columns[name]</code>.</p>
+    </div>
+    <div class="box seam">
+      <span class="tag">SEAM</span>
+      <h3>Strategy plugin</h3>
+      <p class="path">strategies/registry.py · third-party</p>
+      <p>A registered callable: view in, one container id per event out, nothing else.
+      Shipped: <code>insertion_order</code> and <code>random_order</code> — baselines that
+      bracket what ordering alone is worth, reading no feature at all.</p>
+    </div>
+    <div class="box">
+      <h3>Layout check</h3>
+      <p class="path">core/layout.py</p>
+      <p><code>validate_and_compact</code> — totality, non-negativity, then ids compacted to
+      a dense range. The harness never inspects what a strategy did.</p>
+    </div>
+  </div>
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>container_of_event · int per event</span>
+</div>
+
+<!-- ============ BAND 6 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">6</span>
+    <span class="band-title">Evaluate</span>
+    <span class="band-note">the objective</span>
+  </div>
+  <div class="row c2">
+    <div class="box">
+      <h3>Scoring</h3>
+      <p class="path">core/evaluate.py</p>
+      <p>A container is opened exactly when it holds an event the query selected. Per-query
+      figures are <strong>accumulated, never materialized</strong> — no dense
+      container × query matrix is ever built.</p>
+      <ul>
+        <li>skip ratios — byte, record, container</li>
+        <li>waste ratio, read amplification</li>
+        <li>per-query waste median / p95 / max</li>
+        <li>size health from <code>core/layout.py</code></li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Management cost</h3>
+      <p class="path">core/management_cost.py</p>
+      <p>A registered, replaceable model charging per-container bookkeeping, fragmentation
+      and rebuild volume in abstract units. The simulator's own construct — not part of the
+      formulation's objective, and plotted as a separate axis.</p>
+    </div>
+  </div>
+</div>
+
+<div class="loop">
+  <strong>The sweep loop.</strong> Bands 5 and 6 run once per <em>(strategy, target size)</em> —
+  2 strategies × 8 container targets = <strong>16 layouts</strong>, each emitting one row per
+  <code>training</code> / <code>validation</code> / <code>all</code>, so 48 metric rows.
+  Bands 3 and 4 run <strong>once</strong>: the corpus and its supports are invariant across
+  every layout, which is why container assignment is a separate array rather than a column
+  on the data.
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>metric rows</span>
+</div>
+
+<!-- ============ BAND 7 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">7</span>
+    <span class="band-title">Bench and report</span>
+    <span class="band-note">orchestration and presentation</span>
+  </div>
+  <div class="row c3">
+    <div class="box">
+      <h3>Runner</h3>
+      <p class="path">bench/runner.py</p>
+      <p><code>run_one</code> is the primitive; <code>sweep</code> iterates it.
+      <code>add_baseline_lift</code> divides each waste ratio by the do-nothing layout's at
+      the same target.</p>
+    </div>
+    <div class="box">
+      <h3>Metric table</h3>
+      <p class="path">bench/metrics.py</p>
+      <p>One CSV per run, concatenated on read. Append-only comes free from never rewriting
+      a file — no database, no locking.</p>
+    </div>
+    <div class="box">
+      <h3>Report</h3>
+      <p class="path">report/charts.py · report/page.py</p>
+      <p>Three charts — KPI vs cost, KPI vs container size, skipping by month — rendered as a
+      light and dark SVG pair each, then embedded in a standalone page.</p>
+    </div>
+  </div>
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>written to disk</span>
+</div>
+
+<!-- ============ BAND 8 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">8</span>
+    <span class="band-title">Output</span>
+    <span class="band-note">what a run leaves behind</span>
+  </div>
+  <div class="row c3">
+    <div class="box data">
+      <span class="tag">DATA · OUT</span>
+      <h3>Metric rows</h3>
+      <ul><li>data/metrics/run_*.csv</li></ul>
+      <p style="margin-top:7px">Every row stamped with <code>Dataset_ID</code> and
+      <code>Run_ID</code>, so results from different corpora cannot be compared on one chart.</p>
+    </div>
+    <div class="box data">
+      <span class="tag">DATA · OUT</span>
+      <h3>Report</h3>
+      <ul>
+        <li>data/report/&lt;dataset_id&gt;/index.html</li>
+        <li>scatter · sweep · period</li>
+        <li>× light + dark = 6 SVGs</li>
+      </ul>
+    </div>
+    <div class="box data">
+      <span class="tag">DATA · OUT</span>
+      <h3>Console summary</h3>
+      <p>Corpus shape, never-selected and cold-event counts, event size mean and p99, and the
+      sweep table. Runtime is printed, never asserted — drift is a signal, not a failure.</p>
+    </div>
+  </div>
+</div>
+
+<div class="flow">
+  <svg width="14" height="26" viewBox="0 0 14 26" aria-hidden="true">
+    <path d="M7 0 v18" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="3 3"/>
+    <path d="M2.5 17 L7 25 L11.5 17 Z" fill="currentColor"/>
+  </svg>
+  <span>consumed by</span>
+</div>
+
+<!-- ============ BAND 9 ============ -->
+<div class="band">
+  <div class="band-head">
+    <span class="band-n">9</span>
+    <span class="band-title">Surfaces</span>
+    <span class="band-note">who drives the pipeline</span>
+  </div>
+  <div class="row c2">
+    <div class="box">
+      <h3>Command line</h3>
+      <p class="path">simulator/__main__.py</p>
+      <p><code>generate</code> builds a corpus and describes it; <code>run</code> loads,
+      sweeps, and renders. The only surface that exists today.</p>
+    </div>
+    <div class="box spec">
+      <span class="tag">SPEC</span>
+      <h3>Demonstration GUI</h3>
+      <p class="path">PRD §12 — specified, not built</p>
+      <p>A local page presenting the problem statement, an interactive strategy demo, and the
+      production design. It drives the same primitive as the CLI; it does not become a second
+      evaluator.</p>
+    </div>
+  </div>
+</div>
+
+<section class="notes">
+  <h2>Two lines this diagram exists to make visible</h2>
+  <p>
+    <strong>The contract line (band 3).</strong> Everything above it produces a dataset
+    directory; everything below it consumes one. No module below band 3 names a column any
+    provider chose — the roles are matched by pattern, which is what lets a production export
+    be scored without an edit.
+  </p>
+  <p>
+    <strong>The layout line (band 5).</strong> The dataset is loaded once and is invariant;
+    the layout is recomputed 16 times. Container assignment therefore lives in its own array
+    keyed by event position, never as a column on the corpus — a distinction that decides how
+    the whole evaluator is shaped.
+  </p>
+</section>
+
+</div>
+
+<script>
+  // Theme toggle mirrors the closet canvas: stamps data-theme, defaulting from the system.
+  const root = document.documentElement;
+  document.getElementById("theme").addEventListener("click", () => {
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    const current = root.getAttribute("data-theme") || (dark ? "dark" : "light");
+    root.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+  });
+</script>

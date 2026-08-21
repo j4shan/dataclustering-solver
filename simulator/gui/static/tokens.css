@@ -1,0 +1,339 @@
+/*
+ * Design tokens (12.7).
+ *
+ * Every value here is fixed by the specification and none is chosen at implementation
+ * time.  Colour and type come from the Claude Code documentation (12.1.5); everything
+ * structural — spacing, radii, control heights, easing, the spinner's cadence — is
+ * AppKit convention (12.1.4).  Where a number is convention rather than published fact,
+ * 12.7.3.4 says so, and it is recorded rather than claimed.
+ *
+ * No third-party CSS, font, or icon set, and no build step (10.3.5).  The stack in
+ * --font-sans names a proprietary face first on purpose: it will not resolve locally,
+ * so the stack falls through to -apple-system and renders as SF on a Mac (12.7.2.2).
+ * Adopting the documentation's configuration therefore costs no download.
+ *
+ * Contrast figures are measured against the #FDFDF7 ground, not assumed, and they decide
+ * which role a colour may take (12.7.1).  The three that carry text are the only three
+ * that may.
+ */
+
+:root {
+  color-scheme: light; /* 12.1.5.1 — light only, so native controls match */
+
+  /* -- Colour: ground and planes (12.7.1.1) ------------------------------------- */
+  --ground: #fdfdf7;   /* --background-light: 253 253 247, as served by the docs */
+  --recessed: #f3f3f3; /* block bar, empty and stale states, table header rows */
+  /* A card is the ground raised off the recessed plane, not a third colour.  12.7.1.1
+   * names two planes and this page uses two; inventing a white would be inventing a
+   * value the specification does not fix. */
+  --card: var(--ground);
+
+  /* -- Colour: ink, by measured contrast (12.7.1.2) ----------------------------- */
+  --ink: #0e0e0e;           /* 18.9:1 — body */
+  --ink-secondary: #505050; /* 7.9:1  — labels, captions */
+  --ink-muted: #707070;     /* 4.9:1  — the floor for text; nothing lighter carries a word */
+
+  /* -- Colour: rules (12.7.1.3) ------------------------------------------------- */
+  /* Below any text threshold by construction.  Never used for type. */
+  --rule: #dedede;
+  --rule-strong: #cecece;
+
+  /* -- Colour: accent (12.7.1.4) ------------------------------------------------ */
+  /* 2.2:1 — decorative only.  Text on it, or as a text colour, is a defect. */
+  --accent: #d4a27f;
+
+  /* -- Colour: links and chrome (12.7.1.5) -------------------------------------- */
+  --link: #0b62d6;   /* 5.5:1 — passes AA for body text */
+  --chrome: #007aff; /* 3.9:1 — fails AA for text, so: focus rings and selection only */
+
+  /* -- Colour: chart series (12.7.1.6) ------------------------------------------ */
+  /* The validated report palette (9.4), not the UI accent: identity in data and accent
+   * in chrome are different jobs.  Kept in step with report/charts.py SERIES_LIGHT. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-baseline: #707070; /* the grey of 12.4.6.5's dashed reference line */
+
+  /* -- Type (12.7.2) ------------------------------------------------------------ */
+  --font-sans: "Anthropic Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --text-body: 13px; /* AppKit systemFontSize.  Not 17pt — that is an iOS metric (12.7.2.4) */
+  --text-small: 11px;
+  --text-heading: 17px;
+  --text-title: 22px;
+
+  /* -- Metrics: the 8pt grid with a 4pt sub-unit (12.7.3.1) --------------------- */
+  --space-half: 4px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+
+  /* -- Metrics: radii (12.7.3.2) ------------------------------------------------ */
+  --radius-window: 12px;
+  --radius-card: 10px;
+  --radius-control: 6px;
+  --radius-checkbox: 4px;
+
+  /* -- Metrics: control heights (12.7.3.3) -------------------------------------- */
+  --control-height: 24px;
+  --control-height-small: 20px;
+  --top-bar-height: 50px;
+
+  /* -- Motion: the Core Animation constants (12.7.4.1) -------------------------- */
+  /* Generic web easings are not substituted for these. */
+  --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+  --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* NSProgressIndicator's documented cadence (12.7.4.2): 12 blades at 30°, one step
+   * every 1/12 s, one revolution per second.  The one-second revolution is also the
+   * floor 12.1.8.1 holds the spinner visible for, so the two agree by construction. */
+  --spinner-blades: 12;
+  --spinner-revolution: 1s;
+
+  /* Prose set for sustained reading (12.1.9). */
+  --measure: 68ch;
+  --leading-prose: 1.65;
+  --leading-tight: 1.35;
+}
+
+/* -- Base ---------------------------------------------------------------------- */
+/*
+ * Every colour is painted explicitly rather than inherited from the host (12.1.5.1), so
+ * a reader whose system is dark is never served a half-themed page.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ground);
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-tight);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 var(--space-1);
+  line-height: var(--leading-tight);
+  font-weight: 600;
+}
+
+h1 { font-size: var(--text-title); }
+h2 { font-size: var(--text-heading); }
+h3 { font-size: var(--text-body); }
+
+p {
+  margin: 0 0 var(--space-2);
+}
+
+a {
+  color: var(--link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+}
+
+hr {
+  height: 1px;
+  margin: var(--space-3) 0;
+  border: 0;
+  background: var(--rule);
+}
+
+/*
+ * Numerals aligned in tables (12.1.9): tabular figures so a column of counts reads as a
+ * column, and lining figures so they sit level with the row's text.
+ */
+table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+th,
+td {
+  padding: var(--space-half) var(--space-1);
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+
+th {
+  background: var(--recessed);
+  color: var(--ink-secondary);
+  font-weight: 600;
+}
+
+td.numeric,
+th.numeric {
+  text-align: right;
+}
+
+/* -- Focus (12.6.1.1) ----------------------------------------------------------- */
+/*
+ * `:focus-visible` only, never bare `:focus`.  That is the platform convention — the
+ * ring appears for keyboard navigation and not on a mouse click — and #007AFF is
+ * reserved for exactly this job because it fails AA for text (12.7.1.5).
+ */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--chrome);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--chrome) 22%, transparent);
+}
+
+/* -- Controls (12.7.3.3) -------------------------------------------------------- */
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--ink);
+}
+
+button {
+  min-height: var(--control-height);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  transition: background 120ms var(--ease-default);
+}
+
+button:disabled {
+  color: var(--ink-muted);
+  background: var(--recessed);
+}
+
+button:not(:disabled):active {
+  background: var(--recessed);
+}
+
+/*
+ * There is deliberately **no filled primary button**.  AppKit's default push button is
+ * filled blue with white text, but white on #007AFF measures about 3.6:1 — below AA for
+ * 13px body text, and 12.7.1.5 already reserves that blue for chrome precisely because
+ * it fails for text.  A primary action is marked by a heavier border and its position,
+ * which costs no contrast.
+ */
+button.primary:not(:disabled) {
+  border-color: var(--ink-secondary);
+  font-weight: 600;
+}
+
+input[type="text"],
+textarea {
+  min-height: var(--control-height);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--card);
+}
+
+/* -- The spinner (12.1.8, 12.7.4.2) --------------------------------------------- */
+/*
+ * Twelve blades stepping once every 1/12 s, one revolution per second.  Stepped rather
+ * than smooth: `steps(12)` is what makes it an NSProgressIndicator rather than a web
+ * spinner that happens to take a second to go round.
+ */
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  position: relative;
+  animation: spinner-turn var(--spinner-revolution) steps(var(--spinner-blades)) infinite;
+}
+
+.spinner span {
+  position: absolute;
+  inset: 0;
+  /* Each blade is rotated a further 30° and faded a further step around the dial. */
+  transform: rotate(calc(var(--blade) * 30deg));
+  opacity: calc(0.25 + var(--blade) / 16);
+}
+
+.spinner span::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1.5px;
+  height: 4px;
+  margin-left: -0.75px;
+  border-radius: 1px;
+  background: var(--ink-secondary);
+}
+
+@keyframes spinner-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -- Reduced motion (12.7.4.3) --------------------------------------------------- */
+/*
+ * All motion is suppressed, and the spinner degrades to a **static indicator rather
+ * than disappearing**: a reader who asked for less motion still has to be able to tell
+ * that a five-second request is running (12.2.4).
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}
+
+/* -- Print ---------------------------------------------------------------------- */
+/*
+ * The report must survive being printed (12.4.6.7): nothing is reachable only by
+ * pointing at it, so a printed page loses no value a screen carried.
+ */
+
+@media print {
+  .spinner {
+    display: none;
+  }
+}

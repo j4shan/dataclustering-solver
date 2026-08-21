@@ -1,0 +1,17 @@
+# The corpus never enters the image (10.3.12.1): it is a versioned external asset read by
+# the catalog build and by nothing else, and an image that shipped whatever happened to be
+# on someone's disk would not be reproducible from the repository.
+data/
+
+# The one exception, and the reason the rule above is not simply `data/`: the catalog
+# document *is* a build input (8.11.1).  It is generated rather than committed, so it can
+# only reach the image through the build context, and an un-negated `data/` would exclude
+# it and fail the `COPY` in the Dockerfile.
+!data/catalog/strategy-catalog.json
+
+.venv/
+.git/
+.pytest_cache/
+__pycache__/
+*.pyc
+project_metadata/plans/

@@ -1,0 +1,129 @@
+<!doctype html>
+<!--
+  The application shell (12.1).
+
+  Three sections in fixed order — understand, then try, then build — each a left/right
+  pair on a wide viewport, and one of them displayed at a time (12.1.1).  B and C are
+  authored `hidden` so the page opens on A without a frame of all three: `app.js` hands
+  the choice to the location hash from there.  What is authored here is what the server
+  sends: there is no build step, no bundler, and no template engine (10.3.5, 10.3.1).
+
+  The two long documents are *fragments*, pre-rendered ahead of serving (12.3.2) and
+  fetched from this same process at load.  That is not an outbound request — every asset
+  comes from the server that sent this page (12.2.2) — and it keeps this file something a
+  reader can check by reading it.
+
+  Every URL below is relative to *this document* (12.2.13).  A leading slash would be
+  correct only while this page owns the whole origin, and it does not: served under a path
+  prefix beside other pages, a root-absolute reference leaves this exhibit entirely.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Neighbors You Pay For</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <span class="wordmark">The Neighbors You Pay For</span>
+      <nav class="section-nav" aria-label="Sections">
+        <a href="#problem" data-nav="problem"><b>A</b> Problem Statement</a>
+        <a href="#benchmark" data-nav="benchmark"><b>B</b> Data Skipping Experiment</a>
+        <a href="#design" data-nav="design"><b>C</b> Spark + Delta Lake Implementation</a>
+      </nav>
+    </header>
+
+    <main class="shell" id="shell">
+      <!-- A ------------------------------------------------------------------ -->
+      <section class="section" id="problem" tabindex="-1" aria-labelledby="problem-heading">
+        <header class="section-head">
+          <h1 id="problem-heading"><span class="letter">A</span> Organizing a data warehouse like a closet</h1>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Section A illustration"
+               data-mount="figures/graphics/section-a-illustration.html">
+            <p class="empty">Loading the illustration…</p>
+            <noscript>
+              <p class="empty">
+                <a href="figures/graphics/section-a-illustration.html">Open the closet-to-warehouse walkthrough</a>.
+              </p>
+            </noscript>
+          </div>
+          <div class="pane pane-right" role="region" aria-label="Section A formal statement"
+               data-mount="formulation.html">
+            <p class="empty">Loading the formal statement…</p>
+            <noscript>
+              <p class="empty">
+                <a href="formulation.html">Read the formal problem statement</a>.
+              </p>
+            </noscript>
+          </div>
+        </div>
+      </section>
+
+      <!-- B ------------------------------------------------------------------ -->
+      <section class="section" id="benchmark" tabindex="-1" hidden aria-labelledby="benchmark-heading">
+        <header class="section-head">
+          <h1 id="benchmark-heading"><span class="letter">B</span> Assignment Strategy Benchmark</h1>
+          <p class="section-lede">
+            Compose up to four candidates, sweep each across container capacities, and
+            read them against the industry-default baseline.
+          </p>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" id="builder" role="region"
+               aria-label="Section B strategy catalogue">
+            <p class="empty">Loading the strategy catalogue…</p>
+            <noscript>
+              <p class="empty">
+                This section runs the harness, so it needs scripting. Sections A and C
+                are documents and do not.
+              </p>
+            </noscript>
+          </div>
+          <div class="pane pane-right" id="report" role="region"
+               aria-label="Section B benchmark report">
+            <p class="empty">No benchmark yet — configure a block and press Evaluate.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- C ------------------------------------------------------------------ -->
+      <section class="section" id="design" tabindex="-1" hidden aria-labelledby="design-heading">
+        <header class="section-head">
+          <h1 id="design-heading"><span class="letter">C</span> Spark + Delta Lake Implementation</h1>
+          <p class="section-lede">
+            How the formulation maps onto a real engine, and where the engine cannot
+            honour it.
+          </p>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Section C production design"
+               data-mount="production-design.html">
+            <p class="empty">Loading the engine mapping…</p>
+            <noscript>
+              <p class="empty">
+                <a href="production-design.html">Read the Delta Lake prototype</a>.
+              </p>
+            </noscript>
+          </div>
+          <div class="pane pane-right" role="region" aria-label="Section C diagrams"
+               data-mount="figures/graphics/section-c-illustration.html">
+            <p class="empty">Loading the engine diagrams…</p>
+            <noscript>
+              <p class="empty">
+                <a href="figures/graphics/section-c-illustration.html">See the engine mapping drawn</a>.
+              </p>
+            </noscript>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+    <!-- A native ES module: no bundler, no build step (13.3). -->
+    <script type="module" src="section-b.js"></script>
+  </body>
+</html>

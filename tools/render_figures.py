@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Render the documentation figures from the shared closet scenario.
-
-Reads docs/data/closet-scenario.json and writes light/dark SVG pairs into
-docs/img/. Run after editing the scenario:
+"""Render the documentation figures, and write light/dark SVG pairs into
+resources/img/:
 
     python3 tools/render_figures.py
+
+Two of the three read resources/data/closet-scenario.json and state quantities
+computed from it — rerun after editing the scenario. The third, the page anatomy, draws
+the served page's structure and states no scenario quantity at all (9.15).
 
 No third-party dependencies.
 """
@@ -16,8 +18,8 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parent.parent
-SCENARIO = ROOT / "docs" / "data" / "closet-scenario.json"
-OUTDIR = ROOT / "docs" / "img"
+SCENARIO = ROOT / "resources" / "data" / "closet-scenario.json"
+OUTDIR = ROOT / "resources" / "img"
 
 # Single-quoted inner name: this string is interpolated into a double-quoted
 # XML attribute, so nested double quotes would break the document.
@@ -65,15 +67,15 @@ def load():
 
 
 def selections(scenario):
-    """query_id -> set of event ids selected by it (the usage log, pivoted)."""
+    """query_id -> set of event ids selected by it (the selection log, pivoted)."""
     sel = {q["id"]: set() for q in scenario["queries"]}
-    for event_id, query_id in scenario["usage_log"]:
+    for event_id, query_id in scenario["selection_log"]:
         sel[query_id].add(event_id)
     return sel
 
 
 def evaluate(scenario, layout):
-    """Activation, waste and cost for one layout, per §4-§5 of the formulation."""
+    """Activation, waste and cost for one layout, per §§3.4-3.5 of the problem statement."""
     sel = selections(scenario)
     qids = [q["id"] for q in scenario["queries"]]
 
@@ -182,7 +184,7 @@ def legend(x, y, c):
 
 
 # --------------------------------------------------------------------------
-# figure 1 — the usage matrix
+# figure 1 — the selection matrix
 # --------------------------------------------------------------------------
 
 def figure_matrix(scenario, theme):
@@ -222,7 +224,7 @@ def figure_matrix(scenario, theme):
             body.append(text(grid_x + qi * CELL_W + (CELL_W - 5) / 2, hy,
                              str(q["id"]), fill=c["muted"], size=9.5,
                              anchor="middle", mono=True))
-        body.append(text(grid_x - 10, hy, "Query_ID →",
+        body.append(text(grid_x - 10, hy, "query_id →",
                          fill=c["muted"], size=9.5, anchor="end"))
 
         top = hy + 10
@@ -267,7 +269,7 @@ def figure_matrix(scenario, theme):
 
     height = ly + 36
     return svg(width, height, "".join(body), c,
-               "Usage matrix under two layouts, showing container activation and waste")
+               "Selection matrix under two layouts, showing container activation and waste")
 
 
 # --------------------------------------------------------------------------
@@ -317,8 +319,9 @@ def figure_zoom(scenario, theme):
                          fill=c["ink"] if opened else c["muted"],
                          size=12.5, weight=600))
 
+        hits = sum(1 for e in rows if e in sel[qid])
         body.append(text(cx + 16, card_top + 56,
-                         "summary page says:  " + " · ".join(con["labels"]),
+                         f"index scan:  {hits} of {len(rows)} lines point here",
                          fill=c["muted"], size=10.5))
 
         ry = card_top + 74
@@ -354,12 +357,163 @@ def figure_zoom(scenario, theme):
                      "the other two are pure waste.",
                      fill=c["ink2"], size=10.5))
     body.append(text(margin, fy + 17,
-                     "Right: the summary page rules the container out before any read, "
-                     "so it costs nothing at all.",
+                     "Right: no index line points at this container, so it is never read "
+                     "and costs nothing at all.",
                      fill=c["ink2"], size=10.5))
 
     return svg(width, fy + 32, "".join(body), c,
                "An activated container with wasted events, beside a bypassed container")
+
+
+# --------------------------------------------------------------------------
+# figure 3 — the anatomy of the served page
+# --------------------------------------------------------------------------
+
+#: Nav labels, section headings and pane contents, spelled as
+#: simulator/gui/static/index.html spells them. A test holds the two in step.
+NAV = [
+    ("A", "Problem Statement"),
+    ("B", "Data Skipping Experiment"),
+    ("C", "Spark + Delta Lake Implementation"),
+]
+
+SECTIONS = [
+    {
+        "letter": "A",
+        "heading": "Organizing a data warehouse like a closet",
+        "note": "a document — nothing to configure",
+        "left": ("The closet walkthrough",
+                 ["one outfit and its wasted handling,",
+                  "the same fetch with technical names,",
+                  "one learned assignment change"]),
+        "right": ("The formal statement",
+                  ["problem-statement.md, pre-rendered",
+                   "native MathML, with its own contents list"]),
+    },
+    {
+        "letter": "B",
+        "heading": "Assignment Strategy Benchmark",
+        "note": "the interactive section — runs the harness",
+        "left": ("Candidate builder",
+                 ["up to four candidates, each a chain of",
+                  "group-by expressions over the feature columns",
+                  "plus the container capacities to sweep",
+                  "one Evaluate button — all candidates at once"]),
+        "right": ("Benchmark report", [
+            ("P1", "process diagram — what was built"),
+            ("P2", "summary table — what it scored"),
+            ("P3", "paired scatter plots — how the scores trade off"),
+        ]),
+    },
+    {
+        "letter": "C",
+        "heading": "Spark + Delta Lake Implementation",
+        "note": "a document — nothing to configure",
+        "left": ("The engine mapping",
+                 ["production-design.md, pre-rendered",
+                  "at Section A's parity"]),
+        "right": ("The mechanisms drawn",
+                  ["three diagrams: the file as container,",
+                   "clustering as layout, statistics as index"]),
+    },
+]
+
+
+def _pane(x, y, w, h, title, lines, c):
+    """One pane of a section: a bordered box, a title, and what it holds."""
+    out = [rect(x, y, w, h, fill="none", stroke=c["border"], rx=6)]
+    out.append(text(x + 12, y + 21, title, fill=c["ink"], size=11, weight=600))
+    ly = y + 40
+    for line in lines:
+        if isinstance(line, tuple):
+            # A named view of the benchmark report — the label is a word, not a colour.
+            key, label = line
+            out.append(rect(x + 12, ly - 14, w - 24, 26, fill=c["chip"],
+                            stroke=c["border"], rx=5))
+            out.append(text(x + 22, ly + 3, key, fill=c["needed"], size=10.5,
+                            weight=700, mono=True))
+            out.append(text(x + 46, ly + 3, label, fill=c["ink2"], size=10))
+            ly += 34
+        else:
+            out.append(text(x + 12, ly, line, fill=c["ink2"], size=10))
+            ly += 16
+    return "".join(out)
+
+
+def figure_anatomy(theme):
+    c = THEMES[theme]
+    margin, frame_w, gap = 22, 836, 14
+    pane_w = (frame_w - gap * 3) / 2
+    width = margin * 2 + frame_w
+
+    body = [
+        text(margin, 28, "The demonstration page, section by section",
+             fill=c["ink"], size=15, weight=600),
+        text(margin, 48,
+             "One local page on loopback — three sections in fixed order, one shown at a "
+             "time, each a left and a right pane on a wide viewport",
+             fill=c["ink2"], size=11),
+    ]
+
+    # the top bar
+    top = 70
+    bar_h = 34
+    body.append(rect(margin, top, frame_w, bar_h, fill=c["chip"],
+                     stroke=c["border"], rx=6))
+    body.append(text(margin + 14, top + 22, "The Data Storage Layout Problem",
+                     fill=c["ink"], size=11.5, weight=600))
+    # The nav is set from the right edge inward, so a renamed section lengthens the group
+    # leftward into the bar's empty middle instead of overrunning the frame.
+    items = [(f"{letter} {label}", 16 + len(f"{letter} {label}") * 6.2)
+             for letter, label in NAV]
+    nx = margin + frame_w - 14 - (sum(w for _, w in items) + 8 * (len(items) - 1))
+    for item, w in items:
+        body.append(rect(nx, top + 7, w, 20, fill=c["surface"],
+                         stroke=c["border"], rx=5))
+        body.append(text(nx + w / 2, top + 21, item, fill=c["ink2"], size=10.5,
+                         anchor="middle"))
+        nx += w + 8
+
+    # the three sections
+    y = top + bar_h + 12
+    for section in SECTIONS:
+        right_title, right_lines = section["right"]
+        left_lines = section["left"][1]
+        if isinstance(right_lines[0], tuple):
+            pane_h = 34 * len(right_lines) + 34
+        else:
+            pane_h = 40 + 16 * max(len(left_lines), len(right_lines)) + 16
+        band_h = 36 + pane_h + 14
+
+        body.append(rect(margin, y, frame_w, band_h, fill="none",
+                         stroke=c["border"], rx=8))
+        body.append(rect(margin + 14, y + 9, 20, 20, fill=c["chip"], rx=5))
+        body.append(text(margin + 24, y + 23, section["letter"], fill=c["ink2"],
+                         size=11, weight=700, anchor="middle", mono=True))
+        body.append(text(margin + 42, y + 24, section["heading"], fill=c["ink"],
+                         size=12.5, weight=600))
+        body.append(text(margin + frame_w - 14, y + 24, section["note"],
+                         fill=c["muted"], size=10, anchor="end"))
+
+        py = y + 36
+        left_title, left_lines = section["left"]
+        body.append(_pane(margin + gap, py, pane_w, pane_h, left_title, left_lines, c))
+        body.append(_pane(margin + gap * 2 + pane_w, py, pane_w, pane_h,
+                          right_title, right_lines, c))
+        y += band_h + 12
+
+    body.append(text(margin, y + 12,
+                     "Sections A and C are documents to read; B is the one that runs the "
+                     "harness.",
+                     fill=c["ink2"], size=10.5))
+    body.append(text(margin, y + 29,
+                     "Nothing is fetched from a network — every asset comes from the "
+                     "local process, and an evaluation is kept nowhere.",
+                     fill=c["muted"], size=10.5))
+
+    return svg(width, y + 44, "".join(body), c,
+               "The anatomy of the demonstration page: navigation, the three sections it "
+               "selects between, and the panes each holds")
 
 
 # --------------------------------------------------------------------------
@@ -369,12 +523,14 @@ def main():
     OUTDIR.mkdir(parents=True, exist_ok=True)
 
     for theme in THEMES:
-        (OUTDIR / f"usage-matrix.{theme}.svg").write_text(
+        (OUTDIR / f"selection-matrix.{theme}.svg").write_text(
             figure_matrix(scenario, theme))
         (OUTDIR / f"container-zoom.{theme}.svg").write_text(
             figure_zoom(scenario, theme))
+        (OUTDIR / f"page-anatomy.{theme}.svg").write_text(
+            figure_anatomy(theme))
 
-    print(f"wrote 4 figures to {OUTDIR.relative_to(ROOT)}/\n")
+    print(f"wrote 6 figures to {OUTDIR.relative_to(ROOT)}/\n")
     for layout in scenario["layouts"]:
         ev = evaluate(scenario, layout)
         print(f'{layout["name"]:>10}: opened {ev["opened"]:>3} · '
