@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-#: The four capacities the GUI's benchmark sweeps the baseline across, and prefills every
-#: new strategy block with (12.4.2.7, 12.4.5.1).  Four rather than the eight below because
-#: the summary table reserves four rows for the baseline and no more.
+#: The four capacities the catalogue sweeps every candidate and the baseline across
+#: (8.11, 12.4.5.1).  Four rather than the eight below because the summary table
+#: reserves four rows for the baseline and no more.
 INTERACTIVE_CAPACITIES = (1000, 2000, 4000, 8000)
 
 

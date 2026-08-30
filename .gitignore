@@ -47,7 +47,7 @@ venv/
 # Deliberately NOT ignored: simulator/gui/static/formulation.html.  It is generated, but
 # by the optional `docs` extra (10.3.6), and committing it is what lets a default install
 # — numpy, pyarrow, matplotlib and nothing else — serve the GUI.  Rebuild it with
-# `python -m tools.render_formulation` after editing problem-statement.md.
+# `python -m tools.render_formulation` after editing resources/graphics/problem-statement.md.
 # Everything the GUI writes at runtime goes under data/ and is covered above.
 
 # Execution plans.  A plan is a transient working artifact — it tracks progress through

@@ -1,10 +1,12 @@
 """Command line entry point.
 
+    python -m simulator                                 interactive control plane (8.9.1)
     python -m simulator generate                        build the synthetic dataset
     python -m simulator generate --provider external --source DIR
                                                         adopt an external CSV export
+    python -m simulator catalog                         score the catalogue the page presents
     python -m simulator run                             sweep, then render the report
-    python -m simulator gui                             serve the demonstration GUI
+    python -m simulator gui                             serve the demonstration GUI (foreground)
 """
 
 from __future__ import annotations
@@ -37,6 +39,13 @@ log = logs.get(__name__)
 #: The commands that need it, and the extra that supplies it (10.3.9).
 HARNESS_GROUP = "harness"
 HARNESS_COMMANDS = frozenset({"generate", "run", "catalog"})
+
+SUBCOMMANDS = ("generate", "catalog", "run", "gui")
+
+NO_TERMINAL_HELP = (
+    "no terminal to open the control plane — use a subcommand:\n"
+    "    generate | catalog | run | gui"
+)
 
 GENERATED_ROOT = Path("data/generated")
 REPORT_ROOT = Path("data/report")
@@ -231,6 +240,13 @@ def cmd_catalog(args):
     )
 
 
+def cmd_menu(_args):
+    """Numbered control plane.  Only reached when stdin is a terminal (8.9.1)."""
+    from . import menu
+
+    return menu.run()
+
+
 def cmd_gui(args):
     # Imported here rather than at module scope so that `generate` and `run` never pay
     # for the server, and so this module keeps importing on a checkout where the GUI
@@ -316,7 +332,7 @@ def cmd_gui(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="simulator")
-    subcommands = parser.add_subparsers(dest="command", required=True)
+    subcommands = parser.add_subparsers(dest="command", required=False)
 
     generate = subcommands.add_parser("generate")
     generate.add_argument("--provider", default="synthetic", help="dataset provider")
@@ -351,6 +367,13 @@ def main(argv=None):
     gui.set_defaults(func=cmd_gui)
 
     args = parser.parse_args(argv)
+
+    if not args.command:
+        if not sys.stdin.isatty():
+            print(NO_TERMINAL_HELP)
+            return 1
+        args.command = "menu"
+        args.func = cmd_menu
 
     # Once, before any work: everything below logs through the `simulator` logger, and
     # the run file is named for the moment the command started rather than the moment it

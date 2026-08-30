@@ -3,7 +3,7 @@
 The criterion for this stylesheet is that **no value is invented at implementation time**,
 so most of these tests read `ui-spec.md` §12.7 and check the CSS against it rather than
 against a second list written here.  A hardcoded expectation would be exactly the second
-source of truth 10.1.2 forbids: the specification is the authority, and the test's job is
+source of truth: the specification is the authority, and the test's job is
 to notice when the file drifts from it.
 """
 

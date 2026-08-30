@@ -57,7 +57,7 @@ def test_one_renderer_serves_both_documents():
     pytest.importorskip("markdown_it", reason="needs the 'docs' extra")
     from tools import render_formulation as rf
 
-    assert set(rf.DOCUMENTS) == {"formulation", "production-design"}
+    assert {"formulation", "production-design"} <= set(rf.DOCUMENTS)
     source, out = rf.DOCUMENTS["production-design"]
     assert source.resolve() == SOURCE.resolve()
     assert out.resolve() == FRAGMENT.resolve()

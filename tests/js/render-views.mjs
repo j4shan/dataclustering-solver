@@ -5,7 +5,7 @@
  *
  * The document is projected into a report by `reportFor` — **the page's own function**,
  * imported rather than reimplemented, so what these trees are drawn from is exactly what
- * a reader's selection produces (10.1.2).
+ * a reader's selection produces.
  *
  * Nothing here asserts.  The assertions are in `test_report_views.py`, against the trees
  * this prints, so a failure names the requirement rather than a selector.

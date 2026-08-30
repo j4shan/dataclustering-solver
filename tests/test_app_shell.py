@@ -9,6 +9,7 @@ these read the files, and the optional suite (T20) drives the live page.
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pytest
 
@@ -31,6 +32,11 @@ def html() -> str:
 @pytest.fixture(scope="module")
 def css() -> str:
     return re.sub(r"/\*.*?\*/", "", APP_CSS.read_text(), flags=re.DOTALL)
+
+
+def test_browser_and_wordmark_use_the_formal_project_title(html):
+    assert "<title>The Data Storage Layout Problem</title>" in html
+    assert '<span class="wordmark">The Data Storage Layout Problem</span>' in html
 
 
 @pytest.fixture(scope="module")
@@ -60,21 +66,22 @@ def media_block(css: str, query: str) -> str:
     raise AssertionError(f"unbalanced braces after {query}")
 
 
-# -- three sections, in order (12.1.1) -----------------------------------------------
+# -- four sections, in order (12.1.1) -----------------------------------------------
 
 
-def test_there_are_three_sections_in_fixed_order(html):
+def test_there_are_four_sections_in_fixed_order(html):
     assert re.findall(r'<section class="section" id="([\w-]+)"', html) == [
         "problem",
         "benchmark",
         "design",
+        "gini",
     ]
 
 
 def test_each_section_is_a_left_right_pair(html):
-    assert html.count('class="split"') == 3
-    assert html.count("pane pane-left") == 3
-    assert html.count("pane pane-right") == 3
+    assert html.count('class="split"') == 4
+    assert html.count("pane pane-left") == 4
+    assert html.count("pane pane-right") == 4
 
 
 def test_the_sections_are_individually_linkable(html):
@@ -101,13 +108,13 @@ def test_the_page_anatomy_figure_spells_the_sections_the_page_spells_them(html):
     assert headings == [(s["letter"], s["heading"]) for s in rf.SECTIONS]
 
 
-def test_section_a_keeps_its_tab_name_and_uses_the_closet_heading(html):
+def test_section_a_keeps_its_tab_name_and_uses_the_medicine_cabinet_heading(html):
     """Section A's navigation name stays stable while its editorial heading carries the story."""
     section = html.split('id="problem"')[1].split('id="benchmark"')[0]
     assert '<a href="#problem" data-nav="problem"><b>A</b> Problem Statement</a>' in html
     assert (
         '<h1 id="problem-heading"><span class="letter">A</span> '
-        "Organizing a data warehouse like a closet</h1>"
+        "Organizing Data Like a Medicine Cabinet</h1>"
     ) in section
 
 
@@ -117,10 +124,10 @@ def test_every_section_is_labelled_for_a_screen_reader(html):
     for target in labelled:
         assert f'id="{target}"' in html
     panes = re.findall(r'<div class="pane [^"]+"[^>]*>', html)
-    assert len(panes) == 6
+    assert len(panes) == 8
     assert all('role="region"' in pane for pane in panes)
     assert all('aria-label="' in pane for pane in panes)
-    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 6
+    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 8
 
 
 # -- the scroll model (12.1.2, 12.1.7) -----------------------------------------------
@@ -218,9 +225,40 @@ def test_nothing_is_hidden_at_a_narrow_width(css):
 
 
 def test_prose_is_set_for_sustained_reading(css):
-    """A bounded measure and generous leading — Section A's formulation pane is the case."""
+    """Generous leading; other reading prose keeps a character-width measure (12.1.9)."""
     assert "max-width: var(--measure)" in css
     assert "line-height: var(--leading-prose)" in rule_for(css, ".pane:has(> .formulation)")
+
+
+def test_section_a_formulation_fills_the_right_pane(css):
+    """12.3.1.1 — the document uses the pane, not a character clamp inside it."""
+    assert "max-width: none" in rule_for(css, "#problem .pane-right > .formulation")
+
+
+def test_section_a_illustration_is_one_pixel_larger_than_chrome(css):
+    """12.3.5.5 — the left pane remaps the type tokens so every beat steps together."""
+    declarations = rule_for(css, "#problem .pane-left")
+    assert "--text-body: 14px" in declarations
+    assert "--text-small: 12px" in declarations
+    assert "--text-heading: 18px" in declarations
+    assert "--text-title: 23px" in declarations
+
+
+def test_section_a_formulation_is_one_pixel_larger_than_chrome(css):
+    """12.3.1.2 — body, headings, and small type each step one pixel above 12.7.2."""
+    assert "font-size: calc(var(--text-body) + 1px)" in rule_for(css, "#problem .pane-right")
+    assert "font-size: calc(var(--text-title) + 1px)" in rule_for(
+        css, "#problem .pane-right h1"
+    )
+    assert "font-size: calc(var(--text-heading) + 1px)" in rule_for(
+        css, "#problem .pane-right h2"
+    )
+    assert "font-size: calc(var(--text-body) + 1px)" in rule_for(
+        css, "#problem .pane-right h3"
+    )
+    assert "font-size: calc(var(--text-small) + 1px)" in rule_for(
+        css, "#problem .pane-right :is(code, kbd, samp, pre)"
+    )
 
 
 def test_section_a_puts_the_illustration_on_the_left(html):
@@ -235,7 +273,7 @@ def test_section_a_puts_the_illustration_on_the_left(html):
         r'class="pane pane-right"[^>]*data-mount="formulation.html"',
         section,
     )
-    assert "Open the closet-to-warehouse walkthrough" in section
+    assert "Open the medicine-cabinet walkthrough" in section
     assert "twelve events in three containers" not in section
 
 
@@ -339,6 +377,32 @@ def catalog_view() -> str:
         (STATIC_ROOT / "catalog-view.js").read_text(),
         flags=re.DOTALL,
     )
+
+
+def test_the_shell_describes_a_catalogue_not_a_builder(html):
+    """12.4.2.5 — authored copy must not describe the retired compose-and-Evaluate flow."""
+    for gone in (
+        "Compose up to four",
+        "press Evaluate",
+        "runs the harness",
+        "configure a block",
+    ):
+        assert gone not in html, gone
+    assert "pre-scored catalogue" in html
+    assert "choose a catalogue entry" in html
+
+
+def test_the_page_anatomy_source_describes_a_catalogue():
+    """9.15 — the figure generator must spell Section B as the page now is."""
+    from tools import render_figures as rf
+
+    section_b = next(s for s in rf.SECTIONS if s["letter"] == "B")
+    blob = repr(section_b)
+    for gone in ("Candidate builder", "Evaluate button", "runs the harness"):
+        assert gone not in blob, gone
+    assert section_b["left"][0] == "Strategy catalogue"
+    source = Path(rf.__file__).read_text()
+    assert "runs the harness" not in source
 
 
 def test_the_panel_holds_no_control_that_starts_work(section_b):

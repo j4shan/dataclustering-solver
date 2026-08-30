@@ -16,7 +16,7 @@ pytest.importorskip("latex2mathml", reason="needs the 'docs' extra")
 
 from tools import render_formulation as rf  # noqa: E402
 
-FORMULATION = Path("project_metadata/problem-statement.md")
+FORMULATION = Path("resources/graphics/problem-statement.md")
 PRODUCTION_DESIGN = Path("project_metadata/production-design.md")
 
 
@@ -39,7 +39,7 @@ def test_engine_mapping_does_not_link_to_unserved_markdown():
     "heading, expected",
     [
         ("Data storage and fetch model", "data-storage-and-fetch-model"),
-        ("3.6 A patternless query", "36-a-patternless-query"),
+        ("2.6 A patternless query", "26-a-patternless-query"),
         ("One relation, three views", "one-relation-three-views"),
         ("Bounds are far apart", "bounds-are-far-apart"),
     ],
@@ -97,6 +97,17 @@ def test_picture_collapses_to_the_light_image_only():
     assert 'src="figures/img/z.light.svg"' in out
     assert 'alt="a caption"' in out
     assert "<source" not in out
+
+
+def test_picture_from_graphics_hops_to_the_served_img_tree():
+    """A document already under resources/graphics/ reaches img/ through ``../``."""
+    block = (
+        "<picture>\n"
+        '  <img alt="a caption" src="../img/demo.png">\n'
+        "</picture>\n"
+    )
+    out = rf.collapse_pictures(block, "figures/")
+    assert 'src="figures/img/demo.png"' in out
 
 
 # --- links ------------------------------------------------------------------------
@@ -157,6 +168,15 @@ def test_dropping_contents_leaves_a_document_without_one_untouched():
     """12.3.3.1 — the engine mapping authors no contents list, and nothing changes for it."""
     source = "# T\n\nlead.\n\n---\n\n## 1. One\n\nBody.\n"
     assert rf.drop_authored_contents(source) == source
+
+
+def test_the_walkthrough_is_registered_and_renders_without_a_contents_list():
+    """12.8.2 — one renderer; the sequential pane does not inject a TOC."""
+    assert "section-d-walkthrough" in rf.DOCUMENTS
+    source, _out = rf.DOCUMENTS["section-d-walkthrough"]
+    out = rf.render(source.read_text(encoding="utf-8"), document_id="section-d-walkthrough")
+    assert 'class="toc"' not in out
+    assert "<math" in out
 
 
 def test_tables_and_code_survive_the_round_trip():

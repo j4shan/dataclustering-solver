@@ -2,63 +2,33 @@
 
 ## Contents
 
-1. **[Notation](#1-notation)**
-2. **[Data storage and fetch model](#2-data-storage-and-fetch-model)**
-   - [2.1 Predicate-to-container resolution](#21-predicate-to-container-resolution)
-   - [2.2 Custom assignment overhead](#22-custom-assignment-overhead)
-3. **[Objective function and system-wide data skipping](#3-objective-function-and-system-wide-data-skipping)**
-   - [3.1 Observed workload](#31-observed-workload)
-   - [3.2 Demand derived from the log](#32-demand-derived-from-the-log)
-   - [3.3 Predicate and observed demand](#33-predicate-and-observed-demand)
-   - [3.4 Container activation and materialization](#34-container-activation-and-materialization)
-   - [3.5 Aggregate waste](#35-aggregate-waste)
-   - [3.6 A patternless query](#36-a-patternless-query)
-4. **[The effect of data clustering](#4-the-effect-of-data-clustering)**
-   - [4.1 Distinct subgroup probabilities](#41-distinct-subgroup-probabilities)
-   - [4.2 Allocating containers among groups](#42-allocating-containers-among-groups)
-5. **[Container capacity bounds](#5-container-capacity-bounds)**
-6. **[Problem Complexity Analysis](#6-problem-complexity-analysis)**
-   - [6.1 Search space and hardness](#61-search-space-and-hardness)
-   - [6.2 Assignment evaluation cost](#62-assignment-evaluation-cost)
-   - [6.3 Impact of dynamic query patterns](#63-impact-of-dynamic-query-patterns)
+1. **[Data storage and fetch model](#1-data-storage-and-fetch-model)**
+   - [1.1 Predicate-to-container resolution](#11-predicate-to-container-resolution)
+   - [1.2 Custom assignment overhead](#12-custom-assignment-overhead)
+2. **[Objective function and system-wide data skipping](#2-objective-function-and-system-wide-data-skipping)**
+   - [2.1 Observed workload](#21-observed-workload)
+   - [2.2 Demand derived from the log](#22-demand-derived-from-the-log)
+   - [2.3 Predicate and observed demand](#23-predicate-and-observed-demand)
+   - [2.4 Container activation and materialization](#24-container-activation-and-materialization)
+   - [2.5 Aggregate waste](#25-aggregate-waste)
+   - [2.6 A patternless query](#26-a-patternless-query)
+3. **[The effect of data clustering](#3-the-effect-of-data-clustering)**
+   - [3.1 Distinct subgroup probabilities](#31-distinct-subgroup-probabilities)
+   - [3.2 Allocating containers among groups](#32-allocating-containers-among-groups)
+4. **[Container capacity bounds](#4-container-capacity-bounds)**
+5. **[Problem Complexity Analysis](#5-problem-complexity-analysis)**
+   - [5.1 Search space and hardness](#51-search-space-and-hardness)
+   - [5.2 Assignment evaluation cost](#52-assignment-evaluation-cost)
+   - [5.3 Impact of dynamic query patterns](#53-impact-of-dynamic-query-patterns)
 
 ---
 
-## 1. Notation
-
-| symbol | reads as | defined |
-| --- | --- | --- |
-| $E$, $N$ | the event corpus and its event count | §2 |
-| $e$ | one event | §2 |
-| $\lambda$ | the event-to-container assignment | §2 |
-| $c$, $E_c$, $K$ | a container, its contents, and the container count | §2 |
-| $I$, $\rho$ | the index table and its compressed width ratio | §2.1 |
-| $q$, $\mathcal{Q}$, $Q$ | one query, the query set, and the query count | §3.1 |
-| $L$ | the selection log | §3.1 |
-| $S_q$ | the events selected by query $q$ | §3.2 |
-| $\operatorname{supp}(e)$ | the queries that selected event $e$ | §3.2 |
-| $\operatorname{supp}(c)$ | the queries that fetch container $c$ | §3.2 |
-| $u_{e,q}$, $U$ | one selection indicator and the complete selection matrix | §3.2 |
-| $a_{c,q}$ | whether query $q$ activates container $c$ | §3.4 |
-| $M_q$ | the event count materialized for query $q$ | §3.4 |
-| $d_c$ | the number of queries that activate container $c$ | §3.4 |
-| $w_q$, $\mathcal{W}$ | waste for one query and aggregate waste | §3.5 |
-| $\tilde{U}$ | the selections after container-level materialization | §3.5 |
-| $p$, $X_c$ | random event-selection probability and selected events in one container | §3.6 |
-| $G_g$, $N_g$, $p_g$, $K_g$ | a logical group, its event count, its selection probability, and its container allocation | §4 |
-| $s_{\min}$, $s_{\max}$ | lower and upper container-capacity bounds | §5 |
-| $\mathcal{C}$, $s$, $K_s$ | permitted capacities, one capacity, and its resulting container count | §6.1 |
-| $T$, $\lambda$, $\lambda_{\mathrm{base}}$ | the study period, candidate layout, and naive baseline layout | §6.3 |
-| $C_{\mathrm{read}}$, $C_{\mathrm{layout}}$ | total query-read cost and one-time layout cost | §6.3 |
-
----
-
-## 2. Data storage and fetch model
+## 1. Data storage and fetch model
 
 This section describes the database operations that make event placement important. A data storage
-system holds events in containers and answers queries by fetching entire containers. The
-optimization problem studies how assigning events to those containers changes the volume of data
-the system must fetch.
+system holds events in containers and serves a query—a database request that retains selected
+events—by fetching entire containers. The layout question is how assigning events to those
+containers changes the volume of data the system must fetch.
 
 Let $E$ be the finite set of all stored events, and let $N = |E|$ be the number of events in that
 set.
@@ -85,11 +55,8 @@ $|E_c|$. When events have different sizes, the container's storage size in bytes
 
 $$\operatorname{bytes}(E_c) = \sum_{e \in E_c} \operatorname{size}(e).$$
 
-Every later formula that uses $|E_c|$ as storage volume can use
-$\operatorname{bytes}(E_c)$ instead. The displayed objective uses event counts, so its
-byte-weighted form must also replace the selected-event count $|S_q|$ with
-$\sum_{e\in S_q}\operatorname{size}(e)$. Both sides then use bytes. This changes the unit of
-measurement, not the structure of the problem.
+Later storage-volume formulas can use $\operatorname{bytes}(E_c)$ instead of $|E_c|$. This changes
+the unit of measurement, not the structure of the problem.
 
 **Container fetch.** The storage system provides one data-fetch operation:
 
@@ -105,11 +72,12 @@ their container assignment would not affect read cost.
 
 The system serves a query in two phases:
 
-1. **Resolve:** evaluate the query predicate to identify the containers the query must fetch.
+1. **Resolve:** evaluate the query predicate—the filter over indexed event attributes—to identify
+   the containers the query must fetch.
 2. **Fetch:** call `FETCH` on each identified container, then discard events the query did not
    select.
 
-### 2.1 Predicate-to-container resolution
+### 1.1 Predicate-to-container resolution
 
 A columnar store can evaluate a predicate by reading only the columns named in that predicate.
 Other columns do not need to be materialized yet. This practice is **late materialization**:
@@ -118,7 +86,7 @@ nested context, or many attributes are fetched only after the system knows which
 needs.
 
 Predicate-to-container resolution translates a query predicate into those container identifiers.
-The solution pattern used here is a narrow index table with one row per event:
+The solution pattern used here is a narrow index table ($I$) with one row per event:
 
 | column | meaning |
 | --- | --- |
@@ -130,6 +98,12 @@ To resolve a query, the system scans `features`, evaluates the predicate for eve
 collects the corresponding `container_id` values. The resulting set identifies the containers the
 query must fetch. No secondary structure allows the system to skip part of this index scan.
 
+<picture>
+  <img alt="Predicate-to-container resolution: a query scans the index table, collects container identifiers, and fetches only those containers from the event table." src="../img/demo_index_table.png">
+</picture>
+
+*Scan the narrow index, collect container identifiers, and fetch only those containers.*
+
 The index has as many rows as the corpus, but each row is narrower than a complete event. The
 index width ratio ($\rho$) compares their compressed sizes:
 
@@ -138,30 +112,16 @@ $$\rho =
      {\text{compressed bytes per complete event}},
 \qquad \rho \ll 1.$$
 
-A full index scan costs $\rho N$ in event-volume units. Fetching the complete main table costs
-$N$. Serving query $q$ adds the cost of materializing all main-table events fetched for that query
-($M_q$, defined in §3.4). The index saves work exactly when
-
-$$\rho N + M_q < N.$$
-
-The share of the corpus that the query avoids reading is its skipping ratio ($\sigma_q$):
-
-$$\sigma_q = 1-\frac{M_q}{N}.$$
-
-The same condition can therefore be written
-
-$$\sigma_q > \rho.$$
-
 An index table changes how the system locates data, not which records the query returns. Several
 index tables may coexist for different predicate families. Low-cardinality feature labels can
 make an index especially compressible because their values repeat often.
 
 Changing $\lambda$ rewrites `container_id` values but does not change the number of index rows or
 the feature columns scanned. Index cost is therefore real and recurring but constant across
-candidate layouts. Its central benefit is late materialization: the system resolves the predicate
+different assignments. Its central benefit is late materialization: the system resolves the predicate
 using narrow columns before fetching dense columns from the identified main-table containers.
 
-### 2.2 Custom assignment overhead
+### 1.2 Custom assignment overhead
 
 A custom assignment adds container-resolution work at two points in the data path.
 
@@ -170,24 +130,23 @@ event's features and produces its `container_id`. The rule must be deterministic
 and evaluable from that event alone. An assignment represented only as the output of a batch
 computation over the complete corpus cannot route a new event without another global computation.
 
-At query time, **predicate-to-container resolution** performs the index-table process in §2.1. It
+At query time, **predicate-to-container resolution** performs the index-table process in §1.1. It
 evaluates the query predicate against indexed features and produces the container identifiers that
 must be fetched.
 
 Both steps consume compute, memory, and metadata capacity outside the container fetch itself.
 Their overhead can be prohibitive in a low-latency system or a resource-constrained deployment,
-even when the custom assignment would reduce materialized volume. A deployable layout must
+even when the custom assignment would reduce main-table data fetched beyond the selected events. A deployable layout must
 therefore fit the ingest-time routing budget and the query-time resolution budget.
 
 ---
 
-## 3. Objective function and system-wide data skipping
+## 2. Objective function and system-wide data skipping
 
-The objective is built from one observed relation. This section introduces that relation, shows
-how a layout expands each query's fetch, and then establishes a patternless baseline for
-system-wide skipping.
+The objective is built from one observed relation. This section introduces that relation and shows
+how an assignment expands each query's fetch.
 
-### 3.1 Observed workload
+### 2.1 Observed workload
 
 The workload is recorded in an append-only **selection log** with two columns:
 
@@ -209,7 +168,7 @@ where $\mathcal{Q}$ is the set of $Q$ distinct queries. Queries have no separate
 weight. If the same query text runs repeatedly, each execution receives its own `query_id`, so
 repetition is represented directly in the log.
 
-### 3.2 Demand derived from the log
+### 2.2 Demand derived from the log
 
 For one query, collect the events it selected:
 
@@ -239,7 +198,7 @@ An event selected by no observed query has no row in the log. It still exists in
 must still be assigned to a container. Such events are easy to overlook because the workload
 contains no positive observation for them.
 
-### 3.3 Predicate and observed demand
+### 2.3 Predicate and observed demand
 
 The selection log records which events a query selected, not why it selected them. A selection set
 need not be recoverable from the query's stated predicate over event attributes. Joins, lists of
@@ -249,7 +208,7 @@ not announce.
 The assignment is therefore fitted to observed demand in $L$, not merely to columns named in query
 text.
 
-### 3.4 Container activation and materialization
+### 2.4 Container activation and materialization
 
 A query **activates** a container when that container holds at least one selected event. The
 activation indicator is
@@ -266,20 +225,33 @@ $$M_q(\lambda)\ge |S_q|.$$
 
 Equality holds only when every event in every activated container was selected by the query.
 
+**Index cost and skipping.** A full index scan costs $\rho N$ in event-volume units, while
+fetching the complete main table costs $N$. Serving query $q$ adds its materialized event count
+$M_q$. The index saves work exactly when
+
+$$\rho N+M_q<N.$$
+
+The share of the corpus that query $q$ avoids reading is its skipping ratio $\sigma_q$:
+
+$$\sigma_q=1-\frac{M_q}{N}.$$
+
+The index therefore saves work when
+
+$$\sigma_q>\rho.$$
+
 The number of queries that activate container $c$ is its demand breadth:
 
 $$d_c(\lambda)=\sum_q a_{c,q}
 =\bigl|\operatorname{supp}(c)\bigr|.$$
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../resources/img/container-zoom.dark.svg">
-  <img alt="Two containers during one query: an activated container holding one selected event and two wasted ones, beside a bypassed container that is never read." src="../resources/img/container-zoom.light.svg">
+  <img alt="Container activation for one query: one selected event activates its whole container, which is fetched entire; a container with no selected event is skipped." src="../img/demo_container_activation.png">
 </picture>
 
 *One selected event activates the whole container. A container with no selected event is
 skipped.*
 
-### 3.5 Aggregate waste
+### 2.5 Aggregate waste
 
 A query pays for every materialized event but uses only the events in its selection set. The
 difference is that query's waste:
@@ -292,8 +264,12 @@ $$\boxed{\mathcal{W}(\lambda)
 =\sum_q w_q(\lambda)
 =\sum_q\bigl(M_q(\lambda)-|S_q|\bigr)}.$$
 
-This is the complete abstract goal: choose an admissible assignment $\lambda$ that minimizes
+This is the complete abstract goal: choose an assignment $\lambda$ that minimizes
 $\mathcal{W}(\lambda)$.
+
+The displayed objective uses event counts. Its byte-weighted form replaces each container count
+$|E_c|$ inside $M_q$ with $\operatorname{bytes}(E_c)$ and replaces the selected-event count
+$|S_q|$ with $\sum_{e\in S_q}\operatorname{size}(e)$. Both terms then use bytes.
 
 The total workload cost separates into three parts:
 
@@ -321,13 +297,6 @@ $$\mathcal{W}(\lambda)=\lVert\tilde U\rVert_1-\lVert U\rVert_1.$$
 A layout spreads each observed selection across the selected event's container. Waste counts the
 zeros in $U$ that this spreading turns into ones.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="../resources/img/selection-matrix.dark.svg">
-  <img alt="The selection matrix under two layouts. Rows are events grouped into containers, columns are queries. Under the as-built layout 45 cells are wasted; under the clustered layout, 6." src="../resources/img/selection-matrix.light.svg">
-</picture>
-
-*The workload is unchanged between the two panels. Only the assignment changes.*
-
 Second, exchanging the order of summation shows the cost accumulated by each container:
 
 $$\sum_q M_q(\lambda)=\sum_c |E_c|\,d_c(\lambda).$$
@@ -344,11 +313,11 @@ $$
 
 Each container is charged its event count multiplied by the number of queries that fetch it.
 
-### 3.6 A patternless query
+### 2.6 A patternless query
 
-Before considering clustering, suppose one query selects every event independently with the same
-probability $p$. This is a patternless baseline: events differ only by chance, so their assignment
-provides no demand structure to exploit.
+As a baseline with no demand structure, suppose one query selects every event independently with
+the same probability $p$. Events then differ only by chance, so their assignment provides no
+pattern to exploit.
 
 For container $c$, the selected-event count ($X_c$) is
 
@@ -385,16 +354,16 @@ different outcomes.
 
 ---
 
-## 4. The effect of data clustering
+## 3. The effect of data clustering
 
 The corpus-wide selected fraction does not change when events are clustered. Clustering replaces
 the patternless assumption of one universal probability with group-specific demand estimates and
 uses those differences when assigning container capacity.
 
-### 4.1 Distinct subgroup probabilities
+### 3.1 Distinct subgroup probabilities
 
-Suppose a predicate-to-group mapping partitions the corpus into logical groups
-$G_1,\ldots,G_m$. Group $g$ contains $N_g$ events and has an estimated probability $p_g$ that one
+Suppose a predicate-to-group mapping partitions the corpus into $m$ logical groups. Let $G_g$
+denote group $g$, let $N_g$ be its event count, and let $p_g$ be the estimated probability that one
 of its events is selected by the query family being modeled.
 
 The corpus contains
@@ -408,7 +377,7 @@ $$\bar p=\frac{1}{N}\sum_g N_gp_g.$$
 The mapping does not create or remove query demand. It exposes that demand is concentrated
 differently across logical groups.
 
-### 4.2 Allocating containers among groups
+### 3.2 Allocating containers among groups
 
 Let $K_g$ be the number of containers assigned to group $g$. The allocations use the available
 container budget:
@@ -442,7 +411,7 @@ container as equally valuable.
 
 ---
 
-## 5. Container capacity bounds
+## 4. Container capacity bounds
 
 Container capacity determines how much data one fetch can materialize. It must remain between
 storage-system bounds:
@@ -477,9 +446,9 @@ rather than requiring every container to have exactly the same size.
 
 ---
 
-## 6. Problem Complexity Analysis
+## 5. Problem Complexity Analysis
 
-### 6.1 Search space and hardness
+### 5.1 Search space and hardness
 
 A candidate layout partitions $N$ events into non-empty containers. Suppose a selected container
 capacity $s$ produces $K_s$ containers. Before applying the size constraints, the number of
@@ -505,7 +474,7 @@ capacities produce similarly large partition spaces, their count acts as another
 search axis. Moving one event can also change the query demand of an entire container, so candidate
 costs cannot be evaluated as independent choices for each event.
 
-### 6.2 Assignment evaluation cost
+### 5.2 Assignment evaluation cost
 
 Evaluating one assignment requires a simulation with three stages.
 
@@ -525,7 +494,7 @@ corpus, and each candidate requires another assignment mapping and replay. Workl
 index-table construction are preparation costs; replaying the selection log is the repeated
 evaluation cost. A search that scores many assignments pays that repeated cost for every candidate.
 
-### 6.3 Impact of dynamic query patterns
+### 5.3 Impact of dynamic query patterns
 
 Event selection changes over time as seasons, products, customers, and business functions change.
 A layout learned from an earlier workload therefore tends to lose skipping advantage as it ages,
@@ -543,6 +512,10 @@ The total data-skipping benefit is the difference between the baseline's total q
 the candidate's total query-read cost over the whole study. The layout overhead is also measured
 comparatively: the candidate's one-time construction and enforcement cost minus the corresponding
 cost of creating the baseline.
+
+Write $C_{\mathrm{read}}^\lambda(T)$ and $C_{\mathrm{read}}^{\mathrm{base}}(T)$ for the two total
+query-read costs. Write $C_{\mathrm{layout}}^\lambda$ and
+$C_{\mathrm{layout}}^{\mathrm{base}}$ for their one-time layout costs.
 
 The candidate's total net advantage is
 

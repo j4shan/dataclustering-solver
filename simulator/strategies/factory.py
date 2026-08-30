@@ -3,8 +3,7 @@
 This module is the **sole authority on admissibility**.  A caller — the CLI, a test, the
 GUI's server — hands over a name and a mapping that came from somewhere untrusted, and
 gets back either a runnable strategy or every reason it is not runnable.  No surface
-above this one re-checks a domain rule, which is what keeps 10.1.2's objection to a
-second implementation from ever arising: a browser checks that a field is filled in, and
+above this one re-checks a domain rule: a browser checks that a field is filled in, and
 that is a property of the form, not of the domain.
 
 Two rules shape the errors it produces.

@@ -1,0 +1,243 @@
+OUTPUT
+One looping APNG, 1920 × 1080, warm off-white ground. Not a static PNG, not a
+JPEG, not an SVG. 15 frames, uniform 120 ms delay, period 1.8 s, infinite play
+(num_plays = 0). The last frame is pixel-identical to the first, so the loop
+closes seamlessly. File extension stays .png.
+Only the highlight described under ANIMATION changes between frames. Every other
+pixel — containers, tiles, text, formulas, tray, legend, footnote — is identical
+on all 15 frames.
+Single palette, light only. No dark variant, no theme switching.
+
+SUBJECT
+Container activation for a single query, as defined in §2.4 of the problem
+statement. The figure teaches one mechanism: activation is a max over a
+container's events, and an activated container is fetched whole.
+
+STYLE
+Editorial flat 2D technical diagram, horizontal flow, restrained
+database-document palette. No perspective, realism, 3D, shadows, gradients, UI
+chrome, or emojis. System-ui labels; ui-monospace for event tiles and numeric
+readouts; mathematics set in the label face with true typeset subscripts.
+Rounded corners ~8px on containers and tiles, ~10px on the tray. Crisp 2px
+arrows.
+
+COLOURS
+This figure shares one palette with the predicate-to-container resolution
+figure, slot for slot, so the two read as one family:
+#FCFCFB canvas · #7A1F2B wine-red (activated stroke, selected event, fetch
+arrow) · #F8EEF0 warm-rose (activated fill, hatch ground) · #1B4D3E dark-green
+(skipped stroke dashed, skipped type) · #EEF4F0 cool-sage (skipped fill) ·
+#0B0B0B ink · #52514E secondary · #DEDEDE rules · #F3F3F3 formula band ·
+#FFFFFF tray ground.
+One colour is added that the sibling figure does not use:
+#B8394E bright wine — the sweep's peak, and nothing else.
+Do not use orange. #B8394E must never appear as a static accent: only as the
+highlight's peak and in the legend swatch that names it.
+
+ANIMATION — sequenced highlight
+The highlight travels the operation once per cycle, in reading order:
+  1 Query  →  2 Activated container c₁  →  3 Materialized for q
+It is a sweep, not a throb: no element pulses on its own, and nothing repeats
+in place. Five beats, each lighting one actor:
+
+  beat   actor                                        phase centre
+  1      query chip border                            0.00
+  2      the FETCH lane from chip to c₁               0.15
+  3      container c₁ border + its selected tile e₂   0.32
+  4      the fetch arrow from c₁ to the tray          0.50
+  5      tray border + all three tiles inside it      0.68
+
+Per frame k of 15, with phase φ = (k mod 14) / 14, each actor's intensity is a
+raised cosine centred on its own phase:
+  d = circular distance from φ to the centre
+  l = 0 when d ≥ 0.20, else 0.5 · (1 + cos(π · d / 0.20))
+The ±0.20 half-width makes neighbouring beats overlap, so the light is handed
+along the chain instead of blinking on and off. Phase 0.78 → 1.00 leaves every
+actor dark: a short reset beat before the next pass. Because the phase is
+k mod 14, frame 15 reproduces frame 1 exactly.
+
+How an actor is lit:
+  · border colour interpolates from its resting colour toward #B8394E by
+    0.45 + 0.55 · l, drawn at 2.6–3.0px over the resting border
+  · a rounded-rect ring outside it, Gaussian-blurred ~4px, alpha up to 150 · l,
+    standing off 5 → 12px
+  · arrows are redrawn along the same path at 3px in the peak colour, their
+    arrowheads included; the geometry never moves
+Resting borders stay drawn in the base image, so an unlit actor looks exactly
+like the static design. Stroke geometry is identical lit or unlit — only colour
+and halo change, so nothing jitters or reflows.
+
+Beat 5, in the tray, colours by role:
+  · the selected event e₂ takes the wine highlight, as in beat 3
+  · BOTH waste events e₁ and e₃ take a BLACK border (#0B0B0B) with a black
+    halo — the beat reads "three events arrived: one kept, two waste"
+
+Never lit: the skipped container c₂, its tiles, the dark-green lane, and any
+text. The sweep traces what the query did; c₂ is what it did not do.
+No other animation: no flowing dashes, no marching arrows, no moving chevrons.
+
+TITLE
+Top left: "Container activation"                          35px Bold, ink
+Subtitle: "A query fetches a container whole. Selecting one event inside it pays
+for all of E_c."                                          17.5px, secondary
+
+FORMULA BAND
+A full-width tinted strip (#F3F3F3, 1px rule, rounded 8px) under the subtitle,
+split by a 1px vertical rule into two halves. Each half holds one centred
+definition at 21px ink, with one centred sentence beneath it at 13.5px
+secondary. The sentence is not a caption of the formula — it restates the
+formula in words with the symbols carried inline, so the reader meets each term
+twice:
+
+  a_{c,q} = max_{e ∈ E_c} u_{e,q}
+  "When one event e in container c is selected by query q (u_{e,q} = 1), the
+   entire container is activated (a_{c,q} → 1)."
+
+  M_q(λ) = Σ_{c=1}^{K} a_{c,q} |E_c|
+  "Every activated container is fetched whole, so it adds all of |E_c| to what
+   query q materializes (M_q), selected or not."
+
+SECTION TITLES
+Bold black labels, 18px Bold, ink, each left-aligned to the element it names and
+sitting directly above it. The three stages on the swept path carry a wine
+rounded badge (24 × 24, white mono 14) with their step number, placed to the
+left of the title:
+  [1] "Query"                       above the query chip
+  [2] "Activated container c₁"      above the upper container
+      "Skipped container c₂"        above the lower container — no badge, it is
+                                    not on the path, and the missing number is
+                                    part of the point
+  [3] "Materialized for q"          above the tray
+Container titles set c₁ / c₂ with a typeset subscript.
+
+THE INSTANCE (fixed — do not vary)
+Two containers of three events each. c₁ = {e₁, e₂, e₃} with e₂ selected by q;
+c₂ = {e₄, e₅, e₆} with none selected. Therefore a_{c₁,q} = 1, a_{c₂,q} = 0,
+|E_c₁| = |E_c₂| = 3, |S_q| = 1, M_q = 3, w_q = M_q − |S_q| = 2.
+These are generic containers illustrating §2.4 — set them in math italic
+(c₁, c₂, e₁…e₆), never as monospace container_id values, so no reader maps them
+onto the index-table figure's C1–C4 bands, whose contents differ.
+
+OVERALL LAYOUT (left → right)
+1. Query chip, in the left margin, vertically centred between the two containers.
+2. Two lanes leaving the chip: the upper runs to c₁; the lower stops short of c₂.
+3. Containers c₁ (upper) and c₂ (lower), same width, same tile grid.
+4. Materialization tray at the right, fed only by c₁, centred on the vertical
+   midline of the two containers so the fetch arrow descends gently into it.
+
+QUERY
+Wine-red-stroke pill (2px), warm-rose fill, full-round ends, 15px Medium wine:
+  query q   ·   S_q = { e₂ }
+
+CONTAINER c₁ — ACTIVATED
+Warm-rose fill, solid 2px wine-red border. A full-width status strip across the
+top (~26px): tracked 12.5px Semibold wine reading "ACTIVATED — fetched" at the
+left, and at the right a solid wine pill carrying "a_{c₁,q} = 1" in white.
+Below it, three event tiles in a row, each 140 × 120:
+  e₁  45° hatch, 2px wine lines on warm-rose, ~7px pitch, with a solid rose
+      label plate behind the text; label e₁ in mono 18, tag "waste"
+  e₂  solid wine fill, large white ✓, label e₂ in white mono 18, tag "selected"
+  e₃  same as e₁
+Order the tiles e₁, e₂, e₃ left to right so the selected one sits between the
+two wasted ones: it cannot be extracted from among them.
+Beneath the container, 13.5px secondary:
+  "FETCH(c₁) → E_c₁        contributes |E_c₁| = 3 to M_q"
+
+CONTAINER c₂ — SKIPPED
+Cool-sage fill, dashed 2px dark-green border, same footprint and tile grid.
+Status strip: tracked 12.5px Semibold dark-green "IDLE — skipped", and at the
+right a sage pill with a dark-green outline carrying "a_{c₂,q} = 0".
+Three tiles as empty outlines — no fill, 1.5px dashed dark-green — labelled
+e₄, e₅, e₆ in dark-green mono, each tagged "never read".
+Beneath the container, 13.5px secondary:
+  "not fetched        contributes 0 to M_q"
+
+ARROWS
+Upper lane: wine-red 2px solid curve from the query chip to the LEFT EDGE of
+container c₁, arrowhead planted on the boundary — never on an event tile.
+Tagged "FETCH" in 12.5px Semibold wine above the curve.
+Fetch arrow: wine-red 2px, leaves the RIGHT EDGE of c₁ — again the boundary —
+and descends gently into the tray's left edge. Tagged "fetched whole".
+Lower lane: dark-green 2px dashed, leaves the chip, runs a short distance, and
+terminates at a 3.5px vertical stop-bar roughly 90px short of c₂, tagged
+"not fetched" beneath it. This lane must not touch, enter, or wrap c₂.
+
+MATERIALIZATION TRAY
+White ground, 1px rule, rounded 10px. It holds all three tiles that arrived from
+c₁, in their original order and with their original encodings: e₁ hatched,
+e₂ solid with ✓, e₃ hatched. Nothing from c₂ appears.
+A 1px rule separates a readout row beneath the tiles, each column centred under
+its tile, mono 17 Semibold ink over a 12.5px secondary label:
+  M_q = 3          |S_q| = 1          w_q = 2
+  "materialized"   "selected"         "waste"
+Beneath the tray, 13.5px secondary:
+  "activation is a max over the container: one 1 makes a_{c,q} = 1"
+(This is the mechanism, not the conclusion. The document prints the conclusion
+as the figure's caption directly below; do not restate it inside the image.)
+
+STATE ENCODING (never colour alone — each state carries all three channels)
+  selected            solid fill    + ✓ glyph   + "selected"
+  fetched, unselected 45° hatch     + no glyph  + "waste"
+  never read          dashed empty  + no glyph  + "never read"
+  activated container solid stroke  + rose fill + "ACTIVATED — fetched"
+  skipped container   dashed stroke + sage fill + "IDLE — skipped"
+
+LEGEND (bottom, two rows, left-aligned, 14.5px secondary, 40 × 26 swatches)
+Row 1 — the static encodings:
+1. Solid wine swatch with ✓ — selected event · u_{e,q} = 1
+2. Hatched swatch — fetched, not selected — waste
+3. Dashed empty swatch — never read
+4. Wine solid rounded-rect + warm-rose — activated container · a_{c,q} = 1
+5. Dark-green dashed rounded-rect + cool-sage — skipped container · a_{c,q} = 0
+Row 2 — what the motion means:
+6. Rounded-rect with a bright-wine border and a soft halo — "highlight sweep:
+   1 Query → 2 Activated container → 3 Materialized for q"
+7. Hatched swatch with a black border and a soft black halo — "black border —
+   waste that arrived with the fetch"
+Both row-2 swatches are drawn statically at roughly the sweep's peak. They name
+the effect, so they must not themselves animate.
+
+FOOTNOTE (15px, secondary)
+"FETCH(c) returns every event in c; the query discards what it did not select.
+Because activation is a maximum over the container, a single selected event
+turns the whole of E_c into materialized volume."
+
+TYPE SCALE (px as rendered, at 1920 × 1080)
+title 35 Bold · subtitle 17.5 · section titles 18 Bold · step badges mono 14
+Semibold · formulas 21 · formula sentences 13.5 · query chip 15 Medium ·
+status strips 12.5 Semibold tracked · strip pills 13.5 · event tile labels
+mono 18 Semibold · tile tags 12.5 · per-container notes 13.5 · tray readout
+mono 17 Semibold · readout labels 12.5 · legend 14.5 · footnote 15.
+
+KEEP OUT
+- No arrow originating at, or leaving, a single event tile — nothing may depict
+  one event travelling on its own.
+- No arrow that reaches, wraps, or passes c₂.
+- No highlight on the skipped container, its tiles, the dark-green lane, or any
+  text — the sweep traces only what the query actually did.
+- No element that pulses in place; the highlight always moves on.
+- No σ_q, ρ, N, or corpus-wide skipping ratio: those need the whole corpus, and
+  this figure shows two containers.
+- No colour-only distinction, no perspective, no realism, no decorative icons.
+- No restatement of the document's caption inside the image.
+- No dark-mode variant and no second palette.
+
+PRODUCTION
+Render each frame at 2× and downsample (LANCZOS) so the small type, the hatch
+lines and the ✓ stay clean. Draw the static scene once — resting borders
+included — and redraw only the lit borders, halos and arrows per frame, so the
+frames differ in the swept region alone and APNG inter-frame deltas hold the
+file near 1 MB.
+
+Apply the +1 type bump inside the font loader and at the entry of the maths-run
+typesetter, not at each call site: subscripts are then derived from the bumped
+size and keep their ~0.68 em / ~0.54 em proportions instead of drifting.
+
+Typesetting: do NOT use Unicode subscript characters — the monospace system face
+has no glyphs for them and they vanish silently. Set every subscript as a real
+run: the same face at ~0.68 em dropped ~0.30 em below the baseline, with a
+second level at ~0.54 em and ~0.46 em for the nested index in c₁ / c₂. The
+set-membership glyph ∈ (U+2208) is absent from both macOS system faces and must
+come from a covering face such as Arial Unicode, at the matching size. When
+checking glyph coverage, compare the rendered bitmap against a known-missing
+private-use character — a .notdef box is not blank and will pass a naive test.

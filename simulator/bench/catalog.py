@@ -141,7 +141,7 @@ def build(dataset, definition=DEFINITION, capacities=INTERACTIVE_CAPACITIES) -> 
                 "stages": stages,
                 # The last prefix is the whole chain, so its split count is the leaf
                 # count.  Carried explicitly because the panel states it on its own, and
-                # read from the structure rather than counted again (10.1.2).
+                # read from the structure rather than counted again.
                 "leaf_count": stages[-1]["splits"] if stages else 1,
                 "capacities": list(capacities),
             }

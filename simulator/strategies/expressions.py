@@ -223,7 +223,7 @@ class Expression:
             # A temporal column wants a *date*, and `_fits` can only see that a string
             # arrived.  The lift that `group_keys` will perform is the only thing that
             # knows whether it parses, so it is performed here too — the same call, not
-            # a second implementation of date syntax (10.1.2).  Without this the failure
+            # a second implementation of date syntax.  Without this the failure
             # lands in the hot path and reaches the reader as an unaddressed 500,
             # against 12.4.1.2's promise that it is rejected before anything runs.
             if family == TEMPORAL:

@@ -35,6 +35,12 @@ DEFAULT_DIR = Path("data/logs")
 #: a module global — the same reason `metrics.DEFAULT_DIR` is read at call time.
 DIR_ENV_VAR = "SIMULATOR_LOG_DIR"
 
+#: A managed background exhibit is handed one file and writes everything there (10.3.7):
+#: printed lines through a redirected stdout, logger records through this path, and no
+#: stream handler — there is no terminal to tee to.
+FILE_ENV_VAR = "SIMULATOR_LOG_FILE"
+TEE_ENV_VAR = "SIMULATOR_LOG_TEE"
+
 #: Everything under `simulator.*` is a child of this, so one call configures the package
 #: and nothing touches the root logger: importing `simulator` as a library configures
 #: nothing at all.
@@ -82,15 +88,33 @@ def _unclaimed(directory: Path, name: str) -> Path:
     return candidate
 
 
-def configure(command: str = "", stream=None) -> Path:
-    """Attach the two handlers and return the run file.  Called once, from the CLI.
+def prepare_run_file() -> Path:
+    """Claim a run-file path without attaching handlers.
 
-    Returns the path so the caller can print it as interface — telling a reader where the
-    record went is a thing the command says to them, not a thing it logs.
+    The control plane uses this so a background exhibit and its manager agree on one
+    file before the child process starts (10.3.7).
     """
     directory = log_directory()
     directory.mkdir(parents=True, exist_ok=True)
-    run_file = _unclaimed(directory, run_file_name())
+    return _unclaimed(directory, run_file_name())
+
+
+def configure(command: str = "", stream=None) -> Path:
+    """Attach the handlers and return the run file.  Called once, from the CLI.
+
+    Returns the path so the caller can print it as interface — telling a reader where the
+    record went is a thing the command says to them, not a thing it logs.
+
+    A background exhibit is handed `FILE_ENV_VAR` and `TEE_ENV_VAR=0`: the file already
+    exists, and there is no stream to tee to.
+    """
+    explicit = (os.environ.get(FILE_ENV_VAR) or "").strip()
+    if explicit:
+        run_file = Path(explicit)
+        run_file.parent.mkdir(parents=True, exist_ok=True)
+        run_file.touch()
+    else:
+        run_file = prepare_run_file()
 
     logger = logging.getLogger(ROOT)
     logger.setLevel(logging.DEBUG)
@@ -102,13 +126,14 @@ def configure(command: str = "", stream=None) -> Path:
     to_file = logging.FileHandler(run_file, encoding="utf-8")
     to_file.setLevel(logging.DEBUG)
     to_file.setFormatter(_Formatter(LINE))
-
-    to_stream = logging.StreamHandler(stream if stream is not None else sys.stdout)
-    to_stream.setLevel(logging.INFO)
-    to_stream.setFormatter(_Formatter(LINE))
-
     logger.addHandler(to_file)
-    logger.addHandler(to_stream)
+
+    tee = (os.environ.get(TEE_ENV_VAR, "1") or "1").strip() != "0"
+    if tee:
+        to_stream = logging.StreamHandler(stream if stream is not None else sys.stdout)
+        to_stream.setLevel(logging.INFO)
+        to_stream.setFormatter(_Formatter(LINE))
+        logger.addHandler(to_stream)
 
     if command:
         # DEBUG, so it reaches the file but not the terminal: stdout already shows the

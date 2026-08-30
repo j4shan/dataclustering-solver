@@ -26,14 +26,15 @@ should not navigate out of it.
 *An authored contents list is dropped.*  A document that carries one for its Markdown
 readers would otherwise show it beside the generated one (12.3.3.1).
 
-Two documents go through it, not one: the problem statement for Section A and the engine mapping
-for Section C (12.5.4).  Both are committed Markdown artifacts of this repository and both
-are shown as documents to be read, so they get one renderer rather than two.
+Three documents go through it: the problem statement for Section A, the engine mapping
+for Section C (12.5.4), and the Section D walkthrough (12.8.2).  All three are committed
+Markdown artifacts of this repository and are shown as documents to be read, so they get
+one renderer rather than three.
 
 Needs the ``docs`` extra (``markdown-it-py``, ``latex2mathml``) — build-time only, and
 nothing under ``simulator/`` imports it (10.3.6).
 
-    python -m tools.render_formulation                    # both
+    python -m tools.render_formulation                    # all
     python -m tools.render_formulation production-design  # one
 """
 
@@ -47,30 +48,48 @@ from pathlib import Path
 
 #: The committed Markdown the GUI serves, and where each pre-render lands.
 #:
-#: **One rendering path serves both documents** (12.5.4).  Section A shows the problem statement
-#: and Section C shows the engine mapping, at the same parity — anchored headings, an
-#: injected table of contents, native MathML, light-variant figures — and a second renderer
-#: would be a second thing to keep faithful to the source.
+#: **One rendering path serves the committed documents** (12.5.4, 12.8.2).  A second
+#: renderer would be a second thing to keep faithful to the source.
 DOCUMENTS = {
     "formulation": (
-        Path("project_metadata/problem-statement.md"),
+        Path("resources/graphics/problem-statement.md"),
         Path("simulator/gui/static/formulation.html"),
     ),
     "production-design": (
         Path("project_metadata/production-design.md"),
         Path("simulator/gui/static/production-design.html"),
     ),
+    "section-d-walkthrough": (
+        Path("project_metadata/section-d-walkthrough.md"),
+        Path("simulator/gui/static/section-d-walkthrough.html"),
+    ),
 }
+
+#: The walkthrough is a sequential presentation (12.8.2).  A contents list would
+#: turn it into a reference document.
+NO_TOC_DOCUMENTS = frozenset({"section-d-walkthrough"})
 
 SOURCE, OUTPUT = DOCUMENTS["formulation"]
 
 #: Where the figures the document references are served from, relative to the page.
 ASSET_PREFIX = "figures/"
 
-#: How a document under ``project_metadata/`` reaches the shipped resources beside it.
-#: The served tree is rooted at ``resources/`` itself, so this hop is stripped rather
-#: than carried into a URL that would have to climb back out of it.
-RESOURCE_HOP = "../resources/"
+#: How a source document reaches the shipped resources.  The served tree is rooted
+#: at ``resources/`` itself, so these hops are stripped rather than carried into a
+#: URL that would have to climb back out of it.  Longest match first: a document
+#: still under ``project_metadata/`` hops through ``../resources/``; one already
+#: under ``resources/graphics/`` hops through ``../``.
+RESOURCE_HOPS = ("../resources/", "../")
+
+
+def served_src(src: str, asset_prefix: str) -> str:
+    """Repoint a repository-relative figure at the path the page is served under."""
+    rest = src
+    for hop in RESOURCE_HOPS:
+        if rest.startswith(hop):
+            rest = rest.removeprefix(hop)
+            break
+    return f"{asset_prefix}{rest}"
 
 #: A private-use codepoint.  It must not be NUL: CommonMark *requires* U+0000 be replaced
 #: with U+FFFD, which silently destroys any placeholder built from it.
@@ -216,7 +235,7 @@ def collapse_pictures(rendered: str, asset_prefix: str) -> str:
             return ""
         tag = re.sub(
             r'src="(?!https?:|/)([^"]+)"',
-            lambda m: f'src="{asset_prefix}{m.group(1).removeprefix(RESOURCE_HOP)}"',
+            lambda m: f'src="{served_src(m.group(1), asset_prefix)}"',
             img.group(0),
         )
         return f'<figure class="figure">{tag}</figure>'
@@ -237,9 +256,13 @@ def render(
     markdown_text: str,
     asset_prefix: str = ASSET_PREFIX,
     document_id: str = "formulation",
+    inject_toc: bool | None = None,
 ) -> str:
     """Markdown with mathematics in, one finished HTML fragment out."""
     from markdown_it import MarkdownIt
+
+    if inject_toc is None:
+        inject_toc = document_id not in NO_TOC_DOCUMENTS
 
     work, formulas = extract_math(drop_authored_contents(markdown_text))
     rendered = MarkdownIt("commonmark").enable(["table", "strikethrough"]).render(work)
@@ -247,7 +270,8 @@ def render(
     rendered, headings = add_heading_anchors(rendered)
     rendered = collapse_pictures(rendered, asset_prefix)
     rendered = externalize_links(rendered)
-    return f'<article class="formulation">{build_toc(headings, document_id)}{rendered}</article>'
+    toc = build_toc(headings, document_id) if inject_toc else ""
+    return f'<article class="formulation">{toc}{rendered}</article>'
 
 
 def main(argv=None) -> int:

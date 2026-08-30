@@ -8,7 +8,7 @@
  * generator and is passed through untouched (12.4.2.6, 12.6.4).
  *
  * It holds no DOM, which is what lets `tests/js/render-views.mjs` project a document with
- * the *same function the page uses* rather than with a second copy of the rule (10.1.2).
+ * the *same function the page uses* rather than with a second copy of the rule.
  *
  * The report object it returns is deliberately the **shape the three views already took**
  * — the redesign changed where the numbers come from and changed nothing about how they

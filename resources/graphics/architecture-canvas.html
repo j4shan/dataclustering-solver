@@ -118,8 +118,9 @@
   .c1 { grid-template-columns: 1fr; }
   .c2 { grid-template-columns: repeat(2, 1fr); }
   .c3 { grid-template-columns: repeat(3, 1fr); }
+  .c4 { grid-template-columns: repeat(4, 1fr); }
   @media (max-width: 760px) {
-    .c2, .c3 { grid-template-columns: 1fr; }
+    .c2, .c3, .c4 { grid-template-columns: 1fr; }
   }
 
   .box {
@@ -230,7 +231,6 @@
   <div><span class="swatch sw-comp"></span> component — code that runs</div>
   <div><span class="swatch sw-data"></span> data block — bytes on disk or in memory</div>
   <div><span class="swatch sw-seam"></span> plugin seam — third-party code attaches here</div>
-  <div><span class="swatch sw-spec"></span> specified, not built</div>
 </div>
 
 <!-- ============ BAND 1 ============ -->
@@ -486,13 +486,19 @@
     <span class="band-title">Bench and report</span>
     <span class="band-note">orchestration and presentation</span>
   </div>
-  <div class="row c3">
+  <div class="row c4">
     <div class="box">
       <h3>Runner</h3>
       <p class="path">bench/runner.py</p>
       <p><code>run_one</code> is the primitive; <code>sweep</code> iterates it.
       <code>add_baseline_lift</code> divides each waste ratio by the do-nothing layout's at
       the same target.</p>
+    </div>
+    <div class="box">
+      <h3>Catalog</h3>
+      <p class="path">bench/catalog.py</p>
+      <p>Scores the demonstration fixtures once, offline (8.11). Every figure it writes
+      comes from <code>run_one</code>. The serving process never reaches this module.</p>
     </div>
     <div class="box">
       <h3>Metric table</h3>
@@ -524,13 +530,20 @@
     <span class="band-title">Output</span>
     <span class="band-note">what a run leaves behind</span>
   </div>
-  <div class="row c3">
+  <div class="row c4">
     <div class="box data">
       <span class="tag">DATA · OUT</span>
       <h3>Metric rows</h3>
       <ul><li>data/metrics/run_*.csv</li></ul>
       <p style="margin-top:7px">Every row stamped with <code>Dataset_ID</code> and
       <code>Run_ID</code>, so results from different corpora cannot be compared on one chart.</p>
+    </div>
+    <div class="box data">
+      <span class="tag">DATA · OUT</span>
+      <h3>Strategy catalog</h3>
+      <ul><li>data/catalog/strategy-catalog.json</li></ul>
+      <p style="margin-top:7px">The document the exhibit reads at startup. A serving process
+      holds this file and never the corpus.</p>
     </div>
     <div class="box data">
       <span class="tag">DATA · OUT</span>
@@ -567,18 +580,18 @@
   </div>
   <div class="row c2">
     <div class="box">
-      <h3>Command line</h3>
-      <p class="path">simulator/__main__.py</p>
-      <p><code>generate</code> builds a corpus and describes it; <code>run</code> loads,
-      sweeps, and renders. The only surface that exists today.</p>
+      <h3>Control plane</h3>
+      <p class="path">simulator/__main__.py · simulator/menu.py</p>
+      <p>Bare <code>python -m simulator</code> opens a numbered menu. Direct subcommands
+      remain: <code>generate</code>, <code>catalog</code>, <code>run</code>, and foreground
+      <code>gui</code>. The menu can start the exhibit in the background and leave it running.</p>
     </div>
-    <div class="box spec">
-      <span class="tag">SPEC</span>
-      <h3>Demonstration GUI</h3>
-      <p class="path">PRD §12 — specified, not built</p>
-      <p>A local page presenting the problem statement, an interactive strategy demo, and the
-      production design. It drives the same primitive as the CLI; it does not become a second
-      evaluator.</p>
+    <div class="box">
+      <h3>Static exhibit</h3>
+      <p class="path">gui/server.py · gui/static/</p>
+      <p>One local page: the problem, a pre-scored catalogue, and the production design.
+      It reads the catalog document and scores nothing. A deployed instance is the same
+      process, without the harness.</p>
     </div>
   </div>
 </div>

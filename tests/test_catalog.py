@@ -9,7 +9,7 @@ Three kinds of check, and the split is deliberate.
 **Structure is anchored, not recomputed.** The split counts below are derivable from the
 fixture's own column definitions without running the family (10.1.4): a column of two
 values splits a corpus two ways. A test that factorized the columns itself to predict them
-would be the second implementation 10.1.2 forbids.
+would be a second implementation of the split.
 
 **Schema identity is asserted against the real primitive.** 8.10 promises a catalogued row
 carries the same schema as a swept one, and the only honest way to check that is to run

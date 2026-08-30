@@ -75,7 +75,7 @@ def selections(scenario):
 
 
 def evaluate(scenario, layout):
-    """Activation, waste and cost for one layout, per §§3.4-3.5 of the problem statement."""
+    """Activation, waste and cost for one layout, per §§2.4-2.5 of the problem statement."""
     sel = selections(scenario)
     qids = [q["id"] for q in scenario["queries"]]
 
@@ -375,17 +375,18 @@ NAV = [
     ("A", "Problem Statement"),
     ("B", "Data Skipping Experiment"),
     ("C", "Spark + Delta Lake Implementation"),
+    ("D", "Gini Split Search"),
 ]
 
 SECTIONS = [
     {
         "letter": "A",
-        "heading": "Organizing a data warehouse like a closet",
+        "heading": "Organizing Data Like a Medicine Cabinet",
         "note": "a document — nothing to configure",
-        "left": ("The closet walkthrough",
-                 ["one outfit and its wasted handling,",
-                  "the same fetch with technical names,",
-                  "one learned assignment change"]),
+        "left": ("The medicine-cabinet walkthrough",
+                 ["one prescription batch and wasted handling,",
+                  "the same retrieval with technical names,",
+                  "one demand-informed restocking example"]),
         "right": ("The formal statement",
                   ["problem-statement.md, pre-rendered",
                    "native MathML, with its own contents list"]),
@@ -393,12 +394,12 @@ SECTIONS = [
     {
         "letter": "B",
         "heading": "Assignment Strategy Benchmark",
-        "note": "the interactive section — runs the harness",
-        "left": ("Candidate builder",
-                 ["up to four candidates, each a chain of",
+        "note": "a pre-scored catalogue — nothing is computed here",
+        "left": ("Strategy catalogue",
+                 ["six fixtures, each a chain of",
                   "group-by expressions over the feature columns",
-                  "plus the container capacities to sweep",
-                  "one Evaluate button — all candidates at once"]),
+                  "swept across four container capacities",
+                  "select up to four to compare"]),
         "right": ("Benchmark report", [
             ("P1", "process diagram — what was built"),
             ("P2", "summary table — what it scored"),
@@ -415,6 +416,18 @@ SECTIONS = [
         "right": ("The mechanisms drawn",
                   ["three diagrams: the file as container,",
                    "clustering as layout, statistics as index"]),
+    },
+    {
+        "letter": "D",
+        "heading": "Where usage concentrates",
+        "note": "a document — nothing to configure",
+        "left": ("The Gini walkthrough",
+                 ["inequality of wealth,",
+                  "usage as a screen for splits,",
+                  "a search that grows and stops"]),
+        "right": ("The constructions drawn",
+                  ["Lorenz bow, two cuts of twelve events,",
+                   "chain versus tree, search trajectory"]),
     },
 ]
 
@@ -450,7 +463,7 @@ def figure_anatomy(theme):
         text(margin, 28, "The demonstration page, section by section",
              fill=c["ink"], size=15, weight=600),
         text(margin, 48,
-             "One local page on loopback — three sections in fixed order, one shown at a "
+             "One local page on loopback — four sections in fixed order, one shown at a "
              "time, each a left and a right pane on a wide viewport",
              fill=c["ink2"], size=11),
     ]
@@ -474,7 +487,7 @@ def figure_anatomy(theme):
                          anchor="middle"))
         nx += w + 8
 
-    # the three sections
+    # the sections
     y = top + bar_h + 12
     for section in SECTIONS:
         right_title, right_lines = section["right"]
@@ -503,16 +516,16 @@ def figure_anatomy(theme):
         y += band_h + 12
 
     body.append(text(margin, y + 12,
-                     "Sections A and C are documents to read; B is the one that runs the "
-                     "harness.",
+                     "Sections A, C and D are documents to read; B presents a catalogue "
+                     "scored offline.",
                      fill=c["ink2"], size=10.5))
     body.append(text(margin, y + 29,
                      "Nothing is fetched from a network — every asset comes from the "
-                     "local process, and an evaluation is kept nowhere.",
+                     "local process, and nothing is computed while you look.",
                      fill=c["muted"], size=10.5))
 
     return svg(width, y + 44, "".join(body), c,
-               "The anatomy of the demonstration page: navigation, the three sections it "
+               "The anatomy of the demonstration page: navigation, the four sections it "
                "selects between, and the panes each holds")
 
 

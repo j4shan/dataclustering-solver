@@ -86,7 +86,7 @@ def _leaf_from_codes(codes, widths, event_count: int) -> np.ndarray:
     # rather than a `unique(axis=0)` over the stacked codes.  The two agree exactly —
     # the key is injective on the tuple — but the row-wise version lexsorts a 2-D array
     # and costs roughly eight times as much on the shipped corpus, which is most of one
-    # Evaluate click's budget (12.2.4).
+    # catalog build's budget (8.11).
     #
     # The mix only works while the product of the widths fits an int64.  Four stages over
     # high-cardinality columns can exceed that, so the slow path stays as the fallback
@@ -136,7 +136,7 @@ def chain_structure(expressions, features, event_count: int) -> list:
     Built from the same two helpers `leaf_of_event` uses, on each prefix in turn.  There
     is no second way of counting a split here: `_stage_codes` factorizes each stage once
     and every prefix is folded by `_leaf_from_codes`, so the last entry agrees with
-    `leaf_of_event` by construction rather than by a check (10.1.2).
+    `leaf_of_event` by construction rather than by a check.
     """
     ordered = canonical(expressions)
     if not ordered:

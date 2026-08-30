@@ -182,3 +182,17 @@ def test_the_timestamp_is_the_one_the_health_endpoint_publishes(log_dir):
     logs.get("simulator.test").info("anything")
     stamp = run_file.read_text().splitlines()[-1].split()[0]
     assert datetime.strptime(stamp, "%Y-%m-%dT%H:%M:%SZ")
+
+
+def test_a_background_exhibit_writes_only_to_the_named_file(log_dir, capsys, monkeypatch):
+    """10.3.7 — a managed child has no terminal; the file is the whole record."""
+    named = logs.prepare_run_file()
+    monkeypatch.setenv(logs.FILE_ENV_VAR, str(named))
+    monkeypatch.setenv(logs.TEE_ENV_VAR, "0")
+
+    run_file = logs.configure("gui")
+    logs.get("simulator.test").info("bound host=%s port=%s", "127.0.0.1", 8765)
+
+    assert run_file == named
+    assert "bound host=127.0.0.1 port=8765" in named.read_text()
+    assert "bound host=127.0.0.1 port=8765" not in capsys.readouterr().out

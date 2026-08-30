@@ -24,13 +24,18 @@ GRAPHICS = Path("resources/graphics")
 FRAGMENTS = [
     GRAPHICS / "section-a-illustration.html",
     GRAPHICS / "section-c-illustration.html",
+    GRAPHICS / "section-d-illustration.html",
 ]
-PRE_RENDERED = [STATIC / "formulation.html", STATIC / "production-design.html"]
+PRE_RENDERED = [
+    STATIC / "formulation.html",
+    STATIC / "production-design.html",
+    STATIC / "section-d-walkthrough.html",
+]
 
 #: Classes the Markdown renderer emits that this page deliberately does not style. Syntax
 #: highlighting is excluded outright (13.3, 10.3.5), so the fenced-code language class has
 #: nothing to hang a rule on and is not a forgotten one.
-UNSTYLED_BY_DESIGN = {"language-sql"}
+UNSTYLED_BY_DESIGN = {"language-sql", "language-text"}
 
 
 def rules() -> str:

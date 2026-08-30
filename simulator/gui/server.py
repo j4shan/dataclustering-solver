@@ -75,7 +75,7 @@ MAX_REQUEST_BYTES = 1 << 20
 
 #: 12.2.16 — what a listing page shows for this instance.  Authored here because this
 #: repository is the only place that can state its own claim without going stale.
-EXHIBIT_TITLE = "The Neighbors You Pay For"
+PROJECT_TITLE = "The Data Storage Layout Problem"
 EXHIBIT_CLAIM = (
     "Assigning events to storage containers so as to minimize the volume read but not "
     "selected — stated formally, and measured on a harness any strategy can plug into."
@@ -195,7 +195,7 @@ class Application:
             release = "0"
         return {
             "id": self.deployment.exhibit_id,
-            "title": EXHIBIT_TITLE,
+            "title": PROJECT_TITLE,
             "claim": EXHIBIT_CLAIM,
             "tags": list(EXHIBIT_TAGS),
             "version": release,
@@ -434,7 +434,7 @@ def build_app(catalog=None, deployment: Deployment | None = None) -> FastAPI:
     # is already the path these routes are declared at — and a framework told to expect
     # the prefix would strip it a second time, which 404s every asset under a nested
     # mount.  Nothing here generates a URL, so nothing needs the prefix to do it with.
-    app = FastAPI(title=EXHIBIT_TITLE, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title=PROJECT_TITLE, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.application = application
 
     @app.exception_handler(GuiError)

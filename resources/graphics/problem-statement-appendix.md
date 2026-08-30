@@ -35,7 +35,31 @@ The statement “query $q$ selected event $e$” can be read from three directio
 These are three views of one relation, not three independent inputs. The selection log is the
 stored observation; query selection sets and event supports are derived from it.
 
-## 2. Poisson approximation error
+## 2. Notation
+
+| symbol | reads as | defined |
+| --- | --- | --- |
+| $E$, $N$, $e$ | the event corpus, its event count, and one event | §1 |
+| $\lambda$ | the event-to-container assignment | §1 |
+| $c$, $E_c$, $K$ | a container, its contents, and the container count | §1 |
+| $\operatorname{size}(e)$, $\operatorname{bytes}(E_c)$ | event size and container byte size | §1 |
+| $I$, $\rho$ | the index table and its compressed width ratio | §1.1 |
+| $q$, $\mathcal{Q}$, $Q$, $L$ | one query, the query set, the query count, and the selection log | §2.1 |
+| $S_q$ | the events selected by query $q$ | §2.2 |
+| $\operatorname{supp}(e)$, $\operatorname{supp}(c)$ | the queries selecting an event and fetching a container | §2.2 |
+| $u_{e,q}$, $U$ | one selection indicator and the complete selection matrix | §2.2 |
+| $a_{c,q}$, $M_q$, $d_c$ | activation, materialized event count, and container demand breadth | §2.4 |
+| $\sigma_q$ | the share of the corpus skipped by query $q$ | §2.4 |
+| $w_q$, $\mathcal{W}$ | waste for one query and aggregate waste | §2.5 |
+| $\tilde{U}$ | the selections after container-level materialization | §2.5 |
+| $p$, $X_c$ | random event-selection probability and selected events in one container | §2.6 |
+| $m$, $G_g$, $N_g$, $p_g$, $K_g$, $\bar p$ | group count, one group, its event count, selection probability, container allocation, and the corpus-wide selected fraction | §3 |
+| $s_{\min}$, $s_{\max}$ | lower and upper container-capacity bounds | §4 |
+| $\mathcal{C}$, $s$, $K_s$ | permitted capacities, one capacity, and its resulting container count | §5.1 |
+| $T$, $\lambda_{\mathrm{base}}$ | the study period and naive baseline layout | §5.3 |
+| $C_{\mathrm{read}}$, $C_{\mathrm{layout}}$, $\operatorname{Advantage}(T)$ | total query-read cost, one-time layout cost, and net study-period advantage | §5.3 |
+
+## 3. Poisson approximation error
 
 The patternless-query model selects each event independently with probability $p$. Let a container
 hold $s$ events. Its selected-event count is binomial with mean

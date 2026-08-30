@@ -5,7 +5,7 @@ Two kinds of check, and the split is deliberate.
 **The document contract** is exercised against a real catalog build: the views draw
 nothing they compute themselves (12.6.4), so what P1, P2 and P3 can show is entirely
 decided by what the catalogue carries and what `reportFor` projects out of it. Those
-tests assert against rows the runner actually produced and never recompute one (10.1.2).
+tests assert against rows the runner actually produced and never recompute one.
 
 **The drawing rules** are read out of the authored files, but only where a rule has no
 behavioural expression — that P1 never *reaches* for a capacity, that the palette holds no
@@ -131,7 +131,7 @@ def evaluated(rendered):
     """The document projected for a selection — what the three views actually take.
 
     Taken from the same node run that drew them, and produced by `reportFor` rather than
-    by a Python restatement of it (10.1.2), so these tests assert against the shape the
+    by a Python restatement of it, so these tests assert against the shape the
     page really hands its views.
     """
     return rendered["report"]
@@ -390,7 +390,7 @@ def render(document, selected, scratch):
     """Project a catalog document and draw the three views, in one node run.
 
     The projection is `reportFor` and the drawing is the three view modules — the page's
-    own, imported rather than restated (10.1.2) — so what comes back is what a reader
+    own, imported rather than restated — so what comes back is what a reader
     selecting those entries would be looking at.
     """
     payload = scratch / "catalog.json"

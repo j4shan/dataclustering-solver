@@ -120,7 +120,7 @@ layout wins. §7.2 records the cost of that simplification.</p>
 with how the clustering keys divide the data. The sweep axis of the harness, target container
 bytes, maps onto this property directly, which is what gives the sweep meaning against a real
 engine.</p>
-<p><strong>The floor on container size is real and load-bearing.</strong> The problem statement's §5 permits an
+<p><strong>The floor on container size is real and load-bearing.</strong> The problem statement's §4 permits an
 arbitrarily fine partition subject only to a size bound; Databricks does not. Every file costs
 a log entry, a task, and an object-store round trip, so a layout of very many small containers
 loses to per-file overhead the formulation does not model. The simulator charges for this
@@ -134,7 +134,7 @@ superseding the one before.</p>
 <p><strong><code>PARTITIONED BY</code> (Hive-style directories).</strong> Each distinct value of the partition columns
 gets a directory, and a query filtering on those columns opens only the matching ones. This
 realizes <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> as a function of declared attributes, which is a strong constraint: it makes
-the layout trivially assignable at write time (§2.2 of the problem statement, and the <code>route</code>
+the layout trivially assignable at write time (§1.2 of the problem statement, and the <code>route</code>
 seam at 7.1.6 of the simulator spec), and equally makes it incapable of expressing any grouping
 the schema does not already name. High cardinality drives container count up and container size
 down until §2's floor is breached.</p>
@@ -152,8 +152,8 @@ different objective.</strong> Automatic liquid clustering analyses the table's h
 workload, identifies candidate clustering columns from <strong>query predicates and join filters</strong>,
 and changes keys only when predicted skipping gains outweigh the clustering cost. That is
 workload-aware layout, and it is a serious baseline. But the signal it learns from is the
-<em>stated predicate</em>, whereas the objective of §3.5 is defined over the <em>observed selection
-relation</em>. §3.3 of the formulation is precisely about that gap: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> records which events a
+<em>stated predicate</em>, whereas the objective of §2.5 is defined over the <em>observed selection
+relation</em>. §2.3 of the problem statement is precisely about that gap: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> records which events a
 query selected, never why, and nothing requires <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>S</mi><mi>q</mi></msub></mrow></math> to coincide with any predicate over
 event attributes. Where predicate and demand coincide, <code>CLUSTER BY AUTO</code> is close to the right
 answer and is cheap. Where they diverge, which is the case this project exists to study, it is
@@ -248,7 +248,7 @@ thing that cannot be obtained.</li>
 approximate; the sampling error lands directly in the objective.</li>
 </ol>
 <p>Whichever is chosen, the resulting table is append-only and grows monotonically, which is the
-workload evidence accumulated during the fixed study period in §6.3 of the problem statement. It
+workload evidence accumulated during the fixed study period in §5.3 of the problem statement. It
 is also the corpus this project's harness consumes, so the external provider seam is where a real
 deployment attaches.</p>
 <hr />
@@ -269,7 +269,7 @@ problem.</p>
 <td>7.1</td>
 <td>The index resolves the predicate exactly, one row per event</td>
 <td>Per-file min/max ranges over the first 32 columns</td>
-<td>Activation is a superset of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mrow><mi>c</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub></mrow></math>; the extra reads are real waste. Measure waste from the scan, not from a recomputed activation (§3.4)</td>
+<td>Activation is a superset of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mrow><mi>c</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub></mrow></math>; the extra reads are real waste. Measure waste from the scan, not from a recomputed activation (§2.4)</td>
 </tr>
 <tr>
 <td>7.2</td>
@@ -279,7 +279,7 @@ problem.</p>
 </tr>
 <tr>
 <td>7.3</td>
-<td>The index cost is invariant under <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math>, so §3.5 may drop it</td>
+<td>The index cost is invariant under <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math>, so §2.5 may drop it</td>
 <td>Its size and scan cost are invariant; its <strong>precision</strong> is not</td>
 <td>The invariance argument survives for the objective's form, but the precision loss must be counted as waste rather than as index cost</td>
 </tr>
@@ -303,7 +303,7 @@ problem.</p>
 </tr>
 <tr>
 <td>7.7</td>
-<td>A layout is a function to be evaluated on one event at a time (§2.2 of the problem statement)</td>
+<td>A layout is a function to be evaluated on one event at a time (§1.2 of the problem statement)</td>
 <td>Liquid clustering assigns incrementally on write and reclusters asynchronously</td>
 <td>Production <em>does</em> have the <code>route</code> of 7.1.6, but it is approximate and eventually consistent: a row's container is provisional until reclustering settles</td>
 </tr>
@@ -314,7 +314,7 @@ problem.</p>
 <ul>
 <li><strong>Which strategy to run.</strong> This project ships none, and mapping the mechanisms changes
 nothing about that. §3 establishes only where a strategy's output would attach.</li>
-<li><strong>Index design.</strong> The problem statement models predicate resolution in §2.1, while the simulator
+<li><strong>Index design.</strong> The problem statement models predicate resolution in §1.1, while the simulator
 spec excludes index design in 11.2. The statistics described in §4 are the engine's own; nothing here proposes a
 secondary structure over them.</li>
 <li><strong>Cost in currency.</strong> Exclusion 11.4 keeps the cost model abstract and pluggable, and

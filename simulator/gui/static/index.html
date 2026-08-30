@@ -2,11 +2,12 @@
 <!--
   The application shell (12.1).
 
-  Three sections in fixed order — understand, then try, then build — each a left/right
-  pair on a wide viewport, and one of them displayed at a time (12.1.1).  B and C are
-  authored `hidden` so the page opens on A without a frame of all three: `app.js` hands
-  the choice to the location hash from there.  What is authored here is what the server
-  sends: there is no build step, no bundler, and no template engine (10.3.5, 10.3.1).
+  Four sections in fixed order — understand, then try, then build, then examine one
+  screening search — each a left/right pair on a wide viewport, and one of them
+  displayed at a time (12.1.1).  B, C and D are authored `hidden` so the page opens
+  on A without a frame of all four: `app.js` hands the choice to the location hash
+  from there.  What is authored here is what the server sends: there is no build
+  step, no bundler, and no template engine (10.3.5, 10.3.1).
 
   The two long documents are *fragments*, pre-rendered ahead of serving (12.3.2) and
   fetched from this same process at load.  That is not an outbound request — every asset
@@ -21,17 +22,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Neighbors You Pay For</title>
+    <title>The Data Storage Layout Problem</title>
     <link rel="stylesheet" href="tokens.css" />
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
     <header class="top-bar">
-      <span class="wordmark">The Neighbors You Pay For</span>
+      <span class="wordmark">The Data Storage Layout Problem</span>
       <nav class="section-nav" aria-label="Sections">
         <a href="#problem" data-nav="problem"><b>A</b> Problem Statement</a>
         <a href="#benchmark" data-nav="benchmark"><b>B</b> Data Skipping Experiment</a>
         <a href="#design" data-nav="design"><b>C</b> Spark + Delta Lake Implementation</a>
+        <a href="#gini" data-nav="gini"><b>D</b> Gini Split Search</a>
       </nav>
     </header>
 
@@ -39,7 +41,7 @@
       <!-- A ------------------------------------------------------------------ -->
       <section class="section" id="problem" tabindex="-1" aria-labelledby="problem-heading">
         <header class="section-head">
-          <h1 id="problem-heading"><span class="letter">A</span> Organizing a data warehouse like a closet</h1>
+          <h1 id="problem-heading"><span class="letter">A</span> Organizing Data Like a Medicine Cabinet</h1>
         </header>
         <div class="split">
           <div class="pane pane-left" role="region" aria-label="Section A illustration"
@@ -47,7 +49,7 @@
             <p class="empty">Loading the illustration…</p>
             <noscript>
               <p class="empty">
-                <a href="figures/graphics/section-a-illustration.html">Open the closet-to-warehouse walkthrough</a>.
+                <a href="figures/graphics/section-a-illustration.html">Open the medicine-cabinet walkthrough</a>.
               </p>
             </noscript>
           </div>
@@ -68,8 +70,8 @@
         <header class="section-head">
           <h1 id="benchmark-heading"><span class="letter">B</span> Assignment Strategy Benchmark</h1>
           <p class="section-lede">
-            Compose up to four candidates, sweep each across container capacities, and
-            read them against the industry-default baseline.
+            Select up to four pre-scored catalogue entries and read them against the
+            industry-default baseline.
           </p>
         </header>
         <div class="split">
@@ -78,14 +80,14 @@
             <p class="empty">Loading the strategy catalogue…</p>
             <noscript>
               <p class="empty">
-                This section runs the harness, so it needs scripting. Sections A and C
-                are documents and do not.
+                This section draws a pre-scored catalogue, so it needs scripting.
+                Sections A, C and D are documents and do not.
               </p>
             </noscript>
           </div>
           <div class="pane pane-right" id="report" role="region"
                aria-label="Section B benchmark report">
-            <p class="empty">No benchmark yet — configure a block and press Evaluate.</p>
+            <p class="empty">No benchmark yet — choose a catalogue entry on the left.</p>
           </div>
         </div>
       </section>
@@ -115,6 +117,37 @@
             <noscript>
               <p class="empty">
                 <a href="figures/graphics/section-c-illustration.html">See the engine mapping drawn</a>.
+              </p>
+            </noscript>
+          </div>
+        </div>
+      </section>
+
+      <!-- D ------------------------------------------------------------------ -->
+      <section class="section" id="gini" tabindex="-1" hidden aria-labelledby="gini-heading">
+        <header class="section-head">
+          <h1 id="gini-heading"><span class="letter">D</span> Where usage concentrates</h1>
+          <p class="section-lede">
+            A screening signal for logical splits, not a layout score and not a
+            recommendation.
+          </p>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Section D walkthrough"
+               data-mount="section-d-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
+            <noscript>
+              <p class="empty">
+                <a href="section-d-walkthrough.html">Read the Gini walkthrough</a>.
+              </p>
+            </noscript>
+          </div>
+          <div class="pane pane-right" role="region" aria-label="Section D figures"
+               data-mount="figures/graphics/section-d-illustration.html">
+            <p class="empty">Loading the figures…</p>
+            <noscript>
+              <p class="empty">
+                <a href="figures/graphics/section-d-illustration.html">See the Gini figures</a>.
               </p>
             </noscript>
           </div>

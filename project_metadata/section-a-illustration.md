@@ -1,12 +1,13 @@
 # Section A illustration
 
 Product requirements for the graphical illustration in Section A of the demonstration
-GUI. The left pane starts with one closet retrieval in ordinary language, repeats that
-same retrieval as a data-warehouse fetch, then points the reader to the definitions,
-formula, and configurable solution pattern in the right pane.
+GUI. The left pane starts with one dispensary counter batch in ordinary language, uses
+the medicine-cabinet figure to map that retrieval to a data-warehouse fetch, then uses
+the smart-organizer figure to show what demand-informed rearrangement can change before
+pointing the reader to the definitions and formula in the right pane.
 
 **Authority.** This document expands [`ui-spec.md`](ui-spec.md) §§12.3.5–12.3.6.1
-without changing them. [`problem-statement.md`](problem-statement.md) remains the
+without changing them. [`problem-statement.md`](../resources/graphics/problem-statement.md) remains the
 authority on the formal model. Where this document and the UI spec disagree, the UI spec
 wins and the disagreement is a defect.
 
@@ -18,15 +19,14 @@ select, rank, or recommend an assignment strategy.
 
 ## 1. Role and reading order
 
-The illustration is the reader's first exposure to the problem. It teaches one scenario
-twice:
+The illustration is the reader's first exposure to the problem. It teaches the problem
+as one ordered chain:
 
-1. as a familiar closet retrieval without database vocabulary;
-2. as the corresponding fetch process with the technical mapping made explicit.
-
-A final comparison isolates what a **smart organizer** can change, then the prose hands
-the reader to the right pane for the formal model, objective, and effect of data
-clustering.
+1. a familiar medicine-cabinet retrieval establishes useful and wasted handling;
+2. the first figure places technical names beside those familiar objects and actions;
+3. the second figure shows how demand history can inform a different restocking scheme;
+4. the final prose hands the reader to the right pane for the formal model, objective,
+   and effect of data clustering.
 
 - The illustration sits on the **left**. The problem statement sits on the **right**.
 - Below the split breakpoint the panes stack in that order.
@@ -37,45 +37,67 @@ clustering.
 
 ## 2. Vocabulary sequence
 
-### 2.1 Closet-only stage
+### 2.1 Medicine-cabinet mental model
 
-The first stage may use only ordinary closet language: closet, drawer, garment,
-inventory list, morning, outfit, handling, putting back, wasted effort, and **smart
-organizer**. Its reader-facing prose and drawing contain none of these technical words:
-data, warehouse, storage, container, record, row, query, index, materialized, selected,
-layout, assignment, strategy.
+The opening prose uses ordinary dispensary language: dispensary, medicine cabinet, small
+drawer, medicine box, prescriptions, counter batch, prescribed, drawer chart, handling,
+putting back unused, and wasted effort. It establishes the complete retrieval before the
+first raster introduces technical parentheticals.
 
 The technical meaning still governs what is drawn:
 
-- drawer corresponds to storage container;
-- closet corresponds to data warehouse;
-- wasted effort corresponds to records materialized but not selected.
+- the wall of small drawers corresponds to the corpus / data warehouse;
+- one small drawer corresponds to a storage container;
+- the fixed, equal number of boxes per drawer corresponds to container capacity;
+- one medicine box corresponds to a record;
+- one counter batch of patients' prescriptions corresponds to a query;
+- prescribed boxes correspond to selected records;
+- the drawer chart corresponds to the index table;
+- pulling a named drawer to the counter corresponds to container activation;
+- every box that reaches the counter corresponds to materialized volume;
+- boxes handled and put back unused correspond to waste;
+- a drawer the chart never names corresponds to a skipped container;
+- deciding which medicines share a drawer corresponds to the assignment strategy.
 
-Those correspondences are authoring constraints, not labels shown in the first stage.
-The stage ends with a question asking what a **smart organizer** could change.
+Those correspondences govern the story. They become reader-facing labels in the first
+figure and adjacent technical prose, after the ordinary account has supplied their
+meaning.
 
 ### 2.2 Technical stage
 
-The second stage repeats the first scene and introduces each technical term at the
-moment it replaces a closet object or action:
+The first figure and the prose after it introduce each technical term beside the
+medicine-cabinet object or action it replaces:
 
-| closet account | data-warehouse fetch |
+| medicine-cabinet account | data-warehouse fetch |
 | --- | --- |
-| closet | data warehouse |
-| drawer | storage container |
-| garment | record |
-| morning's outfit request | query |
-| inventory list | **index table** |
-| pulling out a drawer | activating a storage container |
-| garments lifted | records materialized |
-| garment kept for the outfit | record selected |
-| garments lifted and put back | records materialized but not selected |
-| deciding which garments share drawers | record layout / assignment strategy |
+| dispensary's medicine cabinet — a wall of small drawers | corpus / data warehouse |
+| one small drawer | storage container |
+| fixed, equal boxes per drawer | container capacity |
+| one medicine box | record / event |
+| one counter batch of patients' prescriptions | query |
+| boxes those prescriptions call for | selected records |
+| drawer chart on the cabinet frame | **index table** |
+| pharmacist pulls the whole drawer to the counter | storage-container activation |
+| one prescribed box pulls the drawer | activation is a max |
+| every box that lands on the counter | materialized volume |
+| boxes handled and put back unused | waste |
+| drawer the chart never names; it stays shut | skipped container |
+| deciding which medicines share a drawer | record layout / assignment strategy |
 
 No glossary precedes the scenario. The scenario supplies the meaning first; the
-technical term follows.
+technical term follows in the figure's parenthetical labels or the adjacent prose.
 
-### 2.3 Right-panel handoff
+### 2.3 Demand-informed restocking
+
+The second figure broadens from one counter batch to demand history. It may introduce
+usage report, average pulls per hour, demand band, threshold, and rearranged drawer. The
+adjacent prose maps the new arrangement to record assignment while keeping the cabinet,
+equal drawer capacity, and retrieval mechanism fixed.
+
+The displayed demand-band rule is a deliberately simple demonstration fixture. Neither
+the figure nor the prose ranks it against another assignment or recommends it.
+
+### 2.4 Right-panel handoff
 
 The final prose tells the reader that the right panel presents:
 
@@ -89,46 +111,49 @@ The handoff does not select, rank, or recommend an assignment strategy.
 
 ## 3. Medium and visual system
 
-All drawings live in one authored fragment under `resources/graphics/`. The medium is
-semantic HTML, CSS, and inline SVG: not a Cursor `canvas.tsx`, not an HTML5 `<canvas>`,
-and not generated static images.
+The authored fragment lives under `resources/graphics/` and embeds these committed
+raster figures:
 
-The three figures use:
+- `resources/img/section_a_medical_cabinet.png`;
+- `resources/img/section_a_smart_organizer.png`.
+
+The two figures use:
 
 - flat editorial drawing, not photorealism, 3D, or a screenshot;
 - the warm paper ground and ink specified by the UI tokens;
 - page sans for labels;
-- one restrained, repeating garment/record palette;
-- single-stroke directional arrows;
+- one restrained medicine-box palette;
+- directional arrows where process order needs them;
 - text, shape, outline, or pattern in addition to colour for every state.
 
-No figure contains UI chrome, server racks, or a spreadsheet grid.
+No figure contains UI chrome or server racks. Each raster scales to the pane width
+without changing its aspect ratio.
 
 ---
 
 ## 4. Shared scenario
 
-Every figure depicts the same request, object set, and initial grouping. The second
-figure repeats the first figure's composition with technical labels. The third keeps
-the query, records, selected records, **index table** result, and storage-container
-capacity fixed; only record assignment changes.
+Both figures retain the same medicine-cabinet setting, medicine inventory, and
+equal-capacity small drawers. The first follows one three-prescription counter batch.
+The second broadens to demand history for that inventory and rearranges which medicines
+share drawers.
 
-This continuity is load-bearing. A later figure may change only the relationship named
-by its prompt, so a reader never has to determine whether an apparent improvement came
-from a different request or different data.
+This progression is load-bearing: the second figure changes the evidence available and
+the drawer arrangement, not the capacity or the whole-drawer retrieval mechanism. It
+illustrates a possible restocking rule; it does not claim an observed improvement for
+the first figure's particular counter batch.
 
 ---
 
 ## 5. Ordered sequence
 
-The pane carries these six beats, in order:
+The pane carries these five beats, in order:
 
-1. closet-only prose describing one morning's retrieval and its wasted effort;
-2. `A.closet-problem`;
-3. technical prose walking through the same retrieval as a data-warehouse fetch;
-4. `A.fetch-process`;
-5. `A.smart-organizer`;
-6. a short handoff to the detailed framework in the right pane.
+1. medicine-cabinet prose describing one counter batch and its wasted effort;
+2. `A.medical-cabinet`;
+3. technical prose mapping the retrieval and introducing demand-informed restocking;
+4. `A.smart-organizer`;
+5. a short handoff to the detailed framework in the right pane.
 
 No other prose stage or illustration appears.
 
@@ -136,44 +161,30 @@ No other prose stage or illustration appears.
 
 ## 6. Illustration prompts
 
-### 6.1 After (1), before (2): `A.closet-problem`
+### 6.1 After (1), before (2): `A.medical-cabinet`
 
-Visible title: *One outfit, one whole drawer*.
+Visible raster title: *Fulfill Prescription Requests*.
 
-Show one morning's outfit request beside a closet with an inventory list on its door.
-The list points to one drawer, and the whole drawer has been pulled out. Separate the
-wanted garment from the other garments that were lifted and must be put back. Make the
-wasted effort visibly larger than the useful effort.
+Embed `resources/img/section_a_medical_cabinet.png`. It shows one three-prescription
+ask, the inventory-catalog lookup, nine equal-capacity drawers, three drawers opened
+whole, and the split between three boxes kept and nine boxes put back. Its parenthetical
+labels introduce query, lookup table, storage containers, and query response at the
+boundary between the ordinary story and the technical explanation.
 
-The figure contains no database vocabulary, symbols, formulas, code, or technical
-mapping labels. The prose after the figure asks: what would a **smart organizer**
-change?
+The caption states the observation: the catalog narrows which drawers to open, but each
+opened drawer brings every box inside it to the counter.
 
-### 6.2 After (2): `A.fetch-process`
+### 6.2 After (2), before (3): `A.smart-organizer`
 
-Visible title: *The same fetch in a warehouse*.
+Visible raster title: *Optimize inventory layout by learning from demand history*.
 
-Repeat `A.closet-problem` as one left-to-right process:
+Embed `resources/img/section_a_smart_organizer.png`. It shows the usage report, average
+pulls per hour, two demand thresholds, and a new equal-capacity drawer arrangement
+grouped into low, medium, and high demand bands.
 
-`query request → index table lookup → storage-container activation → records
-materialized → records selected / records materialized but not selected`.
-
-Map the closet objects and actions using §2.2. Selected and unselected materialized
-records differ by label and visual treatment, never by colour alone. Accompanying prose
-states the shared challenge: both scenarios pay for the whole containing unit. It then
-identifies record assignment as the opportunity for improvement.
-
-### 6.3 Between (2) and (3): `A.smart-organizer`
-
-Visible title: *What a smart organizer can change*.
-
-Place two versions of the same warehouse fetch side by side. Hold the query, records,
-selected records, **index table** result, and storage-container capacity fixed. Change
-only which records share storage containers. The second version materializes fewer
-unselected records.
-
-The comparison introduces the assignment effect that the right panel formalizes. It
-does not label either assignment as best and does not recommend a strategy.
+The prose explains that demand history supplies evidence for changing which medicines
+share a drawer. The caption identifies the displayed threshold rule as deliberately
+simple and does not rank or recommend it.
 
 ---
 
@@ -182,15 +193,14 @@ does not label either assignment as best and does not recommend a strategy.
 | id | requirement | in the spec |
 | --- | --- | --- |
 | I1 | Illustration on the left; formal framework on the right; that order when stacked | 12.3.1, 12.3.5 |
-| I2 | Closet-only account precedes every technical term | 12.3.5.1, 12.3.6 |
-| I3 | Closet stage ends with the **smart organizer** question | 12.3.5.1.1 |
-| I4 | Technical stage repeats and maps the same scenario | 12.3.5.1.2, 12.3.5.3 |
-| I5 | Shared challenge and improvement opportunity are explicit | 12.3.5.1.2 |
+| I2 | Ordinary medicine-cabinet prose establishes the mental model before technical labels | 12.3.5.1.1, 12.3.6 |
+| I3 | The first raster maps the retrieval at the boundary to the technical explanation | 12.3.5.1.2, 12.3.5.3 |
+| I4 | Whole-drawer cost and the assignment opportunity are explicit | 12.3.5.1.2 |
+| I5 | The second raster shows demand-informed restocking | 12.3.5.1.2, 12.3.5.3 |
 | I6 | Final prose points to the formal problem statement on the right | 12.3.5.1.3 |
-| I7 | Exactly three illustrations at their specified locations | 12.3.5.2, 12.3.5.3 |
-| I8 | Every illustration carries its specified visible title | 12.3.5.2 |
-| I9 | One scenario and composition recur throughout | 12.3.5.3 |
-| I10 | The third figure changes record assignment and nothing else | 12.3.5.3 |
-| I11 | Technical terms are defined through the scenario, not a preceding glossary | 12.3.6.1 |
-| I12 | Static authored HTML and inline SVG; no outbound links or alternate scenario | 12.3.5 |
-| I13 | No assignment strategy is selected, ranked, or recommended | 1.2 |
+| I7 | Exactly two committed raster illustrations appear at their specified locations | 12.3.5.2, 12.3.5.3 |
+| I8 | Every illustration carries its specified visible raster title | 12.3.5.2 |
+| I9 | Medicine inventory, equal drawer capacity, and retrieval mechanism remain continuous | 12.3.5.3 |
+| I10 | Technical terms are defined through the scenario, not a preceding glossary | 12.3.6.1 |
+| I11 | Static authored HTML embeds local assets and contains no outbound links or alternate scenario | 12.3.5 |
+| I12 | No assignment strategy is selected, ranked, or recommended | 1.2 |

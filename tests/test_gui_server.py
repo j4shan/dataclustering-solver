@@ -314,8 +314,8 @@ def test_html_and_svg_declare_utf8_so_nosniff_does_not_mojibake(server_url):
 def test_it_serves_the_section_a_illustration(server_url):
     status, body, _ = fetch(f"{server_url}/figures/graphics/section-a-illustration.html")
     assert status == HTTPStatus.OK
-    assert b"closet" in body
-    assert b"The closet" in body
+    assert b"section_a_medical_cabinet.png" in body
+    assert b"section_a_smart_organizer.png" in body
 
 
 def test_it_serves_the_section_c_illustration(server_url):
@@ -323,6 +323,13 @@ def test_it_serves_the_section_c_illustration(server_url):
     assert status == HTTPStatus.OK
     assert b"engine-pruning" in body
     assert b"c-container-activation" in body
+
+
+def test_it_serves_the_section_d_illustration(server_url):
+    status, body, _ = fetch(f"{server_url}/figures/graphics/section-d-illustration.html")
+    assert status == HTTPStatus.OK
+    assert b"D.lorenz-wealth" in body
+    assert b"D.search-trajectory" in body
 
 
 def test_figures_are_served_from_the_repository_rather_than_a_copy(server_url):
@@ -504,7 +511,8 @@ def test_the_formulation_is_served_at_the_light_variant_only(server_url):
     """12.3.8 — a reader whose system is dark is never served a dark figure."""
     _, body, _ = fetch(f"{server_url}/formulation.html")
     text = body.decode()
-    assert ".light.svg" in text
+    assert "demo_index_table.png" in text
+    assert "demo_container_activation.png" in text
     assert ".dark.svg" not in text
     assert "<picture" not in text  # collapsed at pre-render, not switched in the browser
 

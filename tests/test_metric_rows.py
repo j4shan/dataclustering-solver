@@ -2,7 +2,7 @@
 
 These pin what a *row* promises whoever reads it — the sweep's CSV and the GUI's response
 carry the same schema (8.10), so one set of expectations covers both.  Every assertion is a row the
-runner actually produced — nothing recomputes an evaluation to check one (10.1.2).
+runner actually produced — nothing recomputes an evaluation to check one.
 """
 
 from __future__ import annotations
@@ -121,7 +121,7 @@ def test_baseline_lift_is_blank_at_a_capacity_the_baseline_never_swept(corpus):
 
 
 def test_the_sweep_and_the_interactive_capacities_are_both_record_counts():
-    """The CLI sweeps eight capacities; the GUI's baseline sweeps four of them (12.4.2.7)."""
+    """The CLI sweeps eight capacities; the catalogue sweeps four of them (8.11, 12.4.5.1)."""
     config = SweepConfig()
     assert config.variable == "target_container_rows"
     assert config.default_rows in config.values

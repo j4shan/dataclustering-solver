@@ -40,7 +40,7 @@ def run_one(
 
     ``batch_id`` names the *request* these rows belong to (8.3.1), where ``Run_ID`` names
     this one evaluation within it.  A caller running several evaluations for one purpose
-    — a sweep, or one click of the GUI's Evaluate — passes the same batch id to all of
+    — a sweep, or one catalog build — passes the same batch id to all of
     them, so the comparison they were produced for is recoverable from the CSV afterwards.
     A lone call is its own batch.
     """

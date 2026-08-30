@@ -1,0 +1,240 @@
+<article class="formulation"><h1>Where usage concentrates</h1>
+<h2 id="1-a-familiar-kind-of-unevenness">1. A familiar kind of unevenness</h2>
+<p>Picture a town divided into neighborhoods of different sizes. The town has a fixed
+amount of wealth. In one arrangement every neighborhood holds about the same wealth
+per resident. In another, most of the wealth sits in one or two neighborhoods, and
+the remaining neighborhoods hold many residents but almost none of the wealth.</p>
+<p>That second picture is a mental model of inequality: not “some people are richer,”
+but “a large share of the population lives where little of the wealth is.” The
+question is how to <em>measure</em> that bow between population and wealth.</p>
+<p>Line the neighborhoods up from poorest to richest. Walk along the population from
+the poorest end, and at each step keep two running totals: what share of the
+residents you have passed, and what share of the town’s wealth they hold. Plot
+population share on the horizontal axis and wealth share on the vertical axis.
+The resulting path is a <a href="https://en.wikipedia.org/wiki/Lorenz_curve" target="_blank" rel="noopener noreferrer">Lorenz curve</a>.
+If every neighborhood is equally wealthy, the path is the diagonal. If wealth
+piles into the last neighborhoods, the path sags below the diagonal and rises
+steeply at the rich end. The bow between the diagonal and that path <em>is</em> the
+inequality.</p>
+<p>The size of that bow is the <a href="https://en.wikipedia.org/wiki/Gini_coefficient" target="_blank" rel="noopener noreferrer">Gini coefficient</a>.
+For a grouping <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>S</mi></mrow></math> of the town into neighborhoods, write <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> for that
+coefficient. The symbols below are defined together because the formula uses
+them as a set.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>neighborhood population</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub></mrow></math></td>
+<td>number of residents in neighborhood <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>neighborhood wealth</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>U</mi><mi>g</mi></msub></mrow></math></td>
+<td>total wealth held in neighborhood <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>wealth density</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>d</mi><mi>g</mi></msub></mrow></math></td>
+<td>mean wealth per resident, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>U</mi><mi>g</mi></msub><mo>&#x0002F;</mo><msub><mi>n</mi><mi>g</mi></msub></mrow></math></td>
+</tr>
+<tr>
+<td>population share</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub><mo>&#x0002F;</mo><mi>N</mi></mrow></math>, where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi></mrow></math> is the town population</td>
+</tr>
+<tr>
+<td>wealth share</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>q</mi><mi>g</mi></msub></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>U</mi><mi>g</mi></msub><mo>&#x0002F;</mo><mi>U</mi></mrow></math>, where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi></mrow></math> is total wealth</td>
+</tr>
+<tr>
+<td>cumulative wealth share</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">Q</mi></mrow><mi>g</mi></msub></mrow></math></td>
+<td>sum of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>q</mi><mi>j</mi></msub></mrow></math> from the poorest neighborhood through <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>Gini coefficient of the grouping</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>the bow between the diagonal and the Lorenz curve</td>
+</tr>
+</tbody>
+</table>
+<p>Sort neighborhoods by ascending wealth density <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>d</mi><mi>g</mi></msub></mrow></math>. Then</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><msub><mo>&#x02211;</mo><mrow><mi>g</mi></mrow></msub><msub><mi>p</mi><mi>g</mi></msub><mo stretchy="true" fence="true" minsize="1.2em" maxsize="1.2em">(</mo><mn>2</mn><mo>&#x000B7;</mo><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">Q</mi></mrow><mi>g</mi></msub><mo>&#x02212;</mo><msub><mi>q</mi><mi>g</mi></msub><mo stretchy="true" fence="true" minsize="1.2em" maxsize="1.2em">)</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>The first figure on the right draws this construction: the equality diagonal, a
+nearly even path, and a bowed path.</p>
+<p>Three observations follow from the formula.</p>
+<p>When every neighborhood has the same density <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>d</mi><mi>g</mi></msub></mrow></math>, each <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>q</mi><mi>g</mi></msub></mrow></math> equals its <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math>,
+the path is the diagonal, and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>. The grouping reveals no concentration.</p>
+<p>When <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> is high, a small <em>population</em> share holds a large <em>wealth</em> share.
+A large share of residents then live in poor neighborhoods.</p>
+<p>The population weight <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math> is essential. Without it, a tiny rich neighborhood
+could dominate the score. The formula rewards a grouping that isolates wealth
+while leaving a <em>substantial</em> share of residents in poor neighborhoods.</p>
+<p><strong>Takeaway.</strong> Inequality, as <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> measures it, is a property of how wealth sits
+across population shares — not a property of any one rich neighborhood.</p>
+<h2 id="2-the-same-unevenness-in-a-warehouse">2. The same unevenness in a warehouse</h2>
+<p>The same mental model applies to a data warehouse. Each stored event is a
+resident. The wealth of an event is how often it was fetched across the observed
+workload: its <code>used_count</code>. A feature column — a <em>feature grain</em> — cuts the
+corpus into neighborhoods. Those neighborhoods are the terminal groups of a
+split. A group that holds many events and almost no usage is the warehouse
+counterpart of a poor neighborhood: when a query never names it, its storage
+containers can stay shut.</p>
+<p>The symbols of §1 keep their meanings, with residents read as events and wealth
+read as fetch frequency.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>feature grain</td>
+<td>—</td>
+<td>a feature column used to divide events</td>
+</tr>
+<tr>
+<td>terminal group</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+<td>one population produced by a split <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>S</mi></mrow></math></td>
+</tr>
+<tr>
+<td>group population</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub></mrow></math></td>
+<td>event count in group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>group usage</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>U</mi><mi>g</mi></msub></mrow></math></td>
+<td>sum of <code>used_count</code> in group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>usage density</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>d</mi><mi>g</mi></msub></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>U</mi><mi>g</mi></msub><mo>&#x0002F;</mo><msub><mi>n</mi><mi>g</mi></msub></mrow></math></td>
+</tr>
+<tr>
+<td>split</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>S</mi></mrow></math></td>
+<td>a grouping of the corpus into terminal groups <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D4A2;</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+<tr>
+<td>efficiency</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B7;</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>inequality delivered per maintained group</td>
+</tr>
+</tbody>
+</table>
+<p>The population-weighted Gini coefficient (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, defined in §1) is computed on
+those groups exactly as in the town. A second quantity asks what that inequality
+costs to keep. Every extra terminal group adds metadata, planning, and
+file-management work. Taking that cost as proportional to the group count,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B7;</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo>&#x0007C;</mo><mi>&#x1D4A2;</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0007C;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></p>
+<p>High <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> with few groups is a strong screen. High <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> bought by a huge
+group count is a weak one.</p>
+<p>The twelve-event instance used in Section C makes the contrast concrete. Twelve
+events (<code>r01</code>–<code>r12</code>) carry a region and an event type. Three queries select
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007B;</mo><mi>r</mi><mn>01</mn><mo>&#x0002C;</mo><mi>r</mi><mn>03</mn><mo stretchy="false">&#x0007D;</mo></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007B;</mo><mi>r</mi><mn>03</mn><mo>&#x0002C;</mo><mi>r</mi><mn>06</mn><mo stretchy="false">&#x0007D;</mo></mrow></math>, and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007B;</mo><mi>r</mi><mn>10</mn><mo>&#x0002C;</mo><mi>r</mi><mn>11</mn><mo stretchy="false">&#x0007D;</mo></mrow></math>. The implied usage wealth is
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi><mo>&#x0003D;</mo><mn>6</mn></mrow></math>; events that no query selected have <code>used_count</code> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>. These figures are
+the instance’s own arithmetic, not a measurement of a production corpus.</p>
+<p>Cut the twelve events by event type and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002F;</mo><mn>9</mn></mrow></math>: usage is nearly even across
+types. Cut the same events by region and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>7</mn><mo>&#x0002F;</mo><mn>18</mn></mrow></math>: <code>us-east</code> holds four of
+the six units of usage, and <code>ap-south</code> holds two events and none of the usage.
+The second figure on the right draws those two cuts side by side. The cold
+<code>ap-south</code> group is a skip candidate — a group a later query can leave unopened
+when it selects nothing there.</p>
+<p>The same contrast is the effect of clustering (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math> by subgroup, defined in
+§3.1 of the formal statement): a split does not create demand; it exposes that
+demand is already uneven.</p>
+<p>Two limits follow, and both matter.</p>
+<p><code>used_count</code> adds fetch frequency across queries. It forgets which events were
+fetched <em>together</em>. The population-weighted Gini coefficient (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, defined in
+§1) therefore cannot equal the aggregate waste (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>W</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, defined in §2.5).
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> screens a <em>logical</em> split. Waste is a property of a <em>physical</em> assignment
+of events to containers. Scoring that assignment is a workload replay — the
+job of Section B — and this page does not perform it.</p>
+<p><strong>Takeaway.</strong> A high-Gini split is a screen for groups that concentrate usage
+and leave a large cold population that a query can skip. It is not a layout
+score and not a recommendation.</p>
+<h2 id="3-a-search-that-evolves-the-split">3. A search that evolves the split</h2>
+<p>A useful split is grown one decision at a time, the way a search grows a
+candidate rather than enumerating every grouping of the corpus. The starting
+point <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>S</mi><mn>0</mn></msub></mrow></math> is no split: one group, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><msub><mi>S</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>. Each step adds a feature grain,
+either everywhere or only on some leaves, and produces a new grouping <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>S</mi><mi>t</mi></msub></mrow></math>.</p>
+<p>Two constructions share the same fitness.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>group-by-chain</td>
+<td>—</td>
+<td>a compound key built by adding feature grains in order, applied to every group</td>
+</tr>
+<tr>
+<td>selective tree</td>
+<td>—</td>
+<td>a multi-way tree that splits only chosen leaves</td>
+</tr>
+<tr>
+<td>trajectory</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>S</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>S</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mi>&#x02026;</mi><mo>&#x0002C;</mo><msub><mi>S</mi><mi>L</mi></msub></mrow></math></td>
+<td>the sequence of groupings a search actually evaluates</td>
+</tr>
+<tr>
+<td>maintenance cost</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>burden of keeping the split; commonly <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mrow><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">p</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">t</mi></mrow></mrow></msub><mo>&#x000B7;</mo><mo>&#x0007C;</mo><mi>&#x1D4A2;</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0007C;</mo></mrow></math></td>
+</tr>
+<tr>
+<td>marginal efficiency</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><msub><mi>G</mi><mi>t</mi></msub><mo>&#x0002F;</mo><mi>&#x00394;</mi><msub><mi>C</mi><mi>t</mi></msub></mrow></math></td>
+<td>inequality gained per unit of extra cost at step <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p>A chain is simple and deterministic:</p>
+<pre><code class="language-text">region
+→ region × type
+</code></pre>
+<p>Every added grain applies to every existing group, so cardinality can grow as a
+product. A selective tree evaluates candidate grains only on chosen leaves — for
+this instance, splitting only the hot <code>us-east</code> leaf by type — and can isolate
+usage without multiplying every branch. The third figure on the right draws
+that contrast on the same twelve events.</p>
+<p>At each step the search records</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>G</mi><mi>t</mi></msub><mo>&#x0003D;</mo><mi>G</mi><mo stretchy="false">&#x00028;</mo><msub><mi>S</mi><mi>t</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>C</mi><mi>t</mi></msub><mo>&#x0003D;</mo><mi>C</mi><mo stretchy="false">&#x00028;</mo><msub><mi>S</mi><mi>t</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>&#x003B7;</mi><mi>t</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>G</mi><mi>t</mi></msub></mrow><mrow><msub><mi>C</mi><mi>t</mi></msub></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mfrac><mrow><mi>&#x00394;</mi><msub><mi>G</mi><mi>t</mi></msub></mrow><mrow><mi>&#x00394;</mi><msub><mi>C</mi><mi>t</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>G</mi><mi>t</mi></msub><mo>&#x02212;</mo><msub><mi>G</mi><mrow><mi>t</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>C</mi><mi>t</mi></msub><mo>&#x02212;</mo><msub><mi>C</mi><mrow><mi>t</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msub></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></p>
+<p>The stop rule is operational, not aesthetic. The search stops when marginal
+efficiency falls below the return the extra groups are worth, when a cardinality
+budget is exhausted, or when no remaining candidate improves <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> enough to
+justify its cost. Candidates above the budget are pruned; a small set of
+high-value parents is kept for the next expansion. The fourth figure on the
+right is that trajectory: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>S</mi><mn>0</mn></msub></mrow></math>, then the region cut, then the chain and the
+tree, with a stop region where the next cut returns too little.</p>
+<p>This walkthrough describes a screening search. It does not run one. It does not
+assign events to containers. It does not select, rank, or recommend a chain.
+Section B is where a <em>layout</em> — a physical assignment — is scored against the
+observed workload. The figures on the right are the four constructions just
+named, in this order.</p>
+<p><strong>Takeaway.</strong> A heuristic search can evolve a group-by-chain or a selective
+tree by keeping cuts that raise the population-weighted Gini coefficient
+(<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, defined in §1) per unit of maintenance cost, and by stopping when the
+next cut does not. That search is a screen. The score that decides a layout
+remains the aggregate waste (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>W</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, defined in §2.5).</p>
+</article>

@@ -170,14 +170,79 @@
   background: var(--card);
 }
 
-/* Prose set for sustained reading — a bounded measure and generous leading (12.1.9).
- * The formulation pane is the case, wherever it sits (Section A, right; Section C, left). */
+/* Prose set for sustained reading — generous leading (12.1.9).
+ * Section C's formulation keeps a character-width measure; Section A's fills its pane
+ * (12.3.1.1) and is set one pixel larger than chrome (12.3.1.2). */
 .pane:has(> .formulation) {
   line-height: var(--leading-prose);
 }
 
 .pane:has(> .formulation) > .formulation {
   max-width: var(--measure);
+}
+
+#problem .pane-left {
+  --text-body: 14px;
+  --text-small: 12px;
+  --text-heading: 18px;
+  --text-title: 23px;
+  font-size: var(--text-body);
+}
+
+#problem .pane-right {
+  font-size: calc(var(--text-body) + 1px);
+}
+
+#problem .pane-right h1 {
+  font-size: calc(var(--text-title) + 1px);
+}
+
+#problem .pane-right h2 {
+  font-size: calc(var(--text-heading) + 1px);
+}
+
+#problem .pane-right h3 {
+  font-size: calc(var(--text-body) + 1px);
+}
+
+#problem .pane-right :is(code, kbd, samp, pre) {
+  font-size: calc(var(--text-small) + 1px);
+}
+
+#problem .pane-right > .formulation {
+  max-width: none;
+}
+
+/* Section D — one pixel above A's reading size on both panes; left fills the pane
+ * (12.1.9, 12.8.1.6, 12.8.7). */
+#gini .pane-left,
+#gini .pane-right {
+  --text-body: 15px;
+  --text-small: 13px;
+  --text-heading: 19px;
+  --text-title: 24px;
+  font-size: var(--text-body);
+}
+
+#gini .pane-left > .formulation {
+  max-width: none;
+}
+
+#gini .formulation table {
+  display: table;
+  width: 100%;
+}
+
+#gini .pane-left h1 {
+  font-size: var(--text-title);
+}
+
+#gini .pane-left h2 {
+  font-size: var(--text-heading);
+}
+
+#gini .pane-left :is(code, kbd, samp, pre) {
+  font-size: var(--text-small);
 }
 
 .empty {
@@ -344,6 +409,7 @@
  */
 .illustration-stack .illustration-lede,
 .editorial-lede,
+.cabinet-story,
 .closet-story,
 .editorial-bridge,
 .warehouse-walkthrough,
@@ -385,6 +451,12 @@
   border: 1px solid var(--rule);
   border-radius: var(--radius-card);
   background: var(--ground);
+}
+
+.raster-illustration .illustration-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .keyword-chip {
@@ -580,7 +652,7 @@
   }
 }
 
-/* -- Section B: the strategy builder (12.4.2) ------------------------------------- */
+/* -- Section B: the strategy catalogue (12.4.2) ----------------------------------- */
 
 /*
  * The corpus, in prose and as a table definition, ahead of the controls that partition it.

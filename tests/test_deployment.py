@@ -294,7 +294,7 @@ def test_the_descriptor_says_what_this_instance_is(deployed):
     assert status == HTTPStatus.OK
     described = json.loads(body)
     assert set(described) == {"id", "title", "claim", "tags", "version"}
-    assert described["title"]
+    assert described["title"] == "The Data Storage Layout Problem"
     assert described["claim"]
     assert described["tags"]
 

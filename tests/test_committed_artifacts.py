@@ -1,7 +1,7 @@
 """Artifacts the project generates once and then commits (10.3.10, 10.3.11).
 
-Three of this project's deliverables are produced by a script and then checked in: the
-explainer figures, and the two pre-rendered document fragments the GUI mounts. Committing
+This project's generated-and-committed deliverables are the explainer figures
+and the pre-rendered document fragments the GUI mounts. Committing
 them is a deliberate decision with a stated reason — it is what lets an install of the
 three runtime dependencies serve the page without the `docs` extra — and it creates two
 failure modes that no other test in this suite can see.
@@ -17,7 +17,7 @@ not rerun it. The committed copy is now a different thing from what the generato
 produce, tests read the committed copy, and the repository ships the old one.
 
 Both are checked by comparing against the real generator, never by a second implementation
-of it (10.1.2): the test runs the shipped code and asserts the committed bytes are what it
+of it: the test runs the shipped code and asserts the committed bytes are what it
 returns.
 """
 
@@ -43,6 +43,8 @@ COMMITTED = {
         "the page without the docs extra (10.3.6)",
     "simulator/gui/static/production-design.html":
         "Section C's left pane, on the same terms (12.5.4)",
+    "simulator/gui/static/section-d-walkthrough.html":
+        "Section D's left pane, on the same terms (12.8.2)",
     "resources/img/selection-matrix.light.svg": "the centrepiece figure (9.2)",
     "resources/img/selection-matrix.dark.svg": "its dark variant (9.7)",
     "resources/img/container-zoom.light.svg": "the two container outcomes (9.5)",
