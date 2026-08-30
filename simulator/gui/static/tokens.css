@@ -3,7 +3,7 @@
  *
  * Every value here is fixed by the specification and none is chosen at implementation
  * time.  Colour and type come from the Claude Code documentation (12.1.5); everything
- * structural — spacing, radii, control heights, easing, the spinner's cadence — is
+ * structural — spacing, radii, control heights, easing — is
  * AppKit convention (12.1.4).  Where a number is convention rather than published fact,
  * 12.7.3.4 says so, and it is recorded rather than claimed.
  *
@@ -46,14 +46,6 @@
   --link: #0b62d6;   /* 5.5:1 — passes AA for body text */
   --chrome: #007aff; /* 3.9:1 — fails AA for text, so: focus rings and selection only */
 
-  /* -- Colour: chart series (12.7.1.6) ------------------------------------------ */
-  /* The validated report palette (9.4), not the UI accent: identity in data and accent
-   * in chrome are different jobs.  Kept in step with report/charts.py SERIES_LIGHT. */
-  --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
-  --series-4: #eda100;
-  --series-baseline: #707070; /* the grey of 12.4.6.5's dashed reference line */
 
   /* -- Type (12.7.2) ------------------------------------------------------------ */
   --font-sans: "Anthropic Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
@@ -88,12 +80,6 @@
   /* Generic web easings are not substituted for these. */
   --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
   --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
-
-  /* NSProgressIndicator's documented cadence (12.7.4.2): 12 blades at 30°, one step
-   * every 1/12 s, one revolution per second.  The one-second revolution is also the
-   * floor 12.1.8.1 holds the spinner visible for, so the two agree by construction. */
-  --spinner-blades: 12;
-  --spinner-revolution: 1s;
 
   /* Prose set for sustained reading (12.1.9). */
   --measure: 68ch;
@@ -263,52 +249,10 @@ textarea {
   background: var(--card);
 }
 
-/* -- The spinner (12.1.8, 12.7.4.2) --------------------------------------------- */
-/*
- * Twelve blades stepping once every 1/12 s, one revolution per second.  Stepped rather
- * than smooth: `steps(12)` is what makes it an NSProgressIndicator rather than a web
- * spinner that happens to take a second to go round.
- */
-
-.spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  position: relative;
-  animation: spinner-turn var(--spinner-revolution) steps(var(--spinner-blades)) infinite;
-}
-
-.spinner span {
-  position: absolute;
-  inset: 0;
-  /* Each blade is rotated a further 30° and faded a further step around the dial. */
-  transform: rotate(calc(var(--blade) * 30deg));
-  opacity: calc(0.25 + var(--blade) / 16);
-}
-
-.spinner span::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 1.5px;
-  height: 4px;
-  margin-left: -0.75px;
-  border-radius: 1px;
-  background: var(--ink-secondary);
-}
-
-@keyframes spinner-turn {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* -- Reduced motion (12.7.4.3) --------------------------------------------------- */
 /*
- * All motion is suppressed, and the spinner degrades to a **static indicator rather
- * than disappearing**: a reader who asked for less motion still has to be able to tell
- * that a five-second request is running (12.2.4).
+ * All motion is suppressed: a reader who asked for less motion is shown the page
+ * without any.
  */
 
 @media (prefers-reduced-motion: reduce) {
@@ -319,21 +263,5 @@ textarea {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
-  }
-
-  .spinner {
-    animation: none;
-  }
-}
-
-/* -- Print ---------------------------------------------------------------------- */
-/*
- * The report must survive being printed (12.4.6.7): nothing is reachable only by
- * pointing at it, so a printed page loses no value a screen carried.
- */
-
-@media print {
-  .spinner {
-    display: none;
   }
 }

@@ -1,6 +1,6 @@
 # Problem presentation format
 
-**Objective.** Report every problem, defect and open decision in one fixed structure, so the
+**Objective.** Report every problem, defect and open decision in one fixed layout, so the
 reader can tell at a glance what still needs their attention, how bad it is, and which part of the
 system is at risk. Number every finding so later messages can cite it.
 
@@ -30,24 +30,39 @@ Do not assume the reader's knowledge in code. Illustrate the point using product
 concepts, requirements, constraints and documented terms. When you need a code reference, place
 the citation at the end of the field in this format: `[<relative_file_path>/<file_name>: <line_#>]`.
 
-Render the list in this exact shape. Write a markdown thematic break (`---` on its own line)
-before the first entry, between every pair of entries, and after the last entry. Never omit a
-break because there is only one finding. Never write two breaks in a row.
+Render each entry as one markdown block with two vertical sections. Never use a list of bold
+labels for the upper fields. Never omit a field. Write a markdown thematic break (`---` on its
+own line) before the first entry, between every pair of entries, and after the last entry.
+Never omit a break because there is only one finding. Never write two breaks in a row.
+
+Upper section: one GitHub-flavored markdown table — one header row and one value row for
+**Category**, **Scope**, **Severity**, **Components**, and **Status**. Keep each value on a
+single line so the table stays one row.
+
+Lower section: two blocks, each a bold heading on its own line then the body on the following
+lines — **Problem Description**, then **Proposed Action**. Write the body as ordinary
+markdown prose so it can wrap. Never put either body in a table cell.
+
+Write GitHub-flavored markdown only. Never write HTML tags. Chat clients display `<table>`,
+`<tr>`, `<th>`, `<td>`, and `colspan` as raw markup. Do not fake a merged cell with empty
+markdown cells.
 
 ```
 ---
 
 **P1**
 
-**Category:** …
-**Scope:** …
-**Severity:** …
-**Components:** …
-**Problem Description:** …
-**Cause:** …
-**Evidence:** …
-**Action:** …
-**Status:** …
+| Category | Scope | Severity | Components | Status |
+| --- | --- | --- | --- | --- |
+| … | … | … | … | … |
+
+**Problem Description**
+
+…
+
+**Proposed Action**
+
+…
 
 ---
 
@@ -58,9 +73,6 @@ break because there is only one finding. Never write two breaks in a row.
 ---
 ```
 
-Use **Proposed Action** in place of **Action** on open-question entries. Omit **Evidence** and
-**Action** only when the field table says they do not apply.
-
 Fill these fields.
 
 | Field | What goes in it |
@@ -70,12 +82,9 @@ Fill these fields.
 | **Scope** | one or more labels from the scope table below |
 | **Severity** | `blocking` · `degrading` · `cosmetic` |
 | **Components** | the layer — `front end` · `back end` · `data model` · `API / CLI` · `build pipeline` — then the area inside it (for a front-end concern, which screen or section), and the file |
-| **Problem Description** | three parts, in order: (1) `When: always` or `When: <condition>`; (2) a one-sentence problem summary; (3) one concise paragraph of detail. No cause here |
-| **Cause** | the mechanism, the wrong assumption, or the missing rule. **Prefer concision:** one sentence unless a second is load-bearing |
-| **Evidence** | problem and defect entries only. Required whenever the entry asserts a number |
-| **Action** | problem and defect entries only — what was done, or what is proposed |
-| **Proposed Action** | open-question entries only — the options, and a recommendation among them |
-| **Status** | `resolved` · `resolved, enforced forward` · `unresolved — decision needed` · `accepted — recorded in <id>` · `out of scope` |
+| **Status** | `unresolved` · `resolved by agent` · `resolved by user decisions` |
+| **Problem Description** | three parts, in order: (1) `When: always` or `When: <condition>`; (2) a one-sentence problem summary; (3) one concise paragraph of detail. Put any asserted number in this field |
+| **Proposed Action** | what is proposed, what was done, or the options and a recommendation among them — matching **Status** |
 
 | Scope | Covers |
 | --- | --- |
@@ -98,5 +107,5 @@ Fill these fields.
 Two rules:
 
 - A pending decision never sits inside an entry about something already fixed. It stands alone.
-- A finding that contradicts an earlier "done" says so in **Action**, and corrects the earlier
-  claim in the same message. Cite the earlier finding by ID when it has one.
+- A finding that contradicts an earlier "done" says so in **Proposed Action**, and corrects the
+  earlier claim in the same message. Cite the earlier finding by ID when it has one.

@@ -3,7 +3,7 @@
  *
  * **Text goes in as text** (12.6.5).  Every constructor here sets `textContent` or an
  * attribute it computed itself; none of them accepts markup, and there is no sanitizer to
- * fall back on because 13.3 rules out the library.  A reader who types `<img onerror=…>`
+ * fall back on because 10.3.5 rules out the library.  A reader who types `<img onerror=…>`
  * into an expression box sees those characters in the report, which is both the correct
  * rendering and the only one that cannot execute them.
  *

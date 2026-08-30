@@ -2,7 +2,7 @@
 
 A browser is not required to check most of what 12.1 asks for.  The scroll model, the
 breakpoint behaviour, the anchors and the dependency rules are all properties of the
-authored files, and 12.6.3.1 makes browser-driven checks a plus rather than a gate — so
+authored files, and AGENTS.md makes browser-driven checks a plus rather than a gate — so
 these read the files, and the optional suite (T20) drives the live page.
 """
 
@@ -14,8 +14,8 @@ import pytest
 
 from simulator.gui import FIGURE_ROOT, STATIC_ROOT
 
-#: 12.2.13 — relative, because the page is mounted under a path prefix it is not told
-#: about.  A leading slash here would address the front door's root instead.
+#: 12.2.13 — relative, so the page resolves it against its own document wherever the
+#: site is opened from.  A leading slash would address the host's root instead.
 FIGURE_PREFIX = "figures/"
 
 INDEX = STATIC_ROOT / "index.html"
@@ -31,6 +31,11 @@ def html() -> str:
 @pytest.fixture(scope="module")
 def css() -> str:
     return re.sub(r"/\*.*?\*/", "", APP_CSS.read_text(), flags=re.DOTALL)
+
+
+def test_browser_and_wordmark_use_the_formal_project_title(html):
+    assert "<title>The Data Storage Layout Problem</title>" in html
+    assert '<span class="wordmark">The Data Storage Layout Problem</span>' in html
 
 
 @pytest.fixture(scope="module")
@@ -60,21 +65,22 @@ def media_block(css: str, query: str) -> str:
     raise AssertionError(f"unbalanced braces after {query}")
 
 
-# -- three sections, in order (12.1.1) -----------------------------------------------
+# -- four sections, in order (12.1.1) -----------------------------------------------
 
 
-def test_there_are_three_sections_in_fixed_order(html):
+def test_there_are_four_sections_in_fixed_order(html):
     assert re.findall(r'<section class="section" id="([\w-]+)"', html) == [
         "problem",
-        "benchmark",
+        "gini",
+        "knapsack",
         "design",
     ]
 
 
 def test_each_section_is_a_left_right_pair(html):
-    assert html.count('class="split"') == 3
-    assert html.count("pane pane-left") == 3
-    assert html.count("pane pane-right") == 3
+    assert html.count('class="split"') == 4
+    assert html.count("pane pane-left") == 4
+    assert html.count("pane-right") == 4
 
 
 def test_the_sections_are_individually_linkable(html):
@@ -84,31 +90,30 @@ def test_the_sections_are_individually_linkable(html):
     assert navigated == anchors
 
 
-def test_the_page_anatomy_figure_spells_the_sections_the_page_spells_them(html):
-    """9.15 — the figure's labels are the page's own, and this is what holds them so.
-
-    The figure is drawn rather than screenshotted, so nothing but this test stops a
-    renamed section from leaving the README's diagram describing a page that no longer
-    exists. Both halves are read here: what the top bar offers, and what each section
-    calls itself once chosen.
-    """
-    from tools import render_figures as rf
-
-    navigation = re.findall(r"<b>(\w)</b> ([^<]+)</a>", html)
-    assert navigation == [(letter, label) for letter, label in rf.NAV]
-
-    headings = re.findall(r'<span class="letter">(\w)</span> ([^<]+)</h1>', html)
-    assert headings == [(s["letter"], s["heading"]) for s in rf.SECTIONS]
+def test_navigation_labels_match_section_headings(html):
+    """12.1.3.1 — the top bar and the section heading spell the same names."""
+    navigation = re.findall(r'data-nav="[^"]+">([^<]+)</a>', html)
+    headings = re.findall(r'<h1 id="[\w-]+-heading">([^<]+)</h1>', html)
+    assert navigation == headings
 
 
-def test_section_a_keeps_its_tab_name_and_uses_the_closet_heading(html):
-    """Section A's navigation name stays stable while its editorial heading carries the story."""
-    section = html.split('id="problem"')[1].split('id="benchmark"')[0]
-    assert '<a href="#problem" data-nav="problem"><b>A</b> Problem Statement</a>' in html
-    assert (
-        '<h1 id="problem-heading"><span class="letter">A</span> '
-        "Organizing a data warehouse like a closet</h1>"
-    ) in section
+def test_section_headings_match_their_navigation_labels(html):
+    """12.1.3.1 — the section heading is the tab; a distinct editorial name is the left pane title."""
+    section = html.split('id="problem"')[1].split('id="gini"')[0]
+    assert '<a href="#problem" data-nav="problem">Problem Statement</a>' in html
+    assert '<h1 id="problem-heading">Problem Statement</h1>' in section
+    assert ">Organizing Data Like a Medicine Cabinet</h2>" in section
+    knapsack = html.split('id="knapsack"')[1].split('id="design"')[0]
+    assert '<h1 id="knapsack-heading">Drawing Storage Boundary</h1>' in knapsack
+    assert "pane-title" not in knapsack
+    design = html.split('id="design"')[1]
+    assert '<h1 id="design-heading">Go Live on Databricks Lakehouse</h1>' in design
+    assert "pane-title" not in design
+
+
+def test_section_headings_stand_alone(html):
+    """12.1.3.2 — the heading is not followed by a footnote or lede."""
+    assert "section-lede" not in html
 
 
 def test_every_section_is_labelled_for_a_screen_reader(html):
@@ -116,11 +121,11 @@ def test_every_section_is_labelled_for_a_screen_reader(html):
     labelled = re.findall(r'aria-labelledby="([\w-]+)"', html)
     for target in labelled:
         assert f'id="{target}"' in html
-    panes = re.findall(r'<div class="pane [^"]+"[^>]*>', html)
-    assert len(panes) == 6
+    panes = re.findall(r'<div class="pane(?:\s[^"]*)?"[^>]*>', html)
+    assert len(panes) == 10
     assert all('role="region"' in pane for pane in panes)
     assert all('aria-label="' in pane for pane in panes)
-    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 6
+    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 10
 
 
 # -- the scroll model (12.1.2, 12.1.7) -----------------------------------------------
@@ -164,7 +169,7 @@ def test_the_bound_can_actually_take_effect(css):
     Without it a child's automatic minimum size is its content: the pane grows the
     section instead of scrolling, and 12.1.2 silently does not happen.
     """
-    for selector in (".split", ".pane"):
+    for selector in (".split", ".pane", ".pane-body", ".pane-stack.pane-right"):
         assert "min-height: 0" in rule_for(css, selector)
 
 
@@ -218,28 +223,68 @@ def test_nothing_is_hidden_at_a_narrow_width(css):
 
 
 def test_prose_is_set_for_sustained_reading(css):
-    """A bounded measure and generous leading — Section A's formulation pane is the case."""
+    """Generous leading; other reading prose keeps a character-width measure (12.1.9)."""
     assert "max-width: var(--measure)" in css
-    assert "line-height: var(--leading-prose)" in rule_for(css, ".pane:has(> .formulation)")
+    assert "line-height: var(--leading-prose)" in rule_for(css, ".pane:has(.formulation)")
+
+
+def test_section_a_formulation_fills_the_right_pane(css):
+    """12.3 — the document uses the pane, not a character clamp inside it."""
+    assert "max-width: none" in rule_for(css, "#problem .pane-right .formulation")
+
+
+def test_section_a_illustration_is_one_pixel_larger_than_chrome(css):
+    """12.3 — the left pane remaps the type tokens so every beat steps together."""
+    declarations = rule_for(css, "#problem .pane-left")
+    assert "--text-body: 14px" in declarations
+    assert "--text-small: 12px" in declarations
+    assert "--text-heading: 18px" in declarations
+    assert "--text-title: 23px" in declarations
+
+
+def test_section_a_formulation_is_one_pixel_larger_than_chrome(css):
+    """12.3 — body, headings, and small type each step one pixel above 12.7.2."""
+    assert "font-size: calc(var(--text-body) + 1px)" in rule_for(css, "#problem .pane-right")
+    assert "font-size: calc(var(--text-title) + 1px)" in rule_for(
+        css, "#problem .pane-right h1"
+    )
+    assert "font-size: calc(var(--text-heading) + 1px)" in rule_for(
+        css, "#problem .pane-right h2"
+    )
+    assert "font-size: calc(var(--text-body) + 1px)" in rule_for(
+        css, "#problem .pane-right h3"
+    )
+    assert "font-size: calc(var(--text-small) + 1px)" in rule_for(
+        css, "#problem .pane-right :is(code, kbd, samp, pre)"
+    )
 
 
 def test_section_a_puts_the_illustration_on_the_left(html):
-    """12.3.5 / 12.3.1 — drawings first, then the formulation."""
-    section = html.split('id="problem"')[1].split('id="benchmark"')[0]
-    assert section.index("section-a-illustration.html") < section.index("formulation.html")
+    """12.3 / 12.3 — drawings first, then the dictionary, then the formulation."""
+    section = html.split('id="problem"')[1].split('id="gini"')[0]
+    assert section.index("section-problem-illustration.html") < section.index(
+        "section-problem-glossary.html"
+    )
+    assert section.index("section-problem-glossary.html") < section.index("formulation.html")
     assert re.search(
-        r'class="pane pane-left"[^>]*data-mount="figures/graphics/section-a-illustration.html"',
+        r'data-mount="figures/html/section-problem-illustration.html"',
         section,
     )
-    assert re.search(
-        r'class="pane pane-right"[^>]*data-mount="formulation.html"',
-        section,
-    )
-    assert "Open the closet-to-warehouse walkthrough" in section
+    assert re.search(r'data-mount="section-problem-glossary.html"', section)
+    assert re.search(r'data-mount="formulation.html"', section)
+    assert "Open the medicine-cabinet walkthrough" in section
     assert "twelve events in three containers" not in section
 
 
-# -- dependencies (10.3.5, 13.3) -------------------------------------------------------
+def test_section_a_right_column_stacks_the_dictionary_above_the_formulation(css):
+    """12.3 / 12.8 — dictionary 30% on top, independently bounded, lower band 70%."""
+    stack = rule_for(css, ".pane-stack.pane-right")
+    assert "grid-template-rows: minmax(8rem, 30%) minmax(0, 70%)" in stack
+    assert "display: table" in rule_for(css, ".glossary table")
+    assert "border-bottom: 1px solid var(--rule)" in rule_for(css, ".glossary th")
+
+
+# -- dependencies (10.3.5, 10.3.5) -------------------------------------------------------
 
 
 def test_the_page_ships_no_third_party_anything(html):
@@ -248,7 +293,7 @@ def test_the_page_ships_no_third_party_anything(html):
     assert "https://" not in html
     for stylesheet in re.findall(r'<link rel="stylesheet" href="([^"]+)"', html):
         assert (STATIC_ROOT / stylesheet).exists()
-    for source in re.findall(r'<script src="([^"]+)"', html):
+    for source in re.findall(r'<script[^>]+src="([^"]+)"', html):
         assert (STATIC_ROOT / source).exists()
 
 
@@ -279,7 +324,7 @@ def test_html_is_assigned_only_where_the_content_is_a_build_artifact(script):
     """12.6.5 — the one place, and the reason it is safe.
 
     Everything derived from a request is written as text or built as nodes.  A sanitizer
-    is not available to fall back on: 13.3 rules out the library, so the boundary has to
+    is not available to fall back on: 10.3.5 rules out the library, so the boundary has to
     hold by construction.
     """
     assignments = re.findall(r"\.innerHTML\s*=\s*([^;]+);", script)
@@ -316,128 +361,6 @@ def test_the_location_hash_decides_which_section_is_displayed(script):
     assert "section.hidden = name !== id" in script
 
 
-# -- Section B: the strategy catalogue (12.4.2) ---------------------------------------
-#
-# What stood here: eleven tests over a builder — a block bar, a chain repeater, a
-# capacity box, an Evaluate button, a spinner and a stale marker. All eleven described
-# controls that no longer exist. The tests below describe what replaced them, and the
-# first one is the load-bearing claim of the whole redesign.
-
-
-@pytest.fixture(scope="module")
-def section_b() -> str:
-    return re.sub(
-        r"/\*.*?\*/|//[^\n]*", "", (STATIC_ROOT / "section-b.js").read_text(), flags=re.DOTALL
-    )
-
-
-@pytest.fixture(scope="module")
-def catalog_view() -> str:
-    return re.sub(
-        r"/\*.*?\*/|//[^\n]*",
-        "",
-        (STATIC_ROOT / "catalog-view.js").read_text(),
-        flags=re.DOTALL,
-    )
-
-
-def test_the_panel_holds_no_control_that_starts_work(section_b):
-    """12.4.2.5 — choosing redraws from data already held; nothing is set running.
-
-    The page issues exactly one request, at load, for the catalogue itself. A second
-    `fetch` anywhere in this file would mean a reader's action had reacquired a cost —
-    which is the thing the redesign exists to remove.
-    """
-    assert section_b.count("fetch(") == 1
-    assert 'fetch("api/catalog")' in section_b
-    for gone in ("api/evaluate", "api/family", "api/dataset", "runBenchmark", "spinner"):
-        assert gone not in section_b, gone
-
-
-def test_nothing_a_reader_touches_can_fail(section_b):
-    """12.4.2.5 — a selection cannot be rejected, so there is no violation surface.
-
-    The builder needed one because the factory could refuse what a reader typed. Nothing
-    is typed now, so the machinery for reporting a refusal is gone rather than idle.
-    """
-    for gone in ("violation", "state.violations", "window.confirm"):
-        assert gone not in section_b, gone
-
-
-def test_the_selection_ceiling_comes_from_the_shared_module(section_b, catalog_view):
-    """12.4.2.2 — one statement of the bound, and the page does not restate it.
-
-    A literal four in the page would be a second copy of a limit P2's row budget and P3's
-    series count both depend on.
-    """
-    assert "MAX_SELECTED" in section_b
-    assert "export const MAX_SELECTED = 4" in catalog_view
-    assert not re.search(r"length\s*>=\s*4\b", section_b)
-
-
-def test_the_select_control_is_disabled_rather_than_hidden(section_b):
-    """12.4.2.2 — the ceiling is visible before it is reached."""
-    assert "control.disabled = !chosen && full" in section_b
-    assert "state.selected.length >= MAX_SELECTED" in section_b
-
-
-def test_selection_is_marked_by_more_than_colour(section_b):
-    """12.6.2 — a state carried by colour alone is not carried."""
-    assert 'control.setAttribute("aria-pressed"' in section_b
-    assert "entry-mark" in section_b
-
-
-def test_each_entry_lists_its_chain_its_splits_and_its_containers(section_b):
-    """12.4.2.1 — what distinguishes two entries before any score is read."""
-    assert "stage.expression" in section_b
-    assert "stage.splits" in section_b
-    assert "entry.leaf_count" in section_b
-    assert "containersByCapacity" in section_b
-
-
-def test_the_panel_states_the_fixture_framing_where_a_reader_sees_it(section_b):
-    """12.4.2.4 — a list of scored candidates reads as a leaderboard unless it says not."""
-    assert "FIXTURE_NOTE" in section_b
-    note = re.search(r'const FIXTURE_NOTE =\s*(.+?);', section_b, re.DOTALL).group(1)
-    assert "not recommendations" in note
-    assert "not a ranking" in note
-
-
-def test_the_columns_come_from_the_document_rather_than_the_page(section_b):
-    """12.4.2.3, 12.2.3 — listed without a corpus in the serving process."""
-    assert "state.catalog.corpus.feature_columns" in section_b
-
-
-def test_the_page_computes_no_figure_of_its_own(section_b):
-    """12.4.2.6, 12.6.4 — every number displayed is a field of the document.
-
-    Arithmetic on a metric value is what this rules out. Formatting is not arithmetic,
-    and `dom.js` owns all of it.
-    """
-    assert not re.search(r"row\.\w+\s*[-+*/]\s*row\.", section_b)
-    assert not re.search(r"\.reduce\(", section_b)
-
-
-def test_an_opening_selection_is_the_coarsest_and_not_the_best(section_b):
-    """12.4.2.4, 8.11.3 — preselecting the best entries would be a recommendation."""
-    assert "OPENING_SELECTION" in section_b
-    assert ".slice(0, OPENING_SELECTION)" in section_b
-    # From the front of the document's own order, which is structural — never sorted here.
-    assert not re.search(r"\.sort\(", section_b)
-
-
-def test_the_report_says_so_when_nothing_is_selected(section_b):
-    """12.4.3.8 — empty, and it names the control that fills it."""
-    assert "if (!state.selected.length)" in section_b
-    assert "Nothing selected" in section_b
-
-
-def test_the_projection_holds_no_dom_so_it_can_be_tested_directly(catalog_view):
-    """12.6.3 — the rule with logic in it is a pure function, and is unit-tested."""
-    for forbidden in ("document.", "window.", "createElement"):
-        assert forbidden not in catalog_view, forbidden
-
-
 def test_nothing_from_a_request_is_parsed_as_markup():
     """12.6.5 — checked across **every** script the page loads, not just today's.
 
@@ -466,11 +389,67 @@ def test_the_page_builds_its_nodes_rather_than_writing_them():
     """
     source = (STATIC_ROOT / "dom.js").read_text()
     assert "created.textContent = text" in source
-    for script in ("section-b.js", "view-process.js", "view-summary.js", "view-scatter.js"):
-        assert 'from "./dom.js"' in (STATIC_ROOT / script).read_text(), script
 
 
-def test_no_state_survives_a_reload(section_b):
-    """13.4 — persistence is excluded outright, not relocated to a different store."""
-    for store in ("localStorage", "sessionStorage", "document.cookie", "history.pushState"):
-        assert store not in section_b
+def test_no_state_survives_a_reload():
+    """12.2.7 — persistence is excluded outright, not relocated to a different store."""
+    for script in STATIC_ROOT.glob("*.js"):
+        text = script.read_text()
+        for store in ("localStorage", "sessionStorage", "document.cookie", "history.pushState"):
+            assert store not in text, script.name
+
+
+# -- addressing -----------------------------------------------------------------------
+
+#: What actually makes a browser resolve against the site root: a leading slash on a URL
+#: the page emits.  A protocol-relative or absolute URL is 12.2.2's concern, not this
+#: one, and a bare `#anchor` addresses nothing at all.
+ROOT_ABSOLUTE = re.compile(
+    r"""(?:
+          (?:                                 # quoted, which is every case but one
+              \b(?:src|href|action)\s*=       # an attribute, or a property assigned in JS
+            | @import\s+                      # a stylesheet pulling another one in
+            | \bfetch\( | \bnew\s+URL\(     # a script asking for something itself
+            | \bfrom\s+                       # a module import
+          )\s*['"](/(?!/)[^'"]*)
+        | \burl\(\s*['"]?(/(?!/)[^'")\s>]*)   # CSS, where the quotes are optional
+     )""",
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
+def root_absolute(text: str) -> list[str]:
+    """Every URL in `text` that starts at the site root.
+
+    The quote is required everywhere except inside `url(`, because prose is full of paths
+    — a comment naming a directory describes one rather than fetching it, and a check that
+    flagged it would be checking English.
+    """
+    return [
+        found.group(1) or found.group(2) for found in ROOT_ABSOLUTE.finditer(text)
+    ]
+
+
+#: Every document this process serves that a person authored or a generator wrote.
+SERVED = sorted(
+    [*STATIC_ROOT.rglob("*.html"), *STATIC_ROOT.rglob("*.js"), *STATIC_ROOT.rglob("*.css")]
+    + [*FIGURE_ROOT.rglob("*.html"), *FIGURE_ROOT.rglob("*.svg")]
+)
+
+
+def test_the_inventory_of_served_documents_is_not_empty():
+    """A scan that found nothing would pass the next test for the wrong reason."""
+    assert len(SERVED) > 5
+
+
+@pytest.mark.parametrize("document", SERVED, ids=lambda p: p.name)
+def test_no_served_document_addresses_the_site_root(document):
+    """12.2.13 — every URL the page emits is relative to its own document.
+
+    A leading slash resolves against whatever host the page is opened from rather than
+    against the page, so it breaks the moment the site is served from anywhere but the
+    root of an origin.  The rule is checked here rather than remembered, because the next
+    person to write a URL into a page will not have read this docstring.
+    """
+    offending = root_absolute(document.read_text(encoding="utf-8"))
+    assert offending == [], f"{document.name} addresses the site root: {offending}"

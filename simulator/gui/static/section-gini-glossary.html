@@ -1,0 +1,81 @@
+<article class="glossary">
+  <h2>Terminology</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Term</th>
+        <th>Definition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Grouping (<em>S</em>)</td>
+        <td>A partition of the events under consideration into terminal groups.</td>
+      </tr>
+      <tr>
+        <td>Leaf (<em>ℓ</em>)</td>
+        <td>A current uncut group.</td>
+      </tr>
+      <tr>
+        <td>Cut (<em>γ</em>)</td>
+        <td>A partition of one leaf into two or more children <em>C</em>(<em>γ</em>).</td>
+      </tr>
+      <tr>
+        <td>fitness(leaf) (<em>v</em>(<em>ℓ</em>))</td>
+        <td>The leaf scored as packed at size <em>s</em>, with no further cut.</td>
+      </tr>
+      <tr>
+        <td>OPT(leaf) (OPT(<em>ℓ</em>))</td>
+        <td>The best score obtainable from the leaf if further cuts remain allowed under the remaining evaluation budget.</td>
+      </tr>
+      <tr>
+        <td>Container size (<em>s</em>)</td>
+        <td>Event count of one packed unit; the common packing budget.</td>
+      </tr>
+      <tr>
+        <td>Evaluation budget</td>
+        <td>Compute and wall-clock allowed for enumerating and scoring cuts.</td>
+      </tr>
+      <tr>
+        <td>Unit (<em>i</em>)</td>
+        <td>One equal-size container after the grouping is packed at size <em>s</em>.</td>
+      </tr>
+      <tr>
+        <td>Population weight (<em>w<sub>i</sub></em>)</td>
+        <td>Unit <em>i</em>'s share of the parent population, <em>n<sub>i</sub></em>/<em>n</em>.</td>
+      </tr>
+      <tr>
+        <td>Group-wide rate (<em>p<sub>g,i</sub></em>)</td>
+        <td>One selection rate for unit <em>i</em>, averaged across training queries.</td>
+      </tr>
+      <tr>
+        <td>Query-conditional rate (<em>p<sub>i,q</sub></em>)</td>
+        <td>Fraction of unit <em>i</em> that query <em>q</em> selected.</td>
+      </tr>
+      <tr>
+        <td>Poisson parameter (<em>λ</em>)</td>
+        <td>Expected selected-event count in the unit being modeled.</td>
+      </tr>
+      <tr>
+        <td>Group-wide skip ratio (<em>V</em><sub>marg</sub>(<em>S</em>,<em>s</em>))</td>
+        <td>Estimated skip ratio from the group-wide rates.</td>
+      </tr>
+      <tr>
+        <td>Query-conditional skip ratio (<em>V</em>(<em>S</em>,<em>s</em>))</td>
+        <td>Estimated skip ratio that keeps the query index.</td>
+      </tr>
+      <tr>
+        <td>Weighted Gini (<em>G</em>(<em>S</em>))</td>
+        <td>Inequality of the group-wide rate across units.</td>
+      </tr>
+      <tr>
+        <td>Extra groups (<em>Δk</em>)</td>
+        <td>How many groups the cut adds.</td>
+      </tr>
+      <tr>
+        <td>Incremental gain</td>
+        <td>Fitness change per extra group, <em>Δv</em>/<em>Δk</em>.</td>
+      </tr>
+    </tbody>
+  </table>
+</article>

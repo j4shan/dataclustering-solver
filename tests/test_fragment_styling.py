@@ -1,4 +1,4 @@
-"""Mounted fragments and the stylesheet — 12.6.6.
+"""Mounted fragments and the stylesheet — 12.6.5.
 
 A fragment is authored apart from the stylesheet and mounted by assignment (12.6.5), so a
 class whose rule was never written fails silently: the markup is correct, the selector
@@ -6,7 +6,7 @@ matches nothing, and the element renders as a browser default inside an otherwis
 tokenized page. Nothing in the page's construction would catch it, so this does.
 
 The check is deliberately structural rather than visual. It asserts that a rule exists for
-every class a fragment names — not what the rule says, which 12.6.3.2 leaves to §12.7.
+every class a fragment names — not what the rule says, which §12.7 records.
 """
 
 from __future__ import annotations
@@ -17,20 +17,29 @@ from pathlib import Path
 import pytest
 
 STATIC = Path("simulator/gui/static")
-GRAPHICS = Path("resources/graphics")
+HTML = Path("resources/html")
 
 #: The fragments mounted into a pane by `data-mount`, and the wrapper the document
-#: pre-render emits around every collapsed figure pair (12.3.8).
+#: pre-render emits around every collapsed figure pair (12.3).
 FRAGMENTS = [
-    GRAPHICS / "section-a-illustration.html",
-    GRAPHICS / "section-c-illustration.html",
+    HTML / "section-problem-illustration.html",
+    HTML / "section-gini-illustration.html",
+    HTML / "section-budget-illustration.html",
+    HTML / "section-databricks-illustration.html",
+    STATIC / "section-gini-walkthrough.html",
+    STATIC / "section-budget-walkthrough.html",
+    STATIC / "section-databricks-walkthrough.html",
+    STATIC / "section-problem-glossary.html",
+    STATIC / "section-gini-glossary.html",
 ]
-PRE_RENDERED = [STATIC / "formulation.html", STATIC / "production-design.html"]
+PRE_RENDERED = [
+    STATIC / "formulation.html",
+]
 
 #: Classes the Markdown renderer emits that this page deliberately does not style. Syntax
-#: highlighting is excluded outright (13.3, 10.3.5), so the fenced-code language class has
+#: highlighting is excluded outright (10.3.5, 10.3.5), so the fenced-code language class has
 #: nothing to hang a rule on and is not a forgotten one.
-UNSTYLED_BY_DESIGN = {"language-sql"}
+UNSTYLED_BY_DESIGN = {"language-sql", "language-text"}
 
 
 def rules() -> str:

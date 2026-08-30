@@ -1,0 +1,257 @@
+OUTPUT
+One looping APNG, 1920 x 1080, warm off-white ground, single light palette.
+Future accepted path: resources/img/section_gini_tree_split_cycle.png.
+
+SUBJECT
+One abstracted evaluation of a data split. The figure teaches the cycle a
+search repeats at a leaf: list candidate cuts, score each cut, replace the
+leaf with the children of the illustrated cut. It is a mechanism diagram,
+not a solver, not a layout score, and not a recommendation.
+
+STYLE
+Editorial flat 2D diagram, one tree in the centre, a three-phase process
+rail across the top. No perspective, realism, 3D, shadows, gradients, UI
+chrome, dashboard widgets, server racks, or emojis. System-ui labels;
+ui-monospace for every identifier and number. Rounded corners about 8px
+on cards and 6px on tokens. 1px rules.
+
+COLOURS
+Use the same explainer family as Sections A and the Gini example:
+#FCFCFB canvas . #7A1F2B wine-red . #F8EEF0 warm-rose .
+#1B4D3E dark-green . #EEF4F0 cool-sage . #0B0B0B ink .
+#52514E secondary . #DEDEDE rules . #F3F3F3 header band .
+#FFFFFF card ground.
+Do not use orange. Colour is never the only state channel.
+
+THE INSTANCE (fixed -- do not vary)
+The renderer holds this as one dictionary near the top. Values printed in
+the figure are derived from it; none is typed again in drawing code.
+
+parent = {
+  "id": "R0",
+  "label": "R0 Input",
+  "events": 1200,
+}
+
+candidates = [
+  {
+    "id": "g1",
+    "kind": "multi-way grain",
+    "column": "region",
+    "children": [
+      {"id": "R1", "events": 700},
+      {"id": "R2", "events": 350},
+      {"id": "R3", "events": 150},
+    ],
+    "fitness": 0.41,
+  },
+  {
+    "id": "g2",
+    "kind": "multi-way grain",
+    "column": "brand",
+    "children": [
+      {"id": "B1", "events": 480},
+      {"id": "B2", "events": 420},
+      {"id": "B3", "events": 300},
+    ],
+    "fitness": 0.36,
+  },
+  {
+    "id": "p1",
+    "kind": "local predicate",
+    "column": "price_tier",
+    "op": ">",
+    "value": 5,
+    "children": [
+      {"id": "Yes", "events": 200},
+      {"id": "No", "events": 1000},
+    ],
+    "fitness": 0.28,
+  },
+]
+
+illustrated_cut = "g1"
+
+Fitness numbers are authored demonstration values, not a live score and
+not tied to the auto-parts Gini example. Child event counts must sum to
+parent.events. The illustrated cut is g1 so the animation has a story;
+it is never labelled best, winner, or recommended.
+
+TITLE
+None. The raster carries no title line and no subtitle. The figure is
+published under a section heading -- "Recursive Partitioning with a
+Decision Tree" -- and repeating that inside the image would print the
+title twice on the page. The rail is the first element on the canvas.
+
+PROCESS RAIL
+A horizontal rail under the title, three equal stations, always visible:
+  [1] Enumerate
+  [2] Evaluate
+  [3] Split
+Wine rounded badge (24 x 24, white mono 14) on each station. The active
+phase uses a wine top rule + warm-rose fill + ink station title. Idle
+phases use white fill, no top rule, and secondary type. No station prints
+the word "now"; the phase is carried by the fill, by whether the top rule
+is drawn at all, and by the weight of the title -- never by wine alone.
+A single-stroke arrow joins adjacent stations. The rail does not slide;
+only the active station changes.
+
+Each station carries the description of what its phase does, set directly
+beneath the tab and flush with its left edge, wrapped to the tab's width.
+All three descriptions are on the page in every frame; the active one is
+ink and the other two are greyed. Nothing describing the operation is ever
+withheld -- the reader can see what all three phases do before the loop
+reaches them. There is no separate sentence under the tree.
+
+COMPONENT -- THE TREE (centre, shared geometry across frames)
+Circular root node labelled parent.label -- "R0 Input" -- with the
+derived "size = 1,200" under the name. The input node is constant: it
+never fades, dims, empties, or vacates its slot at any point in the loop.
+A predicate's two children are named for the answer to the condition,
+"Yes" and "No", not for the side of the threshold. Below it, three candidate cards in
+a fixed row, one per candidates[] entry, equal width, always in dictionary
+order.
+
+Each card shows:
+  condition row  one line carrying both the split and its score. On the
+                 left, the condition derived from the entry: a multi-way
+                 grain reads "Group by [<column>]"; a local predicate reads
+                 "[<column>] <op> <value>". On the right, flush with the
+                 card's right edge, the score as "Fitness = 0.41". Both in
+                 mono Semibold at the same size, so the row reads across as
+                 two peers rather than a label and a caption. The score is
+                 greyed until Evaluate; the condition never greys.
+  children       small rectangles named by id, each printing its size
+                 as "size = …"
+
+Grain and predicate are not distinguished. There is no kind token and no
+second colour: every card is drawn in the same white ground, the same
+#DEDEDE outline, and the same ink type, so the reader compares conditions
+rather than categories.
+
+Every count in the figure -- root and children alike -- is written
+"size = <n>". Do not overlay numbers on a shape that already carries a
+name; the id sits on its own line above the size.
+
+ANIMATION EFFECT
+A forward loop of three rest poses and three short transitions. No
+reverse playback, no bounce, no easing that overshoots. Title and subtitle
+stay still for the whole loop. The three candidate columns stay
+registered: layout does not jump; only state changes.
+
+Nothing in this figure appears, disappears, or moves. Every component --
+the input node, all three cards, every fitness score, and the children of
+the illustrated cut with the arrows that reach them -- is drawn in its
+final position in all six frames. A component that is not yet part of the
+story is greyed out, and a phase restores it to full ink; that is the only
+way anything changes state. The reader therefore sees the whole shape of
+the operation from the first frame and watches it fill in, rather than
+watching pieces arrive. Grey-out is #B6B5B2 for type and #DEDEDE for
+outlines and arrows, over the white card ground.
+
+Total cycle 5.6 s -- the sum of the six durations below -- then it repeats
+from phase 1. Restoring something from grey is given longer than greying it
+out again: the reader needs to notice a component arriving, and does not
+need to watch it leave.
+
+1. ENUMERATE -- rest 1400 ms
+   Station 1 is the active phase. R0 Input is solid, as it is throughout.
+   The three candidate cards are fully drawn. Every fitness score is
+   printed but greyed out, and so are the children of the illustrated cut
+   and their arrows. Ink sentence under the tree:
+     "List the cuts this leaf still allows."
+   No card is emphasized.
+
+2. TRANSITION A -- 400 ms  (Enumerate -> Evaluate)
+   Fitness labels and values restore from grey to ink on all three cards
+   together, same baseline, same weight. They do not count up, slide,
+   appear, or arrive one after another -- they were already on the page. The active phase hands over from station 1 to station 2;
+   the badges stay. The sentence under the tree cross-fades to the
+   Evaluate sentence.
+   One frame carries the whole transition, so both effects resolve to a
+   still: the two stations each hold the fill and the top rule at half
+   strength, which is what a handover looks like stopped; and the sentence
+   is the incoming one at partial opacity. Two sentences drawn over each
+   other on one baseline would be unreadable, so a cross-fade is never
+   encoded that way.
+
+3. EVALUATE -- rest 1600 ms
+   Station 2 is the active phase. Every candidate card shows its derived
+   fitness at full ink, labelled "fitness". Ink sentence:
+     "Score every listed cut. No mark is a choice."
+   Do not sort, dim, crown, star, or bold the highest fitness. All three
+   cards keep equal weight.
+
+4. TRANSITION B -- 500 ms  (Evaluate -> Split)
+   The illustrated_cut (g1) stays at full ink. The other two cards grey
+   out to dashed #DEDEDE outlines and secondary type; they stay in place
+   so the list is not rewritten. The three arrows below the g1 card and
+   the children R1, R2, R3 they point to restore from grey to wine; they
+   do not grow, slide, or appear. R0 Input is untouched. Each child sits
+   directly under its own listing in the card, separated from it by more
+   than the child's own width so the pairing reads without the two
+   colliding. The active phase hands over to station 3. The sentence
+   cross-fades to the Split sentence.
+
+5. SPLIT -- rest 1600 ms
+   Station 3 is the active phase. R0 Input is unchanged. R1, R2, R3 stand
+   at full ink as the new leaves, sizes derived. The two candidates that
+   were not illustrated stay greyed but fully legible.
+   Ink sentence:
+     "Apply one illustrated cut. The children become the next leaves."
+   Do not print "accepted", "best", "winner", or a rank.
+
+6. TRANSITION C -- 100 ms  (Split -> Enumerate, start of next loop)
+   The children and their arrows grey out again where they stand. The two
+   receded cards return to full ink. Fitness greys out together. R0 Input
+   is untouched, as always. The active phase returns to station 1. This is
+   a reset, not a reverse of Transition B: nothing plays backward, and
+   nothing moves in either direction.
+
+Redraw only the bounding box of what changed on transition frames.
+Do not blur the whole canvas. Encode the six steps as APNG frames in
+this order; hold the rest poses for the times above; give each
+transition its duration as the frame delay. Loop Frame 1 after
+Transition C. No extra interstitial frame.
+
+The raster carries no legend and no caption line. With grain and
+predicate drawn alike there is no encoding left to name, and the three
+ink sentences under the tree already say what each phase does.
+
+TYPE SCALE (base sizes at 1920 x 1080)
+Every size below is a base size. The renderer adds a +1pt bump to all of
+them, once, inside the font loader and at no call site, so the scale stays
+readable as one set of relative sizes.
+title 35 Bold . subtitle 17.5 . station titles 18 Bold .
+step badges mono 14 Semibold . node names 17 mono Semibold .
+counts mono 15 . condition row 15 mono Semibold, condition and
+"Fitness = <v>" alike . tab descriptions 13.5.
+
+KEEP OUT
+- No "best", "optimal", "recommended", "winner", crown, medal, or star.
+- No assignment of events to physical containers.
+- No Gini, Lorenz, skip-ratio formula, Poisson symbol, or auto-parts
+  brand names -- those belong to the continued example below this figure.
+- No production constant, cooling schedule, beam width, or code.
+- No distinction carried by colour alone.
+- No second tree, no search-history trail, no evaluation-budget meter
+  that implies a remaining-time recommendation.
+- No particle burst, bounce, elastic overshoot, or 3D flip.
+
+PRODUCTION
+Draw each frame at 3840 x 2160 and downsample once to 1920 x 1080 with
+LANCZOS. Encode as one APNG in dictionary order, looping, with the hold
+and transition times above. Load SFNS.ttf and SFNSMono.ttf from
+/System/Library/Fonts; select weight with set_variation_by_name and
+cache by (size, weight, mono). Apply the +1pt type bump in that loader
+alone, never at a call site. Use anchor= for text. Draw arrowheads as
+line glyphs, not Unicode.
+
+All geometry is generated from the instance dictionary. The three
+candidate columns stay registered across frames so only state, not
+layout, changes. Labels must clear arrow shafts by at least 20 source
+pixels. Fail the render on clipping, overlap, a child whose events do
+not sum to the parent, or a printed fitness that is not in the
+dictionary. After encoding, play the APNG and inspect every frame
+visually before acceptance. The raster has been rendered; acceptance is
+pending, so the section keeps its titled placeholder until then.

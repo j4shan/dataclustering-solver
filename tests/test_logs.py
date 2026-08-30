@@ -150,32 +150,6 @@ def test_configuring_twice_does_not_double_every_record(log_dir, capsys):
 # -- what a record may not carry ----------------------------------------------------
 
 
-def test_a_catalog_build_records_counts_and_not_expressions(
-    log_dir, capsys, tiny_dataset
-):
-    """10.3.7.2 — an expression is content, so only counts are kept.
-
-    The rule was written for expressions a reader typed into a browser. No reader can
-    type one now (12.4.2.5), but the catalogue's own chains still pass through the
-    generator, and a record that quoted them would put column expressions into a file
-    that is meant to describe the running rather than the run.
-    """
-    from simulator.bench import catalog, metrics
-
-    logs.configure("catalog")
-    metrics.DEFAULT_DIR = log_dir / "metrics"
-    catalog.build(
-        tiny_dataset,
-        definition=(catalog.Entry("as-1", "AS-1", ("brand_id",)),),
-        capacities=(100,),
-    )
-
-    written = capsys.readouterr().out
-    assert "catalog start" in written and "catalog done" in written
-    assert "entries=1" in written
-    assert "brand_id" not in written, "an expression is content, not an identifier"
-
-
 def test_the_timestamp_is_the_one_the_health_endpoint_publishes(log_dir):
     """10.3.7 — one clock and one format across the process's operational surface."""
     run_file = logs.configure("gui")

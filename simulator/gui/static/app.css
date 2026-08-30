@@ -130,25 +130,6 @@
   gap: var(--space-1);
 }
 
-.letter {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--control-height);
-  height: var(--control-height);
-  border-radius: var(--radius-checkbox);
-  background: var(--accent); /* decorative fill only — no text sits on it (12.7.1.4) */
-  color: var(--ink);
-  font-size: var(--text-body);
-  font-weight: 600;
-}
-
-.section-lede {
-  max-width: var(--measure);
-  margin: 0;
-  color: var(--ink-secondary);
-  line-height: var(--leading-prose);
-}
 
 /* -- The left/right split (12.1.1) ------------------------------------------------ */
 
@@ -170,14 +151,132 @@
   background: var(--card);
 }
 
-/* Prose set for sustained reading — a bounded measure and generous leading (12.1.9).
- * The formulation pane is the case, wherever it sits (Section A, right; Section C, left). */
-.pane:has(> .formulation) {
+/*
+ * A pane title sits above the mounted body so a replace of that body cannot wipe it.
+ * The pane itself stops scrolling; the body is what 12.1.2 bounds.
+ */
+.pane:has(> .pane-title) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pane-title {
+  flex: none;
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Problem Statement and Measuring Data Layout Fitness: terminology 30%, lower band 70% (12.3, 12.8). */
+.pane-stack.pane-right {
+  display: grid;
+  grid-template-rows: minmax(8rem, 30%) minmax(0, 70%);
+  gap: var(--space-3);
+  min-height: 0;
+}
+
+/* Prose set for sustained reading — generous leading (12.1.9).
+ * Default formulation keeps a character-width measure; Problem Statement's fills its pane
+ * (12.3) and is set one pixel larger than chrome (12.3). */
+.pane:has(.formulation) {
   line-height: var(--leading-prose);
 }
 
-.pane:has(> .formulation) > .formulation {
+.pane:has(> .formulation) > .formulation,
+.pane-body:has(> .formulation) > .formulation {
   max-width: var(--measure);
+}
+
+#problem .pane-left {
+  --text-body: 14px;
+  --text-small: 12px;
+  --text-heading: 18px;
+  --text-title: 23px;
+  font-size: var(--text-body);
+}
+
+#problem .pane-right {
+  font-size: calc(var(--text-body) + 1px);
+}
+
+#problem .pane-right h1 {
+  font-size: calc(var(--text-title) + 1px);
+}
+
+#problem .pane-right h2 {
+  font-size: calc(var(--text-heading) + 1px);
+}
+
+#problem .pane-right h3 {
+  font-size: calc(var(--text-body) + 1px);
+}
+
+#problem .pane-right :is(code, kbd, samp, pre) {
+  font-size: calc(var(--text-small) + 1px);
+}
+
+#problem .pane-right .formulation {
+  max-width: none;
+}
+
+/* Measuring Data Layout Fitness, Drawing Storage Boundary, and Go Live —
+ * one pixel above A's reading size on both panes; each walkthrough fills
+ * its pane (12.1.9, 12.8, 12.8, 12.9, 12.9, 12.5). */
+#gini .pane-left,
+#gini .pane-right,
+#knapsack .pane-left,
+#knapsack .pane-right,
+#design .pane-left,
+#design .pane-right {
+  --text-body: 15px;
+  --text-small: 13px;
+  --text-heading: 19px;
+  --text-title: 24px;
+  font-size: var(--text-body);
+}
+
+#gini .pane-left > .formulation,
+#knapsack .pane-left > .formulation,
+#design .pane-left > .formulation {
+  max-width: none;
+}
+
+#gini .formulation table,
+#knapsack .formulation table,
+#design .formulation table {
+  display: table;
+  width: 100%;
+}
+
+#gini .pane-left h1,
+#knapsack .pane-left h1,
+#design .pane-left h1 {
+  font-size: var(--text-title);
+}
+
+#gini .pane-left h2,
+#knapsack .pane-left h2,
+#design .pane-left h2 {
+  font-size: var(--text-heading);
+}
+
+#gini .pane-left h3 {
+  font-size: calc(var(--text-body) + 2px);
+}
+
+#gini .pane-left :is(code, kbd, samp, pre),
+#knapsack .pane-left :is(code, kbd, samp, pre),
+#design .pane-left :is(code, kbd, samp, pre) {
+  font-size: var(--text-small);
 }
 
 .empty {
@@ -203,6 +302,38 @@
   display: block;
   max-width: 100%;
   overflow-x: auto;
+}
+
+.glossary h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.glossary table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.glossary th,
+.glossary td {
+  padding: var(--space-half) var(--space-1);
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.glossary thead th {
+  background: var(--recessed);
+  font-weight: 600;
+}
+
+.glossary td:first-child {
+  font-weight: 600;
+  white-space: nowrap;
+  width: 28%;
 }
 
 /* -- Below the breakpoint (12.1.6, 12.1.7) --------------------------------------- */
@@ -234,6 +365,19 @@
     overflow: visible;
   }
 
+  .pane-stack.pane-right {
+    grid-template-rows: none;
+    height: auto;
+  }
+
+  .pane:has(> .pane-title) {
+    overflow: visible;
+  }
+
+  .pane-body {
+    overflow: visible;
+  }
+
   .top-bar {
     gap: var(--space-1);
     padding: 0 var(--space-2);
@@ -246,7 +390,7 @@
   }
 }
 
-/* -- Section A's mounted fragments ------------------------------------------------ */
+/* -- Problem Statement's mounted fragments ------------------------------------------------ */
 
 .formulation .toc {
   margin-bottom: var(--space-3);
@@ -256,9 +400,9 @@
 }
 
 /*
- * The list starts collapsed, and the whole summary row is the control (12.3.3).  A native
+ * The list starts collapsed, and the whole summary row is the control (12.3).  A native
  * `<details>` is the only disclosure this page can afford: no script runs in a mounted
- * fragment and no library is available to it (10.3.5, 13.3).  It renders closed, so the
+ * fragment and no library is available to it (10.3.5, 10.3.5).  It renders closed, so the
  * document itself is the first thing in the pane.
  */
 .formulation .toc summary {
@@ -303,7 +447,7 @@
 
 /* The two levels the contents list carries, stated as a pair: a section sits flush and a
    subsection is indented under it. The flush one is written out rather than left to the
-   default, so neither level is styled by omission (12.6.6). */
+   default, so neither level is styled by omission (12.6.5). */
 .formulation .toc .toc-h2 {
   margin-left: 0;
 }
@@ -337,13 +481,20 @@
   height: auto;
 }
 
+/* 12.8 — Measuring Data Layout Fitness labels stay at least 11px just above the split breakpoint. */
+#gini .illustration-stage svg,
+#gini .raster-illustration .illustration-stage img {
+  min-width: 640px;
+}
+
 /*
  * Editorial prose shared by the two authored illustration fragments.  The pane has no
- * `--measure` clamp of its own, so each prose beat sets its own (12.1.9, 12.3.5.1,
- * 12.5.3.2).
+ * `--measure` clamp of its own, so each prose beat sets its own (12.1.9, 12.3,
+ * 12.5).
  */
 .illustration-stack .illustration-lede,
 .editorial-lede,
+.cabinet-story,
 .closet-story,
 .editorial-bridge,
 .warehouse-walkthrough,
@@ -366,7 +517,7 @@
   font-weight: 600;
 }
 
-/* 12.3.5.2 — every illustration is announced to a sighted reader, not only to a screen
+/* 12.3 — every illustration is announced to a sighted reader, not only to a screen
    reader.  The heading size establishes the editorial sequence without asking 11px
    diagram annotations to carry it. */
 .illustration h3 {
@@ -385,6 +536,52 @@
   border: 1px solid var(--rule);
   border-radius: var(--radius-card);
   background: var(--ground);
+}
+
+.raster-illustration .illustration-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 12.1.10 — reusable zoom chrome, top-right of the figure stage. */
+.is-zoomable {
+  position: relative;
+}
+
+.zoom-widget {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  z-index: 1;
+  display: flex;
+  gap: var(--space-half);
+}
+
+.zoom-widget button {
+  box-sizing: border-box;
+  width: var(--control-height-small);
+  height: var(--control-height-small);
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--ink);
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1;
+  cursor: default;
+}
+
+.zoom-widget button:disabled {
+  color: var(--ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-zoomable img,
+  .is-zoomable svg {
+    transition: none;
+  }
 }
 
 .keyword-chip {
@@ -546,7 +743,7 @@
 }
 
 /* The wrapper the document pre-render emits around every collapsed figure pair
-   (12.3.8), which otherwise fell through to element styling alone. */
+   (12.3), which otherwise fell through to element styling alone. */
 .figure {
   margin: var(--space-3) 0;
 }
@@ -558,9 +755,9 @@
 
 /*
  * `\boxed` compiles to `<menclose>`, which MathML Core does not implement, so the rule is
- * drawn here instead — see `restore_math()` in `tools/render_formulation.py`, which tags
- * the element for exactly this. Without it the objective function, the one equation the
- * formulation boxes, renders as unremarkable body maths.
+ * drawn here instead. The committed formulation tags boxed maths with `is-boxed`.
+ * Without it the objective function, the one equation the formulation boxes, renders as
+ * unremarkable body maths.
  */
 .formulation math.is-boxed {
   padding: var(--space-1) var(--space-2);
@@ -580,659 +777,7 @@
   }
 }
 
-/* -- Section B: the strategy builder (12.4.2) ------------------------------------- */
-
-/*
- * The corpus, in prose and as a table definition, ahead of the controls that partition it.
- * Set like Section A's left pane rather than like a control: this is something to read.
- */
-.dataset-intro {
-  margin-bottom: var(--space-2);
-}
-
-.dataset-intro pre {
-  margin: 0;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-control);
-  background: var(--recessed);
-}
-
-.columns {
-  margin-bottom: var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-control);
-  background: var(--recessed);
-}
-
-.columns summary {
-  font-weight: 600;
-  cursor: default;
-}
-
-.column-list {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: var(--space-half) var(--space-2);
-  margin: var(--space-1) 0 0;
-}
-
-.column-name {
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-}
-
-.column-domain {
-  display: flex;
-  gap: var(--space-1);
-  margin: 0;
-  min-width: 0;
-  color: var(--ink-muted);
-  font-size: var(--text-small);
-}
-
-.column-family {
-  flex: none;
-  color: var(--ink-secondary);
-}
-
-.column-domain > span:last-child {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* -- The strategy catalogue (12.4.2) ---------------------------------------------- */
-
-.catalogue-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-1);
-}
-
-.catalogue-head h3 {
-  margin: 0;
-}
-
-.catalogue-hint,
-.note {
-  color: var(--ink-muted);
-  font-size: var(--text-small);
-}
-
-.note {
-  margin: var(--space-1) 0 0;
-}
-
-/* 12.4.2.4 — the framing sits with the list it frames, not in a footnote. */
-.fixture-note {
-  margin: 0 0 var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  border-left: 2px solid var(--ink-muted);
-  background: var(--recessed);
-  color: var(--ink-secondary);
-  font-size: var(--text-small);
-}
-
-.entry-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-/* The whole card is the control, so the target is the card and not a checkbox in it. */
-.entry-select {
-  display: block;
-  width: 100%;
-  padding: var(--space-2);
-  border-radius: var(--radius-control);
-  text-align: left;
-  white-space: normal;
-}
-
-/* Selection is marked by a check, a heavier border and weight — never colour alone
-   (12.6.2, 12.4.2.2). */
-.entry-select[aria-pressed="true"] {
-  border-color: var(--ink-secondary);
-  border-width: 2px;
-  background: var(--recessed);
-}
-
-.entry-select[aria-pressed="true"] .entry-label {
-  font-weight: 600;
-}
-
-.entry-select:disabled {
-  opacity: 0.5;
-}
-
-.entry-head {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-1);
-  margin-bottom: var(--space-1);
-}
-
-.entry-mark {
-  flex: none;
-  width: 1em;
-  font-weight: 700;
-}
-
-.entry-label {
-  font-size: var(--text-body);
-}
-
-/* The chain, one row per stage, with the splits right-aligned so a reader compares the
-   granularity of two entries down a column rather than across a sentence. */
-.entry-chain {
-  margin: 0 0 var(--space-1);
-  padding: 0 0 0 calc(1em + var(--space-1));
-  list-style: none;
-}
-
-.entry-stage {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-1);
-  padding: 2px 0;
-}
-
-.stage-expression {
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  overflow-wrap: anywhere;
-}
-
-.stage-splits {
-  flex: none;
-  color: var(--ink-muted);
-  font-size: var(--text-small);
-  font-variant-numeric: tabular-nums;
-}
-
-.entry-summary {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  padding-left: calc(1em + var(--space-1));
-  color: var(--ink-secondary);
-  font-size: var(--text-small);
-}
-
-.entry-leaves {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Capacity above, containers below, so the pairs read as a small table without being
-   one — the capacities are the same across entries and line up between cards. */
-.entry-capacities {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: auto auto;
-  gap: 0 var(--space-1);
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-.entry-capacities dt {
-  color: var(--ink-muted);
-}
-
-.entry-capacities dd {
-  margin: 0;
-}
-
-/* -- The report's own states (12.4.3.8) ------------------------------------------- */
-
-.problem {
-  margin: 0 0 var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-control);
-  border-left: 3px solid var(--ink-secondary);
-  background: var(--recessed);
-}
-
-.problem h3 {
-  margin-bottom: var(--space-half);
-}
-
-.problem p {
-  margin: 0 0 var(--space-half);
-  color: var(--ink-secondary);
-}
-
-.views {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-/* -- The report's three views (12.4.4 – 12.4.6) ----------------------------------- */
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.provenance {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-half) var(--space-1);
-  align-items: baseline;
-  margin: 0;
-  padding-bottom: var(--space-1);
-  border-bottom: 1px solid var(--rule);
-  font-size: var(--text-small);
-  color: var(--ink-secondary);
-}
-
-.provenance-label {
-  font-weight: 590;
-  color: var(--ink);
-}
-
-.provenance-id {
-  font-family: var(--font-mono);
-}
-
-.provenance-figure::before {
-  content: "· ";
-  color: var(--ink-muted);
-}
-
-.view {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-height: 0;
-}
-
-.view-heading {
-  margin: 0;
-  font-size: var(--text-heading);
-  line-height: var(--leading-tight);
-}
-
-.view-caption {
-  margin: 0;
-  max-width: var(--measure);
-  font-size: var(--text-small);
-  line-height: var(--leading-prose);
-  color: var(--ink-secondary);
-}
-
-/* -- P1, the process view (12.4.4) ------------------------------------------------- */
-
-.process {
-  margin-top: var(--space-1);
-}
-
-/*
- * The shared root is a bar the full width of the diagram, so every column's connector
- * drops straight out of it (12.4.4.1).  No horizontal joining line has to be positioned
- * against column centres, and the geometry stays correct at any column count.
- */
-.process-root {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-control);
-  background: var(--recessed);
-}
-
-.root-name {
-  font-weight: 590;
-}
-
-.root-count {
-  font-size: var(--text-small);
-  color: var(--ink-secondary);
-}
-
-.process-columns {
-  display: grid;
-  grid-template-columns: repeat(var(--column-count, 1), minmax(0, 1fr));
-  gap: var(--space-2);
-  /* Columns are ragged: a shorter chain simply ends higher (12.4.4.5). */
-  align-items: start;
-}
-
-.process-column {
-  position: relative;
-  padding-top: var(--space-3);
-  text-align: center;
-}
-
-/* The drop from the root bar into this column. */
-.process-column::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 1px;
-  height: var(--space-3);
-  background: var(--rule-strong);
-}
-
-.process-column-label {
-  margin-bottom: var(--space-1);
-  font-weight: 590;
-}
-
-.process-chain {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.process-stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stage-empty {
-  padding: var(--space-1);
-  font-size: var(--text-small);
-  color: var(--ink-muted);
-}
-
-.arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: var(--space-half) 0;
-}
-
-.arrow-line {
-  width: 1px;
-  height: var(--space-2);
-  background: var(--rule-strong);
-  position: relative;
-}
-
-.arrow-line::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: -3px;
-  border-left: 3.5px solid transparent;
-  border-right: 3.5px solid transparent;
-  border-top: 5px solid var(--rule-strong);
-}
-
-.arrow-label {
-  max-width: 100%;
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  line-height: var(--leading-tight);
-  color: var(--ink-secondary);
-  overflow-wrap: anywhere;
-}
-
-.stage-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 84px;
-  padding: var(--space-1);
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-control);
-  background: var(--ground);
-}
-
-.block-count {
-  font-variant-numeric: tabular-nums;
-  font-weight: 590;
-}
-
-.block-unit {
-  font-size: var(--text-small);
-  color: var(--ink-secondary);
-}
-
-/* -- P2, the summary table (12.4.5) ------------------------------------------------ */
-
-/* Thirteen columns do not fit a half-width pane, so the table scrolls inside itself
-   rather than making the page scroll sideways (12.1.7). */
-.table-scroller {
-  overflow-x: auto;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-control);
-}
-
-.summary {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-small);
-  font-variant-numeric: tabular-nums;
-}
-
-.summary th,
-.summary td {
-  padding: var(--space-half) var(--space-1);
-  border-bottom: 1px solid var(--rule);
-  text-align: right;
-  white-space: nowrap;
-}
-
-.summary thead th {
-  background: var(--recessed);
-  font-weight: 590;
-  vertical-align: bottom;
-}
-
-.summary .group {
-  border-bottom: 1px solid var(--rule-strong);
-  text-align: center;
-  letter-spacing: 0.02em;
-}
-
-.summary .set {
-  font-weight: 400;
-  color: var(--ink-secondary);
-}
-
-.summary .identity {
-  text-align: left;
-}
-
-.summary tbody .identity {
-  font-weight: 400;
-}
-
-.candidate-name {
-  display: block;
-  font-weight: 590;
-}
-
-.candidate-note {
-  display: block;
-  font-size: var(--text-small);
-  color: var(--ink-muted);
-}
-
-/* The held-out half is the one to read (5.12.6): the training column stays legible but
-   recedes, which is a weight difference and not a colour-only one (12.6.2). */
-.summary .set-training,
-.summary td.set-training {
-  color: var(--ink-secondary);
-}
-
-.summary td.set-validation {
-  font-weight: 590;
-}
-
-/* The baseline rows sit on top and are marked by a rule and a word, never by colour
-   alone (12.4.5.1, 12.6.2). */
-.summary .row-baseline td,
-.summary .row-baseline th {
-  background: var(--recessed);
-}
-
-.summary tr.row-baseline:last-of-type td,
-.summary tr.row-baseline:last-of-type th {
-  border-bottom: 2px solid var(--rule-strong);
-}
-
-/* -- P3, the paired scatter plots (12.4.6) ----------------------------------------- */
-
-.plot-pair {
-  display: grid;
-  /* Equal columns are what makes the shared X domain readable as a shared position
-     (12.4.6.1): the same container count lands at the same distance in both. */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2);
-}
-
-.plot-figure {
-  margin: 0;
-  min-width: 0;
-}
-
-/*
- * The plot never scales *up* past its own box, so its text is drawn at the user-unit
- * sizes below and never larger than the 11px `--text-small` those sizes shadow.  Below
- * that width it scales down with the pane, which is the same trade the figures in
- * Section A make.
- */
-.plot {
-  width: 100%;
-  max-width: 320px;
-  height: auto;
-  overflow: visible;
-}
-
-.plot-caption {
-  margin-top: var(--space-half);
-  font-size: var(--text-small);
-  font-weight: 590;
-  text-align: center;
-}
-
-.plot .gridline {
-  stroke: var(--rule);
-  stroke-width: 1;
-}
-
-/* Sizes are SVG user units, not screen pixels: at the plot's own width one unit is one
-   pixel, so these sit at and just under `--text-small` rather than beside it. */
-.plot .tick,
-.plot .axis-title {
-  fill: var(--ink-secondary);
-  font-family: var(--font-sans);
-  font-size: 10px;
-}
-
-.plot .axis-title {
-  fill: var(--ink);
-}
-
-.plot .point-label {
-  fill: var(--ink-muted);
-  font-family: var(--font-sans);
-  font-size: 9px;
-  font-variant-numeric: tabular-nums;
-}
-
-/* The baseline is a grey dashed reference, not a fifth candidate (12.4.6.5). */
-.plot .baseline-line {
-  fill: none;
-  stroke: var(--series-baseline);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 3;
-}
-
-.plot .baseline-mark {
-  fill: var(--series-baseline);
-}
-
-.plot .series-1 { --mark: var(--series-1); }
-.plot .series-2 { --mark: var(--series-2); }
-.plot .series-3 { --mark: var(--series-3); }
-.plot .series-4 { --mark: var(--series-4); }
-.legend-entry.series-1 { --mark: var(--series-1); }
-.legend-entry.series-2 { --mark: var(--series-2); }
-.legend-entry.series-3 { --mark: var(--series-3); }
-.legend-entry.series-4 { --mark: var(--series-4); }
-
-.plot .series .line {
-  fill: none;
-  stroke: var(--mark);
-  stroke-width: 1.5;
-}
-
-.plot .series .mark,
-.legend-swatch .mark {
-  fill: var(--mark);
-}
-
-/* Highlight adds emphasis and never information (12.4.6.7), so it is an opacity change
-   and nothing appears or disappears with it. */
-.plot .series,
-.legend-entry {
-  transition: opacity 0.12s var(--ease-default);
-}
-
-.plot .series.dimmed,
-.legend-entry.dimmed {
-  opacity: 0.25;
-}
-
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  margin-top: var(--space-1);
-}
-
-.legend-entry {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-half);
-  height: var(--control-height-small);
-  padding: 0 var(--space-1);
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-control);
-  background: var(--ground);
-  font-family: inherit;
-  font-size: var(--text-small);
-  color: var(--ink);
-  cursor: default;
-}
-
-.legend-entry[aria-pressed="true"] {
-  border-color: var(--ink-secondary);
-  font-weight: 590;
-}
-
-.legend-swatch {
-  width: 12px;
-  height: 12px;
-  flex: none;
-}
-
-/* At the page's one breakpoint the pair stacks rather than shrinking to unreadable
-   (12.1.6). The plots keep their shared width because they keep their shared box. */
-@media (max-width: 1000px) {
-  .plot-pair {
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-  }
-}
-
-/* -- Section C's diagrams (12.5.1, 12.5.3) ---------------------------------------- */
+/* -- Illustration stacks (12.5, 12.8, 12.9) -------------------------------------------------------------- */
 
 .illustration-stack {
   display: flex;
@@ -1252,12 +797,148 @@
   background: var(--rule);
 }
 
+.continued-example > h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.illustration-kicker {
+  margin: 0 0 var(--space-1);
+  max-width: var(--measure);
+  font-size: var(--text-small);
+  line-height: var(--leading-prose);
+  color: var(--ink-secondary);
+}
+
+.split-tree-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.split-tree {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.split-tree + .split-tree {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+.split-tree-heading,
+.split-tree-insight,
+.split-tree-score {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+  text-align: center;
+}
+
+.split-tree-heading,
+.split-tree-insight {
+  white-space: nowrap;
+}
+
+.split-tree-heading {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.split-tree-insight {
+  color: var(--ink-secondary);
+}
+
+.split-tree-score {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+#gini .illustration > .split-tree-insight {
+  margin-bottom: var(--space-2);
+}
+
+.split-gini-low,
+.split-gini-high {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+#gini .split-metrics {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.split-metrics th {
+  width: 6.5rem;
+  text-align: left;
+}
+
+.split-metrics td {
+  text-align: center;
+  white-space: nowrap;
+  padding-left: 0.15em;
+  padding-right: 0.15em;
+}
+
+.split-metrics .is-hot {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.split-metrics .is-cold {
+  color: var(--ink-secondary);
+}
+
+#gini .split-tree svg {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 6.5rem;
+}
+
+.split-sql-lead {
+  margin-top: var(--space-2);
+  max-width: none;
+}
+
+.split-sql {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2);
+  overflow-x: auto;
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+  background: var(--recessed);
+  border-radius: var(--radius-card);
+}
+
 .illustration figcaption {
   margin-top: var(--space-1);
   max-width: var(--measure);
   font-size: var(--text-small);
   line-height: var(--leading-prose);
   color: var(--ink-secondary);
+}
+
+#gini .lorenz-metrics {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin-top: var(--space-2);
+}
+
+.lorenz-metrics th {
+  text-align: left;
+}
+
+.lorenz-metrics td {
+  text-align: center;
 }
 
 .index-explanation {
@@ -1268,7 +949,7 @@
   line-height: var(--leading-prose);
 }
 
-/* 12.5.7 — event table and index table. `.pane table { display: block }` would
+/* 12.5 — event table and index table. `.pane table { display: block }` would
  * collapse the grid; these figures need real columns. */
 .illustration-stack table {
   display: table;

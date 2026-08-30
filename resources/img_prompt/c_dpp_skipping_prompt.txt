@@ -1,0 +1,162 @@
+OUTPUT
+One static PNG, 1920 x 1080, warm off-white ground, single light palette.
+Accepted path: resources/img/section_c_dpp_skipping.png.
+
+SUBJECT
+Spark Dynamic Partition Pruning on the index written in the ingestion
+figure. The figure teaches one mechanism: a multi-select query prescans
+the narrow index, collects a set of partition_id values, and Spark DPP
+broadcasts that set to each worker as a metadata filter that trims
+which cloud objects are downloaded. It is the illustration of Go Live
+on Databricks Lakehouse §2.6. It is not a query planner, a join
+diagram, or a measured runtime.
+
+STYLE
+Editorial flat 2D flow, left to right. A #F3F3F3 header band, 130px
+tall and closed by a 1px rule, carries the title block. No perspective,
+realism, 3D, shadows, gradients, UI chrome, dashboard widgets, server
+racks, or emojis. System-ui labels; ui-monospace for every identifier,
+column name, and cell. Rounded corners about 8px on cards and 6px on
+partition chips. 1px rules. Single-stroke directed arrows with an open
+arrowhead. A skipped cloud object uses a dashed outline; an activated
+one uses a solid wine-red outline.
+
+COLOURS
+Use the same explainer family as Sections A, D, and E:
+#FCFCFB canvas . #7A1F2B wine-red . #F8EEF0 warm-rose .
+#1B4D3E dark-green . #EEF4F0 cool-sage . #0B0B0B ink .
+#52514E secondary . #DEDEDE rules . #F3F3F3 header band .
+#FFFFFF card ground.
+Wine-red and warm-rose on the query, the matching index rows, the
+activated partition chips, the broadcast arrows, and the downloaded
+objects. Dark-green dashed stroke and cool-sage fill on skipped index
+rows and on trimmed cloud objects. Do not use orange. Colour is never
+the only state channel: activated objects also print "download";
+trimmed objects also print "skip".
+
+TITLE
+Visible title, 35 Bold ink, left-aligned in the header band:
+  Spark DPP skips from the index
+One subtitle, 17.5 secondary, under the title:
+  Prescan. Broadcast the activated partition_id set. Trim the download.
+
+THE INSTANCE (fixed -- do not vary)
+The same dictionary as
+resources/img_prompt/c_data_ingestion_prompt.txt. Do not invent a
+second corpus.
+
+stream = "brand sales"
+index_columns = ["brand_id", "pricing_tier", "partition_id"]
+records = [
+  {"record_id": "r01", "brand_id": "A", "pricing_tier": 1,
+   "sku": "brk-12", "amount": 40, "partition_id": "p1"},
+  {"record_id": "r02", "brand_id": "A", "pricing_tier": 2,
+   "sku": "flt-03", "amount": 18, "partition_id": "p2"},
+  {"record_id": "r03", "brand_id": "B", "pricing_tier": 1,
+   "sku": "brk-08", "amount": 55, "partition_id": "p3"},
+  {"record_id": "r04", "brand_id": "B", "pricing_tier": 2,
+   "sku": "tyr-21", "amount": 22, "partition_id": "p4"},
+]
+
+query = {
+  "text": "brand_id IN (A, B) AND pricing_tier = 1",
+  "kind": "multi-select",
+}
+
+workers = ["w1", "w2"]
+
+A row matches when its brand_id is A or B and its pricing_tier is 1.
+The event table is not drawn on this figure; the download target is
+the cloud object named by partition_id.
+
+DERIVATION
+  match(r)     = r["brand_id"] in {"A", "B"} and r["pricing_tier"] == 1
+  activated    = distinct partition_id of matching rows
+                 # {p1, p3}
+  trimmed      = distinct partition_id of records minus activated
+                 # {p2, p4}
+  index_row(r) = {k: r[k] for k in index_columns}
+
+Fail the render if activated is not exactly {p1, p3}, if trimmed is
+not exactly {p2, p4}, or if a worker receives a set other than
+activated.
+
+COMPOSITION
+Left to right, five stages on one baseline:
+
+1. Query. A chip labelled "query" with the exact text
+   brand_id IN (A, B) AND pricing_tier = 1
+   on one mono line. A small secondary line under it: "multi-select".
+
+2. Index prescan. The same four-row index table as the ingestion
+   figure: columns brand_id, pricing_tier, partition_id. Matching
+   rows (r01, r03) are outlined solid and tagged "match". The other
+   two rows are dashed and quiet. A stage title above the table:
+   "index table prescan".
+
+3. Activated set. A small card labelled "activated partition_id".
+   Two chips inside it: p1 and p3, in that order. No other
+   partition_id appears in this card.
+
+4. Broadcast. A rounded rectangle labelled "Spark DPP".
+   One secondary line: "metadata filter".
+   One arrow from the activated-set card into this box.
+   One arrow from this box to each worker, each tagged with the
+   set {p1, p3} written p1, p3.
+
+5. Workers and objects, stacked on the right.
+   Two worker rectangles, labelled w1 and w2. They are flat
+   labelled cards, not machines and not racks.
+   Under the workers, four cloud-object glyphs in a row, labelled
+   p1, p2, p3, p4.
+   p1 and p3: solid wine-red outline, warm-rose fill, word
+   "download" under the glyph.
+   p2 and p4: dashed dark-green outline, cool-sage fill, word
+   "skip" under the glyph.
+   A stage title above the glyphs: "cloud objects".
+
+The event table is absent. The objects stand for the files a worker
+would open.
+
+NO LEGEND AND NO CAPTION
+The cloud-object row is the last mark. The words "download" and
+"skip" sit on the glyphs. No caption line and no separate legend.
+
+TYPE SCALE (base sizes at 1920 x 1080)
+title 35 Bold . subtitle 17.5 . stage title 15 Semibold .
+query text 13 mono . table header 15 Semibold .
+column name 12.5 mono . cell 12 mono .
+chip 13 mono Semibold . worker name 15 mono Semibold .
+object word 12 secondary.
+
+KEEP OUT
+- No event table, no blob column, and no record_id on this figure.
+- No fifth partition and no third worker.
+- No server rack, cluster photo, executor UI, or Spark logo lockup.
+- No join tree, shuffle edge, or physical plan.
+- No wall-clock, DBU, or byte count.
+- No claim that skipped objects were opened, and no claim that
+  download equals selected rows. Activation is at partition grain.
+- No winning query, recommended predicate, or scored skip ratio.
+- No caption line.
+- No distinction carried by colour alone.
+- No second query.
+
+PRODUCTION
+Draw at 3840 x 2160 and downsample once to 1920 x 1080 with LANCZOS.
+Load SFNS.ttf and SFNSMono.ttf from /System/Library/Fonts; select
+weight with set_variation_by_name and cache by (size, weight, mono).
+Use anchor= for text. Draw arrowheads and object glyphs as line
+glyphs, not Unicode.
+
+The index table uses the same column widths as the ingestion figure
+so the two pages read as one family. Workers share size. Object
+glyphs share size and baseline. Labels must clear arrow shafts by
+at least 20 source pixels. Fail the render on clipping, overlap, a
+bare column name, an activated set other than p1 and p3, a worker
+arrow missing its set tag, a download mark on p2 or p4, a skip mark
+on p1 or p3, or a drawn machine. After rendering, read the PNG back
+and inspect it visually before acceptance. The PNG at the accepted
+path is rendered and accepted from this specification; the renderer
+that produced it is deleted with acceptance. A later visual change
+starts a new authoring pass.

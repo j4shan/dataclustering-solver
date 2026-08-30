@@ -1,9 +1,9 @@
 """The design tokens (12.7).
 
 The criterion for this stylesheet is that **no value is invented at implementation time**,
-so most of these tests read `ui-spec.md` §12.7 and check the CSS against it rather than
-against a second list written here.  A hardcoded expectation would be exactly the second
-source of truth 10.1.2 forbids: the specification is the authority, and the test's job is
+so most of these tests read the product spec §12.7 and check the CSS against it rather
+than against a second list written here.  A hardcoded expectation would be exactly the
+second source of truth: the product spec is the authority, and the test's job is
 to notice when the file drifts from it.
 """
 
@@ -14,9 +14,8 @@ import re
 import pytest
 
 from simulator.gui import STATIC_ROOT
-from simulator.report.charts import SERIES_LIGHT
 
-SPEC = STATIC_ROOT.parents[2] / "project_metadata" / "ui-spec.md"
+SPEC = STATIC_ROOT.parents[2] / "project_metadata" / "product_spec" / "simulator-spec.md"
 TOKENS = STATIC_ROOT / "tokens.css"
 
 HEX = re.compile(r"#[0-9A-Fa-f]{6}\b")
@@ -56,17 +55,10 @@ def test_every_colour_the_spec_fixes_is_in_the_stylesheet(css, design_tokens_sec
 def test_no_colour_in_the_stylesheet_was_invented(css, design_tokens_section):
     """The other direction, which is the one that catches drift.
 
-    A colour may be here only because §12.7 fixed it, or because it is a slot of the
-    validated report palette §12.7.1.6 defers to (9.4).
+    A colour may be in the stylesheet only because §12.7 fixed it.
     """
-    allowed = normalized(HEX.findall(design_tokens_section)) | normalized(SERIES_LIGHT)
+    allowed = normalized(HEX.findall(design_tokens_section))
     assert normalized(HEX.findall(css)) <= allowed
-
-
-def test_the_chart_series_stay_in_step_with_the_generated_report(css):
-    """12.7.1.6 — identity in data is one job, and one palette does it in both places."""
-    for slot, colour in enumerate(SERIES_LIGHT, start=1):
-        assert f"--series-{slot}: {colour};" in css
 
 
 def test_the_ground_and_the_recessed_plane_are_the_only_two_planes(css):
@@ -107,15 +99,14 @@ def test_the_platform_blue_never_carries_text(css):
 # -- metrics (12.7.3) ----------------------------------------------------------------
 
 
-# -- the spec is the authority (12.6.3.2) --------------------------------------------
+# -- the product spec is the authority -----------------------------------------------
 
 
 def test_the_stylesheet_records_every_value_the_spec_fixes(css, design_tokens_section):
-    """12.6.3.2 — one drift check, and not one assertion per value.
+    """One drift check, and not one assertion per value.
 
-    Most of §12.7 is typed `I`: a hex, a radius, a font stack and an easing curve are
-    replaceable, and **a restyle is not a spec violation**. A test naming any of them would
-    forbid what the spec permits. What must stay true is narrower — that the two never
+    §12.7 records the UI design tokens. A test naming any of them would duplicate
+    the product spec. What must stay true is narrower — that the two never
     disagree — so this reads whatever §12.7 currently records and looks for it in the
     stylesheet. Change a value in both and this passes; change it in one and it does not.
     """
@@ -125,7 +116,7 @@ def test_the_stylesheet_records_every_value_the_spec_fixes(css, design_tokens_se
         for value in quoted
         if re.fullmatch(r"#[0-9A-Fa-f]{6}|\d+px|cubic-bezier\([^)]*\)", value)
     ]
-    assert len(fixed) > 10, "the spec section stopped recording resolved values"
+    assert len(fixed) > 10, "the product spec section stopped recording resolved values"
 
     missing = [value for value in fixed if value.lower() not in css.lower()]
     assert not missing, f"§12.7 fixes values the stylesheet does not carry: {missing}"
@@ -139,18 +130,19 @@ def test_spacing_is_an_8pt_grid_with_a_4pt_sub_unit(css):
     assert all(int(step) % 8 == 0 for step in steps if int(step) != 4)
 
 
-# -- motion (12.7.4) -----------------------------------------------------------------
+# -- motion --------------------------------------------------------------------------
 
 
-def test_reduced_motion_leaves_the_spinner_visible(css):
-    """12.7.4.3 — it degrades to a static indicator rather than disappearing.
+def test_a_reader_who_asked_for_less_motion_is_shown_none(css):
+    """Every animation and transition is suppressed, and nothing is hidden instead.
 
-    An evaluation takes long enough to notice (12.2.4), so it still has to read as
-    running for a reader who asked for less motion.
+    Hiding is the failure this watches for: a reader who asked for less motion asked for
+    a still page, not a page missing part of itself.
     """
     reduced = css[css.index("prefers-reduced-motion") :]
-    assert "animation: none;" in reduced
-    assert "display: none" not in reduced.split("@media print")[0]
+    assert "animation-duration: 0.001ms !important;" in reduced
+    assert "transition-duration: 0.001ms !important;" in reduced
+    assert "display: none" not in reduced
 
 
 # -- focus (12.6.1.1) ----------------------------------------------------------------

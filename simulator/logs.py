@@ -11,7 +11,7 @@ themselves, printed.  Only events and errors become records.  Folding the two to
 would put a timestamp and a logger name in front of a prompt.
 
 **Records carry no reader-supplied content** (10.3.7.2).  Not a request body, not an
-expression, not a block name.  Identifiers and counts stand in, which keeps 12.2.7.1's rule
+expression, not a block name.  Identifiers and counts stand in, which keeps 12.2.7's rule
 that operational state is never a channel between readers, and removes log injection
 outright rather than escaping for it.
 
@@ -44,7 +44,7 @@ LINE = "%(asctime)s %(levelname)-7s %(name)-22s %(message)s"
 
 
 class _Formatter(logging.Formatter):
-    """Timestamps in the same UTC ISO-8601 the health endpoint publishes (12.2.9)."""
+    """Timestamps in UTC ISO-8601, one format across the whole operational record (10.3.7)."""
 
     def formatTime(self, record, datefmt=None) -> str:  # noqa: N802 - base class name
         moment = datetime.fromtimestamp(record.created, tz=timezone.utc)
@@ -83,7 +83,7 @@ def _unclaimed(directory: Path, name: str) -> Path:
 
 
 def configure(command: str = "", stream=None) -> Path:
-    """Attach the two handlers and return the run file.  Called once, from the CLI.
+    """Attach the handlers and return the run file.  Called once, from the CLI.
 
     Returns the path so the caller can print it as interface — telling a reader where the
     record went is a thing the command says to them, not a thing it logs.
@@ -102,12 +102,14 @@ def configure(command: str = "", stream=None) -> Path:
     to_file = logging.FileHandler(run_file, encoding="utf-8")
     to_file.setLevel(logging.DEBUG)
     to_file.setFormatter(_Formatter(LINE))
+    logger.addHandler(to_file)
 
+    # The file is a tee, not a replacement (10.3.7): the command is one a reader is
+    # watching, and moving errors somewhere they must go looking would make a failed
+    # run harder to read.
     to_stream = logging.StreamHandler(stream if stream is not None else sys.stdout)
     to_stream.setLevel(logging.INFO)
     to_stream.setFormatter(_Formatter(LINE))
-
-    logger.addHandler(to_file)
     logger.addHandler(to_stream)
 
     if command:

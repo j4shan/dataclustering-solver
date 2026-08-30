@@ -1,21 +1,25 @@
 /*
  * The application shell's behaviour (12.1).
  *
- * Plain modules, no framework and no build step (10.3.5, 13.3).  What this file does is
- * deliberately small: mount the pre-rendered fragments, and display the section the nav
- * selected.  Everything that computes a number lives behind the harness (12.6.4).
+ * Plain modules, no framework and no build step (10.3.5).  What this file does is
+ * deliberately small: mount the pane fragments, display the section the nav
+ * selected, and attach the figure-zoom widget to whatever those fragments drew.
+ * Everything that computes a number lives behind the harness (12.6.4).
  */
 
-/** Fetch a committed, pre-rendered fragment and put it in its pane.
+import { attachZoom } from "./figure-zoom.js";
+
+/** Fetch a committed fragment and put it in its pane.
  *
- * The fragments are pre-rendered ahead of serving (12.3.2), so this injects finished
- * HTML rather than parsing Markdown in the browser.  A failure leaves a message naming
- * the file, because a silently empty pane reads as a page that is still loading.
+ * Some fragments are pre-rendered from Markdown ahead of serving (12.3, 12.5);
+ * others are authored HTML. This injects finished HTML rather than parsing Markdown
+ * in the browser.  A failure leaves a message naming the file, because a silently
+ * empty pane reads as a page that is still loading.
  *
  * **This is the only place the page assigns HTML, and the rule that makes it safe is
- * 12.6.5.**  What it injects is a build artifact of this repository's own committed
- * Markdown, named by an authored `data-mount` attribute — never a path from the URL and
- * never anything a reader typed.  Everything that *did* come from a request — an
+ * 12.6.5.**  What it injects is a repository artifact named by an authored
+ * `data-mount` attribute — never a path from the URL and never anything a reader
+ * typed.  Everything that *did* come from a request — an
  * expression, a block name, a violation message — is written with `textContent` or
  * built as nodes, so no reader-supplied string is ever parsed as markup.
  */
@@ -24,6 +28,7 @@ async function mount(pane, url) {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`${response.status}`);
     pane.innerHTML = await response.text();
+    attachZoom(pane);
   } catch (failure) {
     pane.replaceChildren(element("p", "empty", `Could not load ${url} (${failure.message}).`));
   }

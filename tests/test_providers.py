@@ -1,6 +1,6 @@
 """The provider seam.
 
-The harness must be able to score a corpus it did not generate.  These tests are the
+The loader must be able to read a corpus it did not generate.  These tests are the
 only thing standing between that property and a well-meaning edit that reintroduces a
 generator's column name into ``core/``.
 """
@@ -15,11 +15,9 @@ import pytest
 
 from simulator.core import contract
 from simulator.core import dataset as dataset_module
-from simulator.core.evaluate import evaluate
-from simulator.core.layout import validate_and_compact
+from simulator.core import packed_support
 from simulator.providers import available, external, synthetic
 from simulator.providers.synthetic import DatasetConfig
-from simulator.strategies import build_view, get
 
 TINY = DatasetConfig(
     name="seam-corpus",
@@ -31,22 +29,37 @@ TINY = DatasetConfig(
 )
 
 
-def score(corpus) -> dict:
-    view = build_view(corpus, 100)
-    container_of_event, _ = validate_and_compact(
-        get("insertion_order")(view), corpus.event_count
-    )
-    return evaluate(corpus, container_of_event, 100)["validation"]
+def fingerprint(corpus) -> dict:
+    """Everything the contract promises a loader will see, whoever wrote the corpus.
+
+    Aggregated and sorted rather than compared row by row: the contract promises the
+    same corpus, not the same file order.
+    """
+    return {
+        "events": corpus.event_count,
+        "queries": corpus.query_count,
+        "compressed": int(corpus.compressed_bytes.sum()),
+        "decompressed": int(corpus.decompressed_bytes.sum()),
+        "selected_compressed": sorted(
+            corpus.selected_compressed_bytes_by_query.tolist()
+        ),
+        "selected_decompressed": sorted(
+            corpus.selected_decompressed_bytes_by_query.tolist()
+        ),
+        "demand_breadth": sorted(
+            packed_support.support_size(corpus.event_support).tolist()
+        ),
+    }
 
 
 def test_both_providers_are_registered():
     assert available() == ["external", "synthetic"]
 
 
-def test_external_round_trip_reproduces_every_kpi(tmp_path):
-    """Export three CSVs, re-ingest them as a stranger's corpus, score both.
+def test_external_round_trip_reproduces_the_corpus(tmp_path):
+    """Export three CSVs, re-ingest them as a stranger's corpus, read both.
 
-    If these disagree the harness is reading something the contract does not promise.
+    If these disagree the loader is reading something the contract does not promise.
     """
     generated = synthetic.generate(TINY, tmp_path / "generated")
 
@@ -57,8 +70,8 @@ def test_external_round_trip_reproduces_every_kpi(tmp_path):
 
     adopted = external.ingest(out_dir=tmp_path / "adopted", source=export)
 
-    direct = score(dataset_module.load(generated))
-    round_tripped = score(dataset_module.load(adopted))
+    direct = fingerprint(dataset_module.load(generated))
+    round_tripped = fingerprint(dataset_module.load(adopted))
     assert direct == round_tripped
 
 
@@ -107,12 +120,13 @@ def test_unfamiliar_columns_become_features_without_a_code_change(tmp_path):
 
     assert set(corpus.features) == {"part_family", "list_price_band"}
     assert corpus.compressed_bytes.sum() > 0
-    # String keys survive as provenance, hidden from strategies behind the underscore.
+    # String keys survive as provenance, hidden behind the underscore rather than
+    # offered as a feature.
     assert corpus.hidden_event_columns["_source_record_key"][0].startswith("evt-")
-    assert not any(name.startswith("_") for name in build_view(corpus, 100).features)
+    assert not any(name.startswith("_") for name in corpus.features)
 
-    # And the whole pipeline runs on it.
-    assert score(corpus)["waste_bytes"] >= 0
+    # And the loader reads the whole corpus off it.
+    assert fingerprint(corpus)["events"] == 400
 
 
 def test_size_columns_must_carry_the_blob_prefix(tmp_path):

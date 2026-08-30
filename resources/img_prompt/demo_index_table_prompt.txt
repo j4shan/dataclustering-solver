@@ -1,0 +1,162 @@
+OUTPUT
+One looping APNG, 1920 × 1080. Not a static PNG. Not a JPEG. 15 frames, uniform
+120 ms delay, period 1.8 s, linear, infinite play (num_plays = 0). The last frame
+is pixel-identical to the first, so the loop closes seamlessly. Only the three
+arrow shafts move; tables, titles, labels, Blob dots and all arrowheads are
+identical on every frame. File extension stays .png.
+
+STYLE
+Editorial flat 2D vector diagram, landscape 16:9, warm off-white canvas #FCFCFB.
+No photorealism, 3D, UI chrome, shadows, gradients, or emojis. System-ui labels;
+ui-monospace table cells. Rounded corners ~6px on bands, ~10px on the card.
+
+COLOURS
+#FCFCFB canvas · #7A1F2B wine-red (activated stroke, selected Feature_B, arrows,
+flow) · #F8EEF0 warm-rose (activated fill) · #1B4D3E dark-green (idle stroke
+dashed, idle type) · #EEF4F0 cool-sage (idle fill) · #0B0B0B ink · #52514E
+secondary · #DEDEDE rules · #F3F3F3 header · #FFFFFF card ground.
+Do not use orange.
+
+TITLE
+Top left: "Predicate-to-container resolution"          34px Bold, ink
+Subtitle: "Scan the narrow index. Collect container_ids. FETCH only those
+containers — Blob included."                            16.5px, secondary
+
+SECTION TITLES
+Three bold black labels, 17px Bold, ink, each left-aligned to the element it
+names and sitting directly above it:
+  "Query"        above the query chip
+  "Index Table"  above the index table
+  "Event Table"  above the event table
+The Index Table title must clear the Arrow 1 descent by at least 20px.
+
+OVERALL LAYOUT (left → right)
+1. Query chip, below the "Query" title, hanging in the left margin.
+2. Index table (narrow; 42% the width of the event table).
+3. Middle card: containers to FETCH — floats in the gap, ≥18px clear of both
+   tables, and vertically between the two container arrows.
+4. Event table (wide; Blob is the widest column, 2.5× Features).
+Both tables share one header baseline and one band grid, so C1–C4 line up across
+the gap. Captions sit on a common baseline under both tables:
+  under index: "Index table I  ·  one row per event  ·  scanned in full"
+  under event: "Event table (main store)  ·  FETCH(c) returns every row in c,
+                including Blob"
+
+QUERY
+Wine-red-stroke pill (2px), warm-rose fill, full-round ends, 14px Medium wine:
+  query q   ·   Feature_B IN (β1, β2)
+
+INDEX TABLE
+Headers: Feature_A | Feature_B | Feature_C | Container_ID | Event_ID
+12 rows, 4 bands of 3, 4px gap between bands, left gutter badges C1–C4 (small
+rounded rects in the band's own colours, mono 13px).
+
+C1 ACTIVATED — warm-rose fill, solid 2px wine-red
+  fa1 β1 γ2 C1 e01
+  fa2 β1 γ1 C1 e02
+  fa1 β2 γ3 C1 e03
+  Feature_B cells β1, β1, β2: wine-red rounded fill, white type.
+
+C2 IDLE — cool-sage fill, dashed 2px dark-green
+  fa2 β3 γ1 C2 e04
+  fa1 β3 γ2 C2 e05
+  fa2 β4 γ1 C2 e06
+  Feature_B stays dark-green.
+
+C3 ACTIVATED — same as C1
+  fa1 β2 γ3 C3 e07
+  fa2 β1 γ2 C3 e08
+  fa1 β2 γ1 C3 e09
+  Feature_B cells wine-red fill, white type.
+
+C4 IDLE — same as C2
+  fa2 β4 γ2 C4 e10
+  fa1 β3 γ3 C4 e11
+  fa2 β4 γ1 C4 e12
+
+Feature_A and Feature_C: secondary ink. Container_ID: wine in activated bands,
+dark-green in idle bands. Event_ID: ink. Exactly 6 wine-red Feature_B cells, in
+C1 and C3 only. Column and row separators inside a band are 1px, drawn as the
+band fill blended ~13% toward its own stroke colour — barely-there structure.
+
+MIDDLE CARD (between the tables; not an arrow target)
+White ground, 1px #DEDEDE border, ~192px wide.
+  "containers to FETCH"                      13px Semibold, secondary, tracked
+  chips C1 and C3                            wine stroke, rose fill, mono 16px
+  "2 of 4 containers  ·  6 of 12 events"     12.5px, secondary
+
+EVENT TABLE
+Headers: Container_ID | Event_ID | Features | Blob
+Features and Blob carry an 11px sub-label under the name:
+  Features → "narrow  ·  all filter columns"
+  Blob     → "wide  ·  all data columns"
+Same 12 Event_IDs and container bands as the index.
+
+Each band opens with a full-width status strip (~24px) carrying a tracked
+11.5px Semibold label in the band's stroke colour, then its 3 rows:
+  C1, C3: warm-rose, solid wine-red, "ACTIVATED — fetched"
+  C2, C4: cool-sage, dashed dark-green, "IDLE — skipped"
+
+Features: narrow abstract group; each cell is 3 tiny unlabeled vertical ticks,
+band stroke colour at ~45–50%.
+Blob: wide abstract column; every cell is a Dots Grid (3px dots, 6px pitch).
+  Activated Blob: warm-rose ground, wine-red dots ~35% opacity.
+  Idle Blob: cool-sage ground, dark-green dots ~25% opacity.
+  No numbers or icons in Blob.
+
+Under the table: "Late materialization: Blob is read only for C1 and C3. Index
+scan cost is 12 narrow rows; main-table cost is 6 wide rows."
+
+ARROWS
+Exactly three wine-red 2px shafts, each with a planted arrowhead. Flow LEFT →
+RIGHT. Shaft: dash 10px, gap 8px. Chevrons slide along the shaft toward the
+arrowhead, 2.6px stroke, with a soft wine glow behind them; chevrons may glow,
+tables must not. One dash-cycle per 1.8s, linear, infinite, no reverse.
+Arrowheads do not move. Chevrons stop ~14px short of the arrowhead and reappear
+at the shaft's start, advancing exactly one spacing per period so the cycle
+closes on itself.
+
+Arrow 1 — query predicate → index Feature_B      4 chevrons
+  Origin: the chip text "IN (β1, β2)", just off the pill's right edge.
+  Path: a shallow cubic that runs right, then turns down.
+  Destination: the INDEX TABLE Feature_B column header, arrowhead pointing down
+  onto the header's top edge. Arrowhead on that header only.
+  Must not point at the "containers to FETCH" card, any Container_ID cell, or
+  the event table.
+
+Arrow 2 — index C1 → event C1                     5 chevrons
+  Straight horizontal, from the right edge of index band C1 to the left edge of
+  event band C1, at the band's vertical centre.
+
+Arrow 3 — index C3 → event C3                     5 chevrons
+  Same construction at band C3. Same speed and dash phase as Arrow 2.
+
+No arrows to C2 or C4. No fourth arrow. The FETCH card sits in the vertical
+window between Arrow 2 and Arrow 3 with ≥25px clearance from each.
+
+LEGEND (bottom, one row, left-aligned, 13.5px secondary)
+1. Wine-red solid rounded-rect + warm-rose — activated / fetched
+2. Dark-green dashed rounded-rect + cool-sage — idle / skipped
+3. Wine-red pill "β1 / β2" (white mono 13px) — Feature_B values that match
+4. Dots-grid cell — Blob
+5. Wine-red dashed shaft + chevron + arrowhead — flow, left → right
+
+FOOTNOTE (14px, secondary)
+"The index is scanned in full. Only Feature_B is evaluated. Container_ID values
+from matching rows are the FETCH set. No secondary structure skips part of the
+index scan."
+
+TYPE SCALE (px at 1920 × 1080)
+title 34 Bold · subtitle 16.5 · section titles 17 Bold · query chip 14 Medium ·
+column headers 12.5 Semibold · header sub-labels 11 · table cells mono 14 ·
+gutter badges mono 13 · band status labels 11.5 Semibold · card title 13
+Semibold / chips mono 16 / count 12.5 · table captions 13.5 · legend 13.5 ·
+footnote 14.
+
+PRODUCTION
+Render each frame at 2× and downsample (LANCZOS) so small type and the 3px Blob
+dots stay clean. Draw the static scene once and redraw only the shafts per
+frame, so the frames differ in the arrow region alone and APNG inter-frame
+deltas keep the file near 1.2 MB. Every header name must clear its column, the
+card must keep ≥18px from both tables, and the event table must stay on canvas —
+fail the render rather than clip.

@@ -1,0 +1,586 @@
+<!--
+  Measuring Data Layout Fitness, right-column figures (12.8): an APNG
+  of one abstracted split step, then one continued Gini example. The
+  Lorenz beat is inequality language only. The warehouse beats are an
+  authored pedagogical partition of the simulator's auto-parts sales
+  corpus, and they print group count, weighted Gini,
+  and Gini per group (G/k). Numbers are authored instance arithmetic,
+  not a measurement (12.6.4). No state is carried by colour alone
+  (12.6.2).
+
+  Inline SVG plus one committed raster; wine / rose / forest / sage
+  explainer family from the Problem Statement illustration prompts, no
+  diagramming library (10.3.5).
+-->
+<div class="illustration-stack">
+  <figure class="illustration raster-illustration" id="D.tree-split-cycle" aria-labelledby="d-tree-split-cycle-title">
+    <h3 id="d-tree-split-cycle-title">Recursive Partitioning with a Decision Tree</h3>
+    <div class="illustration-stage">
+      <img
+        src="figures/img/section_gini_tree_split_cycle.png"
+        alt="A looping diagram of one parent leaf. Three candidate cuts are listed and scored, then the parent is replaced by the children of the illustrated cut."
+      />
+    </div>
+    <figcaption>
+      One abstracted cycle at a leaf: list candidate cuts, score each cut,
+      replace the leaf with the children of the illustrated cut.
+    </figcaption>
+  </figure>
+
+  <hr class="illustration-rule"/>
+
+  <div class="continued-example">
+  <h2 id="gini-example-title">Exploring a Data Tree with Gini</h2>
+  <figure class="illustration" id="D.lorenz-wealth">
+    <h3>Comparing Inequality with Lorenz Curves</h3>
+    <div class="illustration-stage">
+      <svg viewBox="0 0 760 370" role="img"
+           aria-labelledby="d-lorenz-title d-lorenz-desc"
+           xmlns="http://www.w3.org/2000/svg"
+           font-family="var(--font-sans, -apple-system, BlinkMacSystemFont, system-ui, sans-serif)">
+        <title id="d-lorenz-title">Comparing Inequality with Lorenz Curves</title>
+        <desc id="d-lorenz-desc">
+          Two aligned connected-scatter plots of six neighborhoods N1 to N6
+          ordered poorest to richest. The vertical axis is percent of wealth.
+          Marker width is cohort size; an opaque dashed stem joins the
+          marker to its point. The left path is a perfectly equal
+          distribution, G equals zero. The right path is a distribution in
+          which the top 10 percent of residents control 90 percent of the
+          wealth; the area between that envelope and the horizontal axis is
+          a light grey hatch, and G equals 0.8112.
+        </desc>
+        <defs>
+          <pattern id="d-lorenz-hatch" width="8" height="8"
+                   patternUnits="userSpaceOnUse"
+                   patternTransform="rotate(45)">
+            <rect width="8" height="8" fill="#FCFCFB"/>
+            <line x1="0" y1="0" x2="0" y2="8"
+                  stroke="#DEDEDE" stroke-width="3"/>
+          </pattern>
+        </defs>
+
+        <!--
+          Six neighborhoods, poorest to richest. Cohort widths (population
+          share): 24, 20, 18, 16, 12, 10. The last cohort is the top 10% of
+          residents. Left wealth shares equal those widths. Right wealth
+          shares: 2, 2, 2, 2, 2, 90.
+          Plot boxes are 240×240. Left origin (90, 300); right (460, 300).
+        -->
+
+        <text x="210" y="28" text-anchor="middle" font-size="15"
+              fill="#0B0B0B">A perfectly equal distribution.</text>
+        <text x="580" y="28" text-anchor="middle" font-size="15"
+              fill="#0B0B0B">The top 10% controls 90% of the wealth.</text>
+
+        <!-- left plot -->
+        <rect x="90" y="60" width="240" height="240" fill="#FCFCFB"
+              stroke="#DEDEDE"/>
+        <line x1="90" y1="300" x2="330" y2="60"
+              stroke="#52514E" stroke-dasharray="5 4" stroke-width="1.4"/>
+        <polyline points="90,300 147.6,242.4 195.6,194.4 238.8,151.2 277.2,112.8 306.0,84.0 330.0,60.0"
+                  fill="none" stroke="#1B4D3E" stroke-width="2.4"/>
+        <g stroke="#0B0B0B" stroke-width="1.5" stroke-dasharray="3 3"
+           fill="none">
+          <line x1="147.6" y1="300" x2="147.6" y2="242.4"/>
+          <line x1="195.6" y1="300" x2="195.6" y2="194.4"/>
+          <line x1="238.8" y1="300" x2="238.8" y2="151.2"/>
+          <line x1="277.2" y1="300" x2="277.2" y2="112.8"/>
+          <line x1="306.0" y1="300" x2="306.0" y2="84.0"/>
+          <line x1="330.0" y1="300" x2="330.0" y2="60.0"/>
+        </g>
+        <g fill="#1B4D3E" stroke="#FFFFFF" stroke-width="1.4">
+          <circle cx="147.6" cy="242.4" r="5"/>
+          <circle cx="195.6" cy="194.4" r="5"/>
+          <circle cx="238.8" cy="151.2" r="5"/>
+          <circle cx="277.2" cy="112.8" r="5"/>
+          <circle cx="306.0" cy="84.0" r="5"/>
+          <circle cx="330.0" cy="60.0" r="5"/>
+        </g>
+        <line x1="90" y1="300" x2="330" y2="300"
+              stroke="#0B0B0B" stroke-width="1.4"/>
+        <line x1="90" y1="300" x2="90" y2="60"
+              stroke="#0B0B0B" stroke-width="1.4"/>
+        <g fill="#0B0B0B">
+          <rect x="91.2" y="303" width="55.2" height="6" rx="1"/>
+          <rect x="148.8" y="303" width="45.6" height="6" rx="1"/>
+          <rect x="196.8" y="303" width="40.8" height="6" rx="1"/>
+          <rect x="240.0" y="303" width="36.0" height="6" rx="1"/>
+          <rect x="278.4" y="303" width="26.4" height="6" rx="1"/>
+          <rect x="307.2" y="303" width="21.6" height="6" rx="1"/>
+          <rect x="145.6" y="301" width="4" height="4"/>
+          <rect x="193.6" y="301" width="4" height="4"/>
+          <rect x="236.8" y="301" width="4" height="4"/>
+          <rect x="275.2" y="301" width="4" height="4"/>
+          <rect x="304.0" y="301" width="4" height="4"/>
+          <rect x="328.0" y="301" width="4" height="4"/>
+        </g>
+        <g font-size="14" fill="#52514E">
+          <text x="82" y="304" text-anchor="end">0%</text>
+          <text x="82" y="184" text-anchor="end">50%</text>
+          <text x="82" y="64" text-anchor="end">100%</text>
+        </g>
+        <text x="22" y="180" text-anchor="middle" font-size="15"
+              fill="#52514E"
+              transform="rotate(-90 22 180)">% of wealth</text>
+        <g font-size="11" fill="#52514E" text-anchor="middle">
+          <text x="118.8" y="328">N1</text>
+          <text x="171.6" y="328">N2</text>
+          <text x="217.2" y="328">N3</text>
+          <text x="258.0" y="328">N4</text>
+          <text x="291.6" y="328">N5</text>
+          <text x="318.0" y="328">N6</text>
+        </g>
+        <text x="210" y="354" text-anchor="middle" font-size="16"
+              fill="#1B4D3E">G = 0</text>
+
+        <!-- right plot -->
+        <rect x="460" y="60" width="240" height="240" fill="#FCFCFB"
+              stroke="#DEDEDE"/>
+        <polygon points="460,300 517.6,295.2 565.6,290.4 608.8,285.6 647.2,280.8 676.0,276.0 700.0,60.0 700,300"
+                 fill="url(#d-lorenz-hatch)"/>
+        <line x1="460" y1="300" x2="700" y2="60"
+              stroke="#52514E" stroke-dasharray="5 4" stroke-width="1.4"/>
+        <polyline points="460,300 517.6,295.2 565.6,290.4 608.8,285.6 647.2,280.8 676.0,276.0 700.0,60.0"
+                  fill="none" stroke="#7A1F2B" stroke-width="2.4"/>
+        <g stroke="#0B0B0B" stroke-width="1.5" stroke-dasharray="3 3"
+           fill="none">
+          <line x1="517.6" y1="300" x2="517.6" y2="295.2"/>
+          <line x1="565.6" y1="300" x2="565.6" y2="290.4"/>
+          <line x1="608.8" y1="300" x2="608.8" y2="285.6"/>
+          <line x1="647.2" y1="300" x2="647.2" y2="280.8"/>
+          <line x1="676.0" y1="300" x2="676.0" y2="276.0"/>
+          <line x1="700.0" y1="300" x2="700.0" y2="60.0"/>
+        </g>
+        <g fill="#7A1F2B" stroke="#FFFFFF" stroke-width="1.4">
+          <circle cx="517.6" cy="295.2" r="5"/>
+          <circle cx="565.6" cy="290.4" r="5"/>
+          <circle cx="608.8" cy="285.6" r="5"/>
+          <circle cx="647.2" cy="280.8" r="5"/>
+          <circle cx="676.0" cy="276.0" r="5"/>
+          <circle cx="700.0" cy="60.0" r="5"/>
+        </g>
+        <line x1="460" y1="300" x2="700" y2="300"
+              stroke="#0B0B0B" stroke-width="1.4"/>
+        <line x1="460" y1="300" x2="460" y2="60"
+              stroke="#0B0B0B" stroke-width="1.4"/>
+        <g fill="#0B0B0B">
+          <rect x="461.2" y="303" width="55.2" height="6" rx="1"/>
+          <rect x="518.8" y="303" width="45.6" height="6" rx="1"/>
+          <rect x="566.8" y="303" width="40.8" height="6" rx="1"/>
+          <rect x="610.0" y="303" width="36.0" height="6" rx="1"/>
+          <rect x="648.4" y="303" width="26.4" height="6" rx="1"/>
+          <rect x="677.2" y="303" width="21.6" height="6" rx="1"/>
+          <rect x="515.6" y="301" width="4" height="4"/>
+          <rect x="563.6" y="301" width="4" height="4"/>
+          <rect x="606.8" y="301" width="4" height="4"/>
+          <rect x="645.2" y="301" width="4" height="4"/>
+          <rect x="674.0" y="301" width="4" height="4"/>
+          <rect x="698.0" y="301" width="4" height="4"/>
+        </g>
+        <g font-size="14" fill="#52514E">
+          <text x="452" y="304" text-anchor="end">0%</text>
+          <text x="452" y="184" text-anchor="end">50%</text>
+          <text x="452" y="64" text-anchor="end">100%</text>
+        </g>
+        <text x="392" y="180" text-anchor="middle" font-size="15"
+              fill="#52514E"
+              transform="rotate(-90 392 180)">% of wealth</text>
+        <g font-size="11" fill="#52514E" text-anchor="middle">
+          <text x="488.8" y="328">N1</text>
+          <text x="541.6" y="328">N2</text>
+          <text x="587.2" y="328">N3</text>
+          <text x="628.0" y="328">N4</text>
+          <text x="661.6" y="328">N5</text>
+          <text x="688.0" y="328">N6</text>
+        </g>
+        <text x="580" y="354" text-anchor="middle" font-size="16"
+              fill="#7A1F2B">G = 0.8112</text>
+      </svg>
+      <table class="lorenz-metrics">
+        <thead>
+          <tr>
+            <th scope="col">Neighbour</th>
+            <th scope="col">N1</th>
+            <th scope="col">N2</th>
+            <th scope="col">N3</th>
+            <th scope="col">N4</th>
+            <th scope="col">N5</th>
+            <th scope="col">N6</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Neighbour population %</th>
+            <td>24</td>
+            <td>20</td>
+            <td>18</td>
+            <td>16</td>
+            <td>12</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <th scope="row">Cumulative wealth %</th>
+            <td>2</td>
+            <td>4</td>
+            <td>6</td>
+            <td>8</td>
+            <td>10</td>
+            <td>100</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption>
+      Six neighborhoods, poorest to richest. Marker width is how many
+      residents live there. When every neighborhood’s wealth share matches
+      that width, the path follows equality and G is zero. When the
+      narrowest tenth of residents holds nine tenths of the wealth, the
+      path bows and G is 0.8112.
+    </figcaption>
+  </figure>
+
+  <hr class="illustration-rule"/>
+
+  <figure class="illustration" id="D.split-comparison">
+    <h3>Evaluating Weighted Gini Across Data Splits</h3>
+    <p class="illustration-kicker">Wealth is query selection rate: how often a stored sale is fetched, not the sale amount.</p>
+    <div class="illustration-stage">
+      <!--
+        Authored pedagogical partition of the simulator's auto-parts corpus
+        (not a live measurement). Population shares follow the provider's
+        category mix and brand long tail. Selection wealth is used_count
+        as query selection rate. Category is not in the demand curve, so
+        density stays near 1. Brand is the demand driver, so a few
+        tenants run hot and the remaining 35 run cold.
+        Category (n%, U%): brakes 14/15, filters 13/14, batteries 11/12,
+        tires 10/10, belts_and_hoses 7/7, other 9 categories 45/42.
+        Brand (n%, U%): A 8/22, B 7/18, C 7/8, D 6/14, E 6/5,
+        rest combined (35) tenants 66/33.
+        Drawn leaves k=6. Displayed G is 0.04 and 0.38; G/k is G/6.
+      -->
+      <div class="split-tree-pair">
+        <div class="split-tree">
+          <p class="split-tree-heading">Split by product category</p>
+          <p class="split-tree-score">6 groups · G = 0.04 · G/k = 0.007</p>
+          <p class="split-tree-insight">density nearly even · <strong class="split-gini-low">low G</strong></p>
+          <svg viewBox="0 0 360 168" role="img"
+               aria-labelledby="d-split-title d-split-desc"
+               xmlns="http://www.w3.org/2000/svg"
+               font-family="var(--font-sans, -apple-system, BlinkMacSystemFont, system-ui, sans-serif)">
+            <title id="d-split-title">Evaluating Weighted Gini Across Data Splits</title>
+            <desc id="d-split-desc">
+              Two one-level splits of the auto-parts sales corpus. Each tree
+              has a circular root labelled Original Data and a row of
+              rectangular subsets. A sentence names the cut; a one-line
+              insight sits under that sentence. Leaf metrics sit in a table
+              whose first column names the metric. Split by product category
+              is nearly even in density, G equals 0.04, Gini per group
+              equals 0.007. Split by tenant brand concentrates selection
+              on a few tenants, G equals 0.38, Gini per group equals 0.063;
+              the long tail is dashed as a cold group.
+            </desc>
+            <defs>
+              <marker id="d-split-arrow-cat" viewBox="0 0 10 10" refX="9" refY="5"
+                      markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M1 1 L9 5 L1 9" fill="none"
+                      stroke="#52514E" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <circle cx="180" cy="38" r="30" fill="#F3F3F3" stroke="#0B0B0B"/>
+            <text text-anchor="middle" font-size="11" fill="#0B0B0B">
+              <tspan x="180" y="35">Original</tspan>
+              <tspan x="180" y="48">Data</tspan>
+            </text>
+            <line x1="180" y1="68" x2="180" y2="88"
+                  stroke="#52514E" stroke-width="1.4"
+                  marker-end="url(#d-split-arrow-cat)"/>
+            <line x1="40" y1="96" x2="320" y2="96" stroke="#52514E"/>
+            <g stroke="#52514E" stroke-width="1.3"
+               marker-end="url(#d-split-arrow-cat)">
+              <line x1="40" y1="96" x2="40" y2="114"/>
+              <line x1="96" y1="96" x2="96" y2="114"/>
+              <line x1="152" y1="96" x2="152" y2="114"/>
+              <line x1="208" y1="96" x2="208" y2="114"/>
+              <line x1="264" y1="96" x2="264" y2="114"/>
+              <line x1="320" y1="96" x2="320" y2="114"/>
+            </g>
+            <rect x="15" y="116" width="50" height="28" rx="3"
+                  fill="#FFFFFF" stroke="#52514E"/>
+            <rect x="71" y="116" width="50" height="28" rx="3"
+                  fill="#FFFFFF" stroke="#52514E"/>
+            <rect x="127" y="116" width="50" height="28" rx="3"
+                  fill="#FFFFFF" stroke="#52514E"/>
+            <rect x="183" y="116" width="50" height="28" rx="3"
+                  fill="#FFFFFF" stroke="#52514E"/>
+            <rect x="239" y="116" width="50" height="28" rx="3"
+                  fill="#FFFFFF" stroke="#52514E"/>
+            <rect x="295" y="116" width="50" height="28" rx="3"
+                  fill="#EEF4F0" stroke="#1B4D3E" stroke-dasharray="4 3"/>
+          </svg>
+          <table class="split-metrics">
+            <tbody>
+              <tr>
+                <th scope="row">Category</th>
+                <td>brakes</td>
+                <td>filters</td>
+                <td>batteries</td>
+                <td>tires</td>
+                <td>belts</td>
+                <td>Rest combined (9)</td>
+              </tr>
+              <tr>
+                <th scope="row">Weight %</th>
+                <td>14</td>
+                <td>13</td>
+                <td>11</td>
+                <td>10</td>
+                <td>7</td>
+                <td>45</td>
+              </tr>
+              <tr>
+                <th scope="row">Selection rate</th>
+                <td>1.07</td>
+                <td>1.08</td>
+                <td>1.09</td>
+                <td>1.00</td>
+                <td>1.00</td>
+                <td>0.93</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="split-tree">
+          <p class="split-tree-heading">Split by tenant brand</p>
+          <p class="split-tree-score">6 groups · G = 0.38 · G/k = 0.063</p>
+          <p class="split-tree-insight">demand on a few tenants · <strong class="split-gini-high">higher G</strong></p>
+          <svg viewBox="0 0 360 168" aria-hidden="true"
+               xmlns="http://www.w3.org/2000/svg"
+               font-family="var(--font-sans, -apple-system, BlinkMacSystemFont, system-ui, sans-serif)">
+            <defs>
+              <marker id="d-split-arrow-brand" viewBox="0 0 10 10" refX="9" refY="5"
+                      markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M1 1 L9 5 L1 9" fill="none"
+                      stroke="#52514E" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <circle cx="180" cy="38" r="30" fill="#F3F3F3" stroke="#0B0B0B"/>
+            <text text-anchor="middle" font-size="11" fill="#0B0B0B">
+              <tspan x="180" y="35">Original</tspan>
+              <tspan x="180" y="48">Data</tspan>
+            </text>
+            <line x1="180" y1="68" x2="180" y2="88"
+                  stroke="#52514E" stroke-width="1.4"
+                  marker-end="url(#d-split-arrow-brand)"/>
+            <line x1="40" y1="96" x2="320" y2="96" stroke="#52514E"/>
+            <g stroke="#52514E" stroke-width="1.3"
+               marker-end="url(#d-split-arrow-brand)">
+              <line x1="40" y1="96" x2="40" y2="114"/>
+              <line x1="96" y1="96" x2="96" y2="114"/>
+              <line x1="152" y1="96" x2="152" y2="114"/>
+              <line x1="208" y1="96" x2="208" y2="114"/>
+              <line x1="264" y1="96" x2="264" y2="114"/>
+              <line x1="320" y1="96" x2="320" y2="114"/>
+            </g>
+            <rect x="15" y="116" width="50" height="28" rx="3"
+                  fill="#F8EEF0" stroke="#7A1F2B" stroke-width="1.8"/>
+            <rect x="71" y="116" width="50" height="28" rx="3"
+                  fill="#F8EEF0" stroke="#7A1F2B" stroke-width="1.8"/>
+            <rect x="127" y="116" width="50" height="28" rx="3"
+                  fill="#FFFFFF" stroke="#52514E"/>
+            <rect x="183" y="116" width="50" height="28" rx="3"
+                  fill="#F8EEF0" stroke="#7A1F2B" stroke-width="1.8"/>
+            <rect x="239" y="116" width="50" height="28" rx="3"
+                  fill="#FFFFFF" stroke="#52514E"/>
+            <rect x="295" y="116" width="50" height="28" rx="3"
+                  fill="#EEF4F0" stroke="#1B4D3E" stroke-dasharray="4 3"/>
+          </svg>
+          <table class="split-metrics">
+            <tbody>
+              <tr>
+                <th scope="row">Brand name</th>
+                <td>A</td>
+                <td>B</td>
+                <td>C</td>
+                <td>D</td>
+                <td>E</td>
+                <td>Rest combined (35)</td>
+              </tr>
+              <tr>
+                <th scope="row">Weight %</th>
+                <td>8</td>
+                <td>7</td>
+                <td>7</td>
+                <td>6</td>
+                <td>6</td>
+                <td>66</td>
+              </tr>
+              <tr>
+                <th scope="row">Selection rate</th>
+                <td class="is-hot">2.75</td>
+                <td class="is-hot">2.57</td>
+                <td>1.14</td>
+                <td class="is-hot">2.33</td>
+                <td>0.83</td>
+                <td class="is-cold">0.50</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <figcaption>
+      Each tree splits the same auto-parts sales table and reports Gini per group.
+    </figcaption>
+  </figure>
+
+  <hr class="illustration-rule"/>
+
+  <figure class="illustration" id="D.selective-tree">
+    <h3>Growing a Selective Tree from a Brand Split</h3>
+    <p class="split-tree-score">8 groups · G = 0.41 · G/k = 0.051</p>
+    <p class="split-tree-insight">from the brand split: +2 groups · ΔG = 0.03 · ΔG/Δk = 0.015</p>
+    <div class="illustration-stage">
+      <!--
+        L2 wealth on the brand partition (n%, U%): A brakes 2/12,
+        A not brakes 6/10, B tier>5 2/12, B tier<=5 5/6; C, D, E,
+        and Rest unchanged. Displayed G = 0.41; G/k = 0.41/8.
+        From brand: ΔG = 0.03, Δk = 2, ΔG/Δk = 0.015.
+      -->
+      <svg viewBox="0 0 760 260" role="img"
+           aria-labelledby="d-tree-title d-tree-desc"
+           xmlns="http://www.w3.org/2000/svg"
+           font-family="var(--font-sans, -apple-system, BlinkMacSystemFont, system-ui, sans-serif)">
+        <title id="d-tree-title">Growing a Selective Tree from a Brand Split</title>
+        <desc id="d-tree-desc">
+          One selective tree grown from the tenant-brand split. The root
+          is labelled Original Data. Layer L1 is brands A through E and the rest
+          combined. Brands A and B each receive a different binary grain
+          at layer L2: category equals brakes on A, price tier greater
+          than 5 on B. The other L1 nodes stay uncut and are dashed.
+          A grey dashed line separates each pair of layers, including the
+          root from L1. The tree has eight groups, G equals 0.41, Gini
+          per group equals 0.051. From the brand split that is two extra
+          groups, a Gini gain of 0.03, and a marginal 0.015 per group.
+        </desc>
+        <defs>
+          <marker id="d-tree-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M1 1 L9 5 L1 9" fill="none"
+                  stroke="#52514E" stroke-width="1.5"/>
+          </marker>
+        </defs>
+
+        <text x="380" y="18" text-anchor="middle" font-size="14"
+              fill="#52514E">L1 · tenant brand · L2 only on A and B</text>
+
+        <circle cx="380" cy="52" r="30" fill="#F3F3F3" stroke="#0B0B0B"/>
+        <text text-anchor="middle" font-size="11" fill="#0B0B0B">
+          <tspan x="380" y="49">Original</tspan>
+          <tspan x="380" y="62">Data</tspan>
+        </text>
+        <line x1="380" y1="82" x2="380" y2="104"
+              stroke="#52514E" stroke-width="1.4"
+              marker-end="url(#d-tree-arrow)"/>
+        <line id="d-layer-root-l1" x1="40" y1="92" x2="720" y2="92"
+              stroke="#DEDEDE" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <line x1="110" y1="114" x2="663" y2="114" stroke="#52514E"/>
+        <g stroke="#52514E" stroke-width="1.3"
+           marker-end="url(#d-tree-arrow)">
+          <line x1="110" y1="114" x2="110" y2="132"/>
+          <line x1="330" y1="114" x2="330" y2="132"/>
+          <line x1="465" y1="114" x2="465" y2="132"/>
+          <line x1="509" y1="114" x2="509" y2="132"/>
+          <line x1="553" y1="114" x2="553" y2="132"/>
+          <line x1="663" y1="114" x2="663" y2="132"/>
+        </g>
+
+        <!-- L1: A and B take a wide column; C, D, E shrink to a letter -->
+        <rect x="70" y="134" width="80" height="28" rx="3"
+              fill="#F8EEF0" stroke="#7A1F2B" stroke-width="1.8"/>
+        <text x="110" y="153" text-anchor="middle" font-size="13"
+              fill="#0B0B0B">A</text>
+        <rect x="290" y="134" width="80" height="28" rx="3"
+              fill="#F8EEF0" stroke="#7A1F2B" stroke-width="1.8"/>
+        <text x="330" y="153" text-anchor="middle" font-size="13"
+              fill="#0B0B0B">B</text>
+        <rect x="448" y="134" width="34" height="28" rx="3"
+              fill="#FFFFFF" stroke="#1B4D3E" stroke-dasharray="4 3"/>
+        <text x="465" y="153" text-anchor="middle" font-size="13"
+              fill="#52514E">C</text>
+        <rect x="492" y="134" width="34" height="28" rx="3"
+              fill="#FFFFFF" stroke="#1B4D3E" stroke-dasharray="4 3"/>
+        <text x="509" y="153" text-anchor="middle" font-size="13"
+              fill="#52514E">D</text>
+        <rect x="536" y="134" width="34" height="28" rx="3"
+              fill="#FFFFFF" stroke="#1B4D3E" stroke-dasharray="4 3"/>
+        <text x="553" y="153" text-anchor="middle" font-size="13"
+              fill="#52514E">E</text>
+        <rect x="582" y="134" width="162" height="28" rx="3"
+              fill="#EEF4F0" stroke="#1B4D3E" stroke-dasharray="4 3"/>
+        <text x="663" y="153" text-anchor="middle" font-size="11"
+              fill="#1B4D3E">Rest combined (35)</text>
+        <line id="d-layer-l1-l2" x1="40" y1="168" x2="720" y2="168"
+              stroke="#DEDEDE" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+        <line x1="110" y1="162" x2="110" y2="196"
+              stroke="#7A1F2B" stroke-width="1.3"/>
+        <line x1="330" y1="162" x2="330" y2="196"
+              stroke="#7A1F2B" stroke-width="1.3"/>
+        <rect x="52" y="172" width="116" height="16" fill="#FCFCFB"/>
+        <rect x="272" y="172" width="116" height="16" fill="#FCFCFB"/>
+        <text x="110" y="184" text-anchor="middle" font-size="11"
+              fill="#7A1F2B">category = brakes</text>
+        <text x="330" y="184" text-anchor="middle" font-size="11"
+              fill="#7A1F2B">price tier &gt; 5</text>
+        <line x1="58" y1="196" x2="162" y2="196" stroke="#52514E"/>
+        <line x1="278" y1="196" x2="382" y2="196" stroke="#52514E"/>
+        <g stroke="#52514E" stroke-width="1.3"
+           marker-end="url(#d-tree-arrow)">
+          <line x1="58" y1="196" x2="58" y2="214"/>
+          <line x1="162" y1="196" x2="162" y2="214"/>
+          <line x1="278" y1="196" x2="278" y2="214"/>
+          <line x1="382" y1="196" x2="382" y2="214"/>
+        </g>
+
+        <rect x="18" y="216" width="80" height="28" rx="3"
+              fill="#FFFFFF" stroke="#52514E"/>
+        <text x="58" y="235" text-anchor="middle" font-size="12"
+              fill="#0B0B0B">brakes</text>
+        <rect x="122" y="216" width="80" height="28" rx="3"
+              fill="#FFFFFF" stroke="#52514E"/>
+        <text x="162" y="235" text-anchor="middle" font-size="12"
+              fill="#0B0B0B">not brakes</text>
+        <rect x="238" y="216" width="80" height="28" rx="3"
+              fill="#F8EEF0" stroke="#7A1F2B" stroke-width="1.8"/>
+        <text x="278" y="235" text-anchor="middle" font-size="12"
+              fill="#7A1F2B">tier &gt; 5</text>
+        <rect x="342" y="216" width="80" height="28" rx="3"
+              fill="#FFFFFF" stroke="#52514E"/>
+        <text x="382" y="235" text-anchor="middle" font-size="12"
+              fill="#0B0B0B">tier ≤ 5</text>
+
+        <text x="560" y="234" text-anchor="middle" font-size="13"
+              fill="#1B4D3E">dashed = uncut leaf</text>
+      </svg>
+      <p class="illustration-kicker split-sql-lead">A split action can be either a multi-way grouping or a local conditional grouping. A custom split tree is easily expressed as a query.</p>
+      <pre class="split-sql"><code class="language-sql">SELECT
+  CASE
+    WHEN brand_id IN ('A', 'B', 'C', 'D', 'E') THEN brand_id
+    ELSE 'Rest combined'
+  END AS l1,
+  CASE
+    WHEN brand_id = 'A' THEN
+      CASE WHEN feature_category = 'brakes' THEN 'brakes' ELSE 'not brakes' END
+    WHEN brand_id = 'B' THEN
+      CASE WHEN feature_price_tier &gt; 5 THEN 'tier &gt; 5' ELSE 'tier &lt;= 5' END
+    ELSE 'uncut'
+  END AS l2
+FROM sales
+GROUP BY l1, l2</code></pre>
+    </div>
+    <figcaption>
+      One selective tree on the tenant-brand split, with Gini per group.
+    </figcaption>
+  </figure>
+  </div>
+</div>

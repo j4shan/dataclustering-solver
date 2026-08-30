@@ -1,0 +1,65 @@
+<!--
+  Go Live on Databricks Lakehouse, right pane (12.5): three figures in
+  walkthrough order. Numbers are hypothesized in each figure's instance,
+  not read from a provider dataset or catalog. Each raster is drawn from
+  its retained prompt under resources/img_prompt/.
+-->
+<div class="illustration-stack">
+  <figure
+    class="illustration raster-illustration"
+    id="C.process-flow"
+    aria-labelledby="c-process-flow-title"
+  >
+    <h3 id="c-process-flow-title">The go-live process</h3>
+    <div class="illustration-stage">
+      <img
+        src="figures/img/section_c_go_live_process.png"
+        alt="Six rounded rectangles in one vertical chain, joined by directed arrows. A small numbered circle sits at the top-left of each rectangle. The actions read Collect a target sample, Identify split decision trees, Estimate leaf skipping potential, Inspect the holdout, Implement data ingestion, and Implement query optimization."
+      />
+    </div>
+    <figcaption>
+      Six numbered actions in one vertical chain; the titles match the
+      left-pane sections.
+    </figcaption>
+  </figure>
+
+  <hr class="illustration-rule"/>
+
+  <figure
+    class="illustration raster-illustration"
+    id="C.data-ingestion"
+    aria-labelledby="c-data-ingestion-title"
+  >
+    <h3 id="c-data-ingestion-title">Ingestion writes two tables</h3>
+    <div class="illustration-stage">
+      <img
+        src="figures/img/section_c_data_ingestion.png"
+        alt="A brand-sales stream runs left to right through a group-by on brand_id and pricing_tier, then a closed partition-assignment box labelled detailed later. The stream fans out to two tables. The upper table is the narrow index with columns brand_id, pricing_tier, and partition_id, four rows p1 through p4. The lower table is the wide event table with those columns plus sku, amount, and record_id."
+      />
+    </div>
+    <figcaption>
+      A brand-sales stream grouped by brand_id and pricing_tier, assigned
+      a partition_id, and written to a narrow index and a wide event table.
+    </figcaption>
+  </figure>
+
+  <hr class="illustration-rule"/>
+
+  <figure
+    class="illustration raster-illustration"
+    id="C.dpp-skipping"
+    aria-labelledby="c-dpp-skipping-title"
+  >
+    <h3 id="c-dpp-skipping-title">Spark DPP skips from the index</h3>
+    <div class="illustration-stage">
+      <img
+        src="figures/img/section_c_dpp_skipping.png"
+        alt="A multi-select query brand_id IN (A, B) AND pricing_tier = 1 prescans the four-row index table. Rows for p1 and p3 match. Spark DPP broadcasts that set to two worker cards as a metadata filter. Four cloud-object glyphs follow: p1 and p3 marked download, p2 and p4 marked skip."
+      />
+    </div>
+    <figcaption>
+      A multi-select query prescans the index; Spark DPP broadcasts p1 and
+      p3; workers download those partitions and skip the rest.
+    </figcaption>
+  </figure>
+</div>

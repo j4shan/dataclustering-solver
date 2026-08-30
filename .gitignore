@@ -44,10 +44,8 @@ venv/
 /data/
 *.npy
 
-# Deliberately NOT ignored: simulator/gui/static/formulation.html.  It is generated, but
-# by the optional `docs` extra (10.3.6), and committing it is what lets a default install
-# — numpy, pyarrow, matplotlib and nothing else — serve the GUI.  Rebuild it with
-# `python -m tools.render_formulation` after editing problem-statement.md.
+# Deliberately NOT ignored: simulator/gui/static/formulation.html.  It is a committed
+# pre-render, and shipping it is what lets a default install serve the GUI (10.3.10).
 # Everything the GUI writes at runtime goes under data/ and is covered above.
 
 # Execution plans.  A plan is a transient working artifact — it tracks progress through
@@ -64,3 +62,13 @@ project_metadata/plans/
 docs/superpowers/
 .cursor/
 .agents/
+
+# Project-scope skills are installed per machine, not shipped.  `.claude/skills/` here is
+# symlinks into the ignored `.agents/` tree above, so committing them would hand a fresh
+# clone four broken links.  `skills-lock.json` is the installer's own reinstall manifest
+# for that same tree.
+.claude/skills/
+skills-lock.json
+
+# draw.io desktop atomic-write temp files
+.$*.drawio.dtmp

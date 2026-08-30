@@ -64,7 +64,7 @@ with how the clustering keys divide the data. The sweep axis of the harness, tar
 bytes, maps onto this property directly, which is what gives the sweep meaning against a real
 engine.
 
-**The floor on container size is real and load-bearing.** The problem statement's §5 permits an
+**The floor on container size is real and load-bearing.** The problem statement's §4 permits an
 arbitrarily fine partition subject only to a size bound; Databricks does not. Every file costs
 a log entry, a task, and an object-store round trip, so a layout of very many small containers
 loses to per-file overhead the formulation does not model. The simulator charges for this
@@ -82,7 +82,7 @@ superseding the one before.
 **`PARTITIONED BY` (Hive-style directories).** Each distinct value of the partition columns
 gets a directory, and a query filtering on those columns opens only the matching ones. This
 realizes $\lambda$ as a function of declared attributes, which is a strong constraint: it makes
-the layout trivially assignable at write time (§2.2 of the problem statement, and the `route`
+the layout trivially assignable at write time (§1.2 of the problem statement, and the `route`
 seam at 7.1.6 of the simulator spec), and equally makes it incapable of expressing any grouping
 the schema does not already name. High cardinality drives container count up and container size
 down until §2's floor is breached.
@@ -103,8 +103,8 @@ different objective.** Automatic liquid clustering analyses the table's historic
 workload, identifies candidate clustering columns from **query predicates and join filters**,
 and changes keys only when predicted skipping gains outweigh the clustering cost. That is
 workload-aware layout, and it is a serious baseline. But the signal it learns from is the
-*stated predicate*, whereas the objective of §3.5 is defined over the *observed selection
-relation*. §3.3 of the formulation is precisely about that gap: $L$ records which events a
+*stated predicate*, whereas the objective of §2.5 is defined over the *observed selection
+relation*. §2.3 of the problem statement is precisely about that gap: $L$ records which events a
 query selected, never why, and nothing requires $S_q$ to coincide with any predicate over
 event attributes. Where predicate and demand coincide, `CLUSTER BY AUTO` is close to the right
 answer and is cheap. Where they diverge, which is the case this project exists to study, it is
@@ -192,7 +192,7 @@ returned. $L$ therefore has to be constructed, and there are three honest ways t
    approximate; the sampling error lands directly in the objective.
 
 Whichever is chosen, the resulting table is append-only and grows monotonically, which is the
-workload evidence accumulated during the fixed study period in §6.3 of the problem statement. It
+workload evidence accumulated during the fixed study period in §5.3 of the problem statement. It
 is also the corpus this project's harness consumes, so the external provider seam is where a real
 deployment attaches.
 
@@ -205,13 +205,13 @@ problem.
 
 | # | The formulation assumes | Databricks does | Cost of the divergence |
 | --- | --- | --- | --- |
-| 7.1 | The index resolves the predicate exactly, one row per event | Per-file min/max ranges over the first 32 columns | Activation is a superset of $a_{c,q}$; the extra reads are real waste. Measure waste from the scan, not from a recomputed activation (§3.4) |
+| 7.1 | The index resolves the predicate exactly, one row per event | Per-file min/max ranges over the first 32 columns | Activation is a superset of $a_{c,q}$; the extra reads are real waste. Measure waste from the scan, not from a recomputed activation (§2.4) |
 | 7.2 | `FETCH(c)` returns the whole of $E_c$; no per-event addressing | Column projection, row-group skipping, deletion vectors, Predictive I/O | $\mathcal{W}(\lambda)$ overstates absolute volume. It stays a faithful *ranking* only while projections are stable across candidate layouts; measure in bytes with the real projection |
-| 7.3 | The index cost is invariant under $\lambda$, so §3.5 may drop it | Its size and scan cost are invariant; its **precision** is not | The invariance argument survives for the objective's form, but the precision loss must be counted as waste rather than as index cost |
+| 7.3 | The index cost is invariant under $\lambda$, so §2.5 may drop it | Its size and scan cost are invariant; its **precision** is not | The invariance argument survives for the objective's form, but the precision loss must be counted as waste rather than as index cost |
 | 7.4 | $L$ is observed | Query history records predicates, not selected rows | $L$ must be replayed, instrumented, or sampled (§6). Sampling error enters the objective directly |
 | 7.5 | Waste is the only layout-dependent cost | Every container costs a log entry, a task, and a round trip | A layout of many small containers wins on paper and loses in production. The simulator charges this separately and says so |
 | 7.6 | One fixed layout is evaluated | `OPTIMIZE`, background reclustering, and deletion vectors change $\lambda$ underneath | Pin measurement to a table version (`VERSION AS OF`); Delta's time travel makes this exact rather than approximate |
-| 7.7 | A layout is a function to be evaluated on one event at a time (§2.2 of the problem statement) | Liquid clustering assigns incrementally on write and reclusters asynchronously | Production *does* have the `route` of 7.1.6, but it is approximate and eventually consistent: a row's container is provisional until reclustering settles |
+| 7.7 | A layout is a function to be evaluated on one event at a time (§1.2 of the problem statement) | Liquid clustering assigns incrementally on write and reclusters asynchronously | Production *does* have the `route` of 7.1.6, but it is approximate and eventually consistent: a row's container is provisional until reclustering settles |
 
 ---
 
@@ -219,7 +219,7 @@ problem.
 
 - **Which strategy to run.** This project ships none, and mapping the mechanisms changes
   nothing about that. §3 establishes only where a strategy's output would attach.
-- **Index design.** The problem statement models predicate resolution in §2.1, while the simulator
+- **Index design.** The problem statement models predicate resolution in §1.1, while the simulator
   spec excludes index design in 11.2. The statistics described in §4 are the engine's own; nothing here proposes a
   secondary structure over them.
 - **Cost in currency.** Exclusion 11.4 keeps the cost model abstract and pluggable, and

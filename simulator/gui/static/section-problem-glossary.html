@@ -1,0 +1,73 @@
+<article class="glossary">
+  <h2>Terminology</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Term</th>
+        <th>Definition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Event / record</td>
+        <td>A stored item in the corpus. The statement uses <em>event</em>; <em>record</em> names the same object.</td>
+      </tr>
+      <tr>
+        <td>Corpus (<em>E</em>)</td>
+        <td>The finite set of all stored events.</td>
+      </tr>
+      <tr>
+        <td>Container (<em>c</em>)</td>
+        <td>A storage unit that holds a subset of events and is fetched whole. One fetch returns every event in the container.</td>
+      </tr>
+      <tr>
+        <td>Container capacity</td>
+        <td>How many events one container holds. Capacity stays between storage-system lower and upper bounds so a fetch is neither too small to amortize nor so large that almost every query activates it.</td>
+      </tr>
+      <tr>
+        <td>Layout (λ)</td>
+        <td>The assignment of every event to exactly one container. The containers therefore partition the corpus.</td>
+      </tr>
+      <tr>
+        <td>Query</td>
+        <td>A database request that retains selected events by fetching entire containers.</td>
+      </tr>
+      <tr>
+        <td>Selected events (<em>S<sub>q</sub></em>)</td>
+        <td>The events a query ultimately needs — the events it selected.</td>
+      </tr>
+      <tr>
+        <td>Index table (<em>I</em>)</td>
+        <td>A narrow table with one row per event. A query scans it to resolve which containers to fetch before any container is opened.</td>
+      </tr>
+      <tr>
+        <td>Activation</td>
+        <td>A container is activated when it holds at least one selected event. Every activated container must be fetched.</td>
+      </tr>
+      <tr>
+        <td>Materialized volume (<em>M<sub>q</sub></em>)</td>
+        <td>Every event in every container the query activates — the volume the fetch returns, including events the query will discard.</td>
+      </tr>
+      <tr>
+        <td>Skipped container</td>
+        <td>A container that holds no selected event. It is not fetched.</td>
+      </tr>
+      <tr>
+        <td>Waste (<em>w<sub>q</sub></em>)</td>
+        <td>Materialized events the query did not select — the difference between materialized volume and the selected-event count.</td>
+      </tr>
+      <tr>
+        <td>Aggregate waste (𝒲(λ))</td>
+        <td>The sum of per-query waste over the observed workload. The objective is to choose a layout that minimizes this sum.</td>
+      </tr>
+      <tr>
+        <td>Selection log (<em>L</em>)</td>
+        <td>The observed relation of which query selected which event. One row is one selection; absence means the query did not select the event.</td>
+      </tr>
+      <tr>
+        <td>Assignment strategy</td>
+        <td>The rule that decides which events share a container — the procedure that produces a layout.</td>
+      </tr>
+    </tbody>
+  </table>
+</article>

@@ -155,8 +155,8 @@ def summarize_feature_columns(path: str | Path) -> list[dict]:
     as a string and have it read back as a date; summarizing what it wrote would describe
     a corpus nobody ever sees.  The extra parse is paid once, at generation.
 
-    Hidden, identity and blob-size columns are absent: this is the list a caller composes
-    a group-by against (12.4.2.1), and those three are not partitionable.
+    Hidden, identity and blob-size columns are absent: this is the list a catalogue
+    author composes a group-by against (4.12), and those three are not partitionable.
     """
     import numpy as np
     import pyarrow.csv

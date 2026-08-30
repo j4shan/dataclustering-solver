@@ -2,119 +2,170 @@
 <!--
   The application shell (12.1).
 
-  Three sections in fixed order — understand, then try, then build — each a left/right
-  pair on a wide viewport, and one of them displayed at a time (12.1.1).  B and C are
-  authored `hidden` so the page opens on A without a frame of all three: `app.js` hands
-  the choice to the location hash from there.  What is authored here is what the server
-  sends: there is no build step, no bundler, and no template engine (10.3.5, 10.3.1).
+  Four sections in fixed order — understand, examine one screening search,
+  draw a storage boundary, then go live — each a left/right pair on a wide
+  viewport, and one of them displayed at a time (12.1.1).  Measuring Data
+  Layout Fitness, Drawing Storage Boundary and Go Live on Databricks Lakehouse
+  are authored `hidden` so the page opens on Problem Statement without a frame
+  of all four: `app.js` hands the choice to the location hash from there.
+  What is authored here is what the server sends: there is no build step, no
+  bundler, and no template engine (10.3.5, 10.3.1).
 
-  The two long documents are *fragments*, pre-rendered ahead of serving (12.3.2) and
+  The two long documents are *fragments*, pre-rendered ahead of serving (12.3) and
   fetched from this same process at load.  That is not an outbound request — every asset
   comes from the server that sent this page (12.2.2) — and it keeps this file something a
   reader can check by reading it.
 
-  Every URL below is relative to *this document* (12.2.13).  A leading slash would be
-  correct only while this page owns the whole origin, and it does not: served under a path
-  prefix beside other pages, a root-absolute reference leaves this exhibit entirely.
+  Every URL below is relative to *this document* (12.2.13).  A leading slash resolves
+  against whatever host the page is opened from rather than against the page, so it
+  breaks the moment this is served from anywhere but the root of an origin.
 -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Neighbors You Pay For</title>
+    <title>The Data Storage Layout Problem</title>
     <link rel="stylesheet" href="tokens.css" />
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
     <header class="top-bar">
-      <span class="wordmark">The Neighbors You Pay For</span>
+      <span class="wordmark">The Data Storage Layout Problem</span>
       <nav class="section-nav" aria-label="Sections">
-        <a href="#problem" data-nav="problem"><b>A</b> Problem Statement</a>
-        <a href="#benchmark" data-nav="benchmark"><b>B</b> Data Skipping Experiment</a>
-        <a href="#design" data-nav="design"><b>C</b> Spark + Delta Lake Implementation</a>
+        <a href="#problem" data-nav="problem">Problem Statement</a>
+        <a href="#gini" data-nav="gini">Measuring Data Layout Fitness</a>
+        <a href="#knapsack" data-nav="knapsack">Drawing Storage Boundary</a>
+        <a href="#design" data-nav="design">Go Live on Databricks Lakehouse</a>
       </nav>
     </header>
 
     <main class="shell" id="shell">
-      <!-- A ------------------------------------------------------------------ -->
+      <!-- problem ----------------------------------------------------------- -->
       <section class="section" id="problem" tabindex="-1" aria-labelledby="problem-heading">
         <header class="section-head">
-          <h1 id="problem-heading"><span class="letter">A</span> Organizing a data warehouse like a closet</h1>
+          <h1 id="problem-heading">Problem Statement</h1>
         </header>
         <div class="split">
-          <div class="pane pane-left" role="region" aria-label="Section A illustration"
-               data-mount="figures/graphics/section-a-illustration.html">
-            <p class="empty">Loading the illustration…</p>
-            <noscript>
-              <p class="empty">
-                <a href="figures/graphics/section-a-illustration.html">Open the closet-to-warehouse walkthrough</a>.
-              </p>
-            </noscript>
+          <div class="pane pane-left" role="region" aria-label="Problem Statement illustration">
+            <h2 class="pane-title">Organizing Data Like a Medicine Cabinet</h2>
+            <div class="pane-body" data-mount="figures/html/section-problem-illustration.html">
+              <p class="empty">Loading the illustration…</p>
+              <noscript>
+                <p class="empty">
+                  <a href="figures/html/section-problem-illustration.html">Open the medicine-cabinet walkthrough</a>.
+                </p>
+              </noscript>
+            </div>
           </div>
-          <div class="pane pane-right" role="region" aria-label="Section A formal statement"
-               data-mount="formulation.html">
-            <p class="empty">Loading the formal statement…</p>
-            <noscript>
-              <p class="empty">
-                <a href="formulation.html">Read the formal problem statement</a>.
-              </p>
-            </noscript>
+          <div class="pane-stack pane-right">
+            <div class="pane" role="region" aria-label="Problem Statement terminology"
+                 data-mount="section-problem-glossary.html">
+              <p class="empty">Loading the terminology…</p>
+              <noscript>
+                <p class="empty">
+                  <a href="section-problem-glossary.html">Read the terminology</a>.
+                </p>
+              </noscript>
+            </div>
+            <div class="pane" role="region" aria-label="Problem Statement formal statement"
+                 data-mount="formulation.html">
+              <p class="empty">Loading the formal statement…</p>
+              <noscript>
+                <p class="empty">
+                  <a href="formulation.html">Read the formal problem statement</a>.
+                </p>
+              </noscript>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- B ------------------------------------------------------------------ -->
-      <section class="section" id="benchmark" tabindex="-1" hidden aria-labelledby="benchmark-heading">
+      <!-- gini -------------------------------------------------------------- -->
+      <section class="section" id="gini" tabindex="-1" hidden aria-labelledby="gini-heading">
         <header class="section-head">
-          <h1 id="benchmark-heading"><span class="letter">B</span> Assignment Strategy Benchmark</h1>
-          <p class="section-lede">
-            Compose up to four candidates, sweep each across container capacities, and
-            read them against the industry-default baseline.
-          </p>
+          <h1 id="gini-heading">Measuring Data Layout Fitness</h1>
         </header>
         <div class="split">
-          <div class="pane pane-left" id="builder" role="region"
-               aria-label="Section B strategy catalogue">
-            <p class="empty">Loading the strategy catalogue…</p>
+          <div class="pane pane-left" role="region" aria-label="Measuring Data Layout Fitness walkthrough"
+               data-mount="section-gini-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
             <noscript>
               <p class="empty">
-                This section runs the harness, so it needs scripting. Sections A and C
-                are documents and do not.
+                <a href="section-gini-walkthrough.html">Read the split-search walkthrough</a>.
               </p>
             </noscript>
           </div>
-          <div class="pane pane-right" id="report" role="region"
-               aria-label="Section B benchmark report">
-            <p class="empty">No benchmark yet — configure a block and press Evaluate.</p>
+          <div class="pane-stack pane-right">
+            <div class="pane" role="region" aria-label="Measuring Data Layout Fitness terminology"
+                 data-mount="section-gini-glossary.html">
+              <p class="empty">Loading the terminology…</p>
+              <noscript>
+                <p class="empty">
+                  <a href="section-gini-glossary.html">Read the terminology</a>.
+                </p>
+              </noscript>
+            </div>
+            <div class="pane" role="region" aria-label="Measuring Data Layout Fitness figures"
+                 data-mount="figures/html/section-gini-illustration.html">
+              <p class="empty">Loading the figures…</p>
+              <noscript>
+                <p class="empty">
+                  <a href="figures/html/section-gini-illustration.html">See the split-search figures</a>.
+                </p>
+              </noscript>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- C ------------------------------------------------------------------ -->
+      <!-- budget ------------------------------------------------------------ -->
+      <section class="section" id="knapsack" tabindex="-1" hidden aria-labelledby="knapsack-heading">
+        <header class="section-head">
+          <h1 id="knapsack-heading">Drawing Storage Boundary</h1>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Drawing Storage Boundary walkthrough"
+               data-mount="section-budget-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
+            <noscript>
+              <p class="empty">
+                <a href="section-budget-walkthrough.html">Read the storage-boundary walkthrough</a>.
+              </p>
+            </noscript>
+          </div>
+          <div class="pane pane-right" role="region" aria-label="Drawing Storage Boundary visualizations"
+               data-mount="figures/html/section-budget-illustration.html">
+            <p class="empty">Loading the visualizations…</p>
+            <noscript>
+              <p class="empty">
+                <a href="figures/html/section-budget-illustration.html">See the visualization placeholders</a>.
+              </p>
+            </noscript>
+          </div>
+        </div>
+      </section>
+
+      <!-- go live ----------------------------------------------------------- -->
       <section class="section" id="design" tabindex="-1" hidden aria-labelledby="design-heading">
         <header class="section-head">
-          <h1 id="design-heading"><span class="letter">C</span> Spark + Delta Lake Implementation</h1>
-          <p class="section-lede">
-            How the formulation maps onto a real engine, and where the engine cannot
-            honour it.
-          </p>
+          <h1 id="design-heading">Go Live on Databricks Lakehouse</h1>
         </header>
         <div class="split">
-          <div class="pane pane-left" role="region" aria-label="Section C production design"
-               data-mount="production-design.html">
-            <p class="empty">Loading the engine mapping…</p>
+          <div class="pane pane-left" role="region" aria-label="Go Live on Databricks Lakehouse walkthrough"
+               data-mount="section-databricks-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
             <noscript>
               <p class="empty">
-                <a href="production-design.html">Read the Delta Lake prototype</a>.
+                <a href="section-databricks-walkthrough.html">Read the go-live walkthrough</a>.
               </p>
             </noscript>
           </div>
-          <div class="pane pane-right" role="region" aria-label="Section C diagrams"
-               data-mount="figures/graphics/section-c-illustration.html">
-            <p class="empty">Loading the engine diagrams…</p>
+          <div class="pane pane-right" role="region" aria-label="Go Live on Databricks Lakehouse figures"
+               data-mount="figures/html/section-databricks-illustration.html">
+            <p class="empty">Loading the figures…</p>
             <noscript>
               <p class="empty">
-                <a href="figures/graphics/section-c-illustration.html">See the engine mapping drawn</a>.
+                <a href="figures/html/section-databricks-illustration.html">See the go-live figures</a>.
               </p>
             </noscript>
           </div>
@@ -122,8 +173,7 @@
       </section>
     </main>
 
-    <script src="app.js"></script>
-    <!-- A native ES module: no bundler, no build step (13.3). -->
-    <script type="module" src="section-b.js"></script>
+    <!-- Native ES modules: no bundler, no build step (10.3.5). -->
+    <script type="module" src="app.js"></script>
   </body>
 </html>

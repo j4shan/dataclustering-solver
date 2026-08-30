@@ -2,7 +2,7 @@
  * Just enough DOM to run the report views outside a browser.
  *
  * The three views are pure functions of one response: payload in, element tree out.  That
- * makes them testable without a browser, which matters because 12.6.3.1 keeps the browser
+ * makes them testable without a browser, which matters because AGENTS.md keeps the browser
  * suite a plus rather than a gate — the rules that must always hold should be checkable in
  * the default run.  What the browser suite (T20) covers is what this cannot: layout,
  * scrolling, focus, and whether anything is actually visible.
@@ -25,6 +25,14 @@ class ClassList {
     this.element.className = [...names].join(" ");
   }
 
+  add(...names) {
+    for (const name of names) this.toggle(name, true);
+  }
+
+  remove(...names) {
+    for (const name of names) this.toggle(name, false);
+  }
+
   contains(name) {
     return String(this.element.className || "").split(/\s+/).includes(name);
   }
@@ -41,6 +49,7 @@ class Element {
     this.ownText = "";
     this.classList = new ClassList(this);
     this.style = { properties: new Map(), setProperty: (n, v) => this.style.properties.set(n, v) };
+    this._disabled = false;
     // `dataset` writes through to the attribute, the way the real one does, so a view can
     // set it either way and `[data-*]` selectors still find it.
     this.dataset = new Proxy(
@@ -73,6 +82,16 @@ class Element {
     this.children = [...nodes];
   }
 
+  set disabled(value) {
+    this._disabled = Boolean(value);
+    if (this._disabled) this.attributes.set("disabled", "");
+    else this.attributes.delete("disabled");
+  }
+
+  get disabled() {
+    return this._disabled;
+  }
+
   setAttribute(name, value) {
     this.attributes.set(name, String(value));
   }
@@ -98,6 +117,10 @@ class Element {
     }
     if (selector.startsWith(".")) return this.classList.contains(selector.slice(1));
     return this.tagName === selector;
+  }
+
+  querySelector(selector) {
+    return this.querySelectorAll(selector)[0] ?? null;
   }
 
   querySelectorAll(selector) {
