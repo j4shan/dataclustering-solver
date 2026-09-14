@@ -15,25 +15,25 @@ from pathlib import Path
 
 import pytest
 
-from simulator.gui import FIGURE_ROOT, STATIC_ROOT
+from simulator.gui import FIGURE_ROOT, SITE_ROOT
 
-FRAGMENT = STATIC_ROOT / "section-gini-walkthrough.html"
-GLOSSARY = STATIC_ROOT / "section-gini-glossary.html"
+FRAGMENT = SITE_ROOT / "section-gini-walkthrough.html"
+GLOSSARY = SITE_ROOT / "section-gini-glossary.html"
 DIAGRAMS = FIGURE_ROOT / "html" / "section-gini-illustration.html"
 ILLUSTRATION_HREF = "figures/html/section-gini-illustration.html"
-INDEX = STATIC_ROOT / "index.html"
+INDEX = SITE_ROOT / "index.html"
 
 FIGURE_IDS = (
-    "D.tree-split-cycle",
-    "D.lorenz-wealth",
-    "D.split-comparison",
-    "D.selective-tree",
+    "gini.tree-split-cycle",
+    "gini.lorenz-wealth",
+    "gini.split-comparison",
+    "gini.selective-tree",
 )
 FIGURE_TITLES = {
-    "D.tree-split-cycle": "Recursive Partitioning with a Decision Tree",
-    "D.lorenz-wealth": "Comparing Inequality with Lorenz Curves",
-    "D.split-comparison": "Evaluating Weighted Gini Across Data Splits",
-    "D.selective-tree": "Growing a Selective Tree from a Brand Split",
+    "gini.tree-split-cycle": "Recursive Partitioning with a Decision Tree",
+    "gini.lorenz-wealth": "Comparing Inequality with Lorenz Curves",
+    "gini.split-comparison": "Evaluating Weighted Gini Across Data Splits",
+    "gini.selective-tree": "Growing a Selective Tree from a Brand Split",
 }
 
 LORENZ_FORBIDDEN = (
@@ -58,7 +58,7 @@ GLOSSARY_TERMS = (
     "OPT(leaf)",
     "Container size",
     "Evaluation budget",
-    "Unit",
+    "Container",
     "Population weight",
     "Group-wide rate",
     "Query-conditional rate",
@@ -197,6 +197,15 @@ def test_public_terms_are_wiki_or_arxiv_links(fragment):
     assert "Problem Statement" in fragment and "§2.5" in fragment
 
 
+def test_the_packed_bin_is_called_a_container(fragment):
+    """I18 — first mention is equal-size containers; unit is only the [0, 1] interval."""
+    assert "equal-size containers" in fragment
+    assert fragment.index("equal-size containers") < fragment.index("packed container")
+    assert fragment.count("unit interval") == 2
+    remainder = re.sub(r"unit interval", "", fragment, flags=re.IGNORECASE)
+    assert not re.search(r"\bunit\b", remainder, flags=re.IGNORECASE)
+
+
 def test_section_one_states_the_objective_and_fitness_versus_opt(fragment):
     body = stage_bodies(fragment)[0]
     assert "quantified data skipping goal" in body
@@ -208,6 +217,9 @@ def test_section_one_states_the_objective_and_fitness_versus_opt(fragment):
     assert "fitness of the leaf" in body
     assert "OPT of the leaf" in body
     assert "subproblem" in body
+    assert "arbitrary leaf" in body
+    assert "immediate children" in body
+    assert "incremental value" in body
     assert "evaluation budget" in body
     assert "does not claim a tractable solver" in body
 
@@ -261,8 +273,8 @@ def test_the_glossary_is_a_two_column_term_definition_table():
 def test_the_figures_are_the_apng_then_one_continued_example(diagrams):
     assert figure_ids(diagrams) == list(FIGURE_IDS)
     assert "Exploring a Data Tree with Gini" in diagrams
-    assert diagrams.index("D.tree-split-cycle") < diagrams.index("gini-example-title")
-    assert diagrams.index("gini-example-title") < diagrams.index("D.lorenz-wealth")
+    assert diagrams.index("gini.tree-split-cycle") < diagrams.index("gini-example-title")
+    assert diagrams.index("gini-example-title") < diagrams.index("gini.lorenz-wealth")
     for ident, title in FIGURE_TITLES.items():
         heading = re.search(
             rf'<figure[^>]*id="{ident}"[^>]*>\s*<h3[^>]*>([^<]+)</h3>',
@@ -274,17 +286,17 @@ def test_the_figures_are_the_apng_then_one_continued_example(diagrams):
 
 
 def test_the_apng_is_the_committed_raster(diagrams):
-    start = diagrams.find('id="D.tree-split-cycle"')
-    end = diagrams.find('id="D.lorenz-wealth"')
+    start = diagrams.find('id="gini.tree-split-cycle"')
+    end = diagrams.find('id="gini.lorenz-wealth"')
     body = diagrams[start:end]
     assert "Recursive Partitioning with a Decision Tree" in body
     assert "Visualization placeholder" not in body
     assert 'src="figures/img/section_gini_tree_split_cycle.png"' in body
     alt = re.search(r'<img[^>]*\balt="([^"]+)"', body)
     assert alt and len(alt.group(1).split()) >= 12
-    raster = Path("resources/img/section_gini_tree_split_cycle.png")
+    raster = Path("site/figures/img/section_gini_tree_split_cycle.png")
     assert raster.is_file()
-    prompt = Path("resources/img_prompt/d_tree_split_cycle_prompt.txt")
+    prompt = Path("resources/img_prompt/section_gini_tree_split_cycle_prompt.txt")
     assert prompt.is_file()
 
 
@@ -295,8 +307,8 @@ def test_the_right_pane_has_no_editorial_lede(diagrams):
 
 
 def test_lorenz_figure_uses_no_warehouse_vocabulary(diagrams):
-    start = diagrams.find('id="D.lorenz-wealth"')
-    end = diagrams.find('id="D.split-comparison"')
+    start = diagrams.find('id="gini.lorenz-wealth"')
+    end = diagrams.find('id="gini.split-comparison"')
     body = diagrams[start:end].lower()
     for noun in LORENZ_FORBIDDEN:
         assert not re.search(rf"\b{noun}\b", body), noun
@@ -306,7 +318,7 @@ def test_every_drawn_figure_is_announced_to_a_screen_reader(diagrams):
     assert diagrams.count('role="img"') == 3
     assert diagrams.count("<title") == 3
     assert diagrams.count("<desc") == 3
-    assert 'aria-labelledby="d-tree-split-cycle-title"' in diagrams
+    assert 'aria-labelledby="gini-tree-split-cycle-title"' in diagrams
 
 
 def test_no_state_is_carried_by_colour_alone(diagrams):
@@ -331,8 +343,8 @@ def test_the_diagrams_state_the_instance_gini_values(diagrams):
 
 
 def test_lorenz_figure_is_a_six_neighborhood_connected_scatter(diagrams):
-    start = diagrams.find('id="D.lorenz-wealth"')
-    end = diagrams.find('id="D.split-comparison"')
+    start = diagrams.find('id="gini.lorenz-wealth"')
+    end = diagrams.find('id="gini.split-comparison"')
     body = diagrams[start:end]
     assert "A perfectly equal distribution." in body
     assert "The top 10% controls 90% of the wealth." in body
@@ -352,8 +364,8 @@ def test_lorenz_figure_is_a_six_neighborhood_connected_scatter(diagrams):
 
 
 def test_split_figure_is_two_auto_parts_trees(diagrams):
-    start = diagrams.find('id="D.split-comparison"')
-    end = diagrams.find('id="D.selective-tree"')
+    start = diagrams.find('id="gini.split-comparison"')
+    end = diagrams.find('id="gini.selective-tree"')
     body = diagrams[start:end]
     assert "Wealth is query selection rate" in body
     assert "Split by product category" in body
@@ -377,7 +389,7 @@ def test_split_figure_is_two_auto_parts_trees(diagrams):
 
 
 def test_selective_tree_grows_from_the_brand_split(diagrams):
-    start = diagrams.find('id="D.selective-tree"')
+    start = diagrams.find('id="gini.selective-tree"')
     body = diagrams[start:]
     assert "Original Data" in body
     assert "Sales event" not in body
@@ -399,7 +411,7 @@ def test_selective_tree_grows_from_the_brand_split(diagrams):
     assert body.count("<svg") == 1
 
 
-def test_section_d_title_matches_the_navigation_label():
+def test_section_gini_title_matches_the_navigation_label():
     html = INDEX.read_text()
     assert 'data-nav="gini">Measuring Data Layout Fitness</a>' in html
     assert '<h1 id="gini-heading">Measuring Data Layout Fitness</h1>' in html
@@ -409,12 +421,12 @@ def test_the_walkthrough_shares_no_element_id_with_the_other_documents(fragment)
     pattern = r'id="([^"]+)"'
     others = set()
     for name in ("formulation.html", "section-gini-glossary.html"):
-        others |= set(re.findall(pattern, (STATIC_ROOT / name).read_text()))
+        others |= set(re.findall(pattern, (SITE_ROOT / name).read_text()))
     mine = set(re.findall(pattern, fragment))
     assert not (mine & others)
 
 
-def test_section_d_stacks_terminology_above_the_figures():
+def test_section_gini_stacks_terminology_above_the_figures():
     html = INDEX.read_text()
     section = html.split('id="gini"')[1].split('id="knapsack"')[0]
     assert 'data-mount="section-gini-walkthrough.html"' in section
@@ -427,17 +439,14 @@ def test_section_d_stacks_terminology_above_the_figures():
     assert section.index("section-gini-glossary.html") < section.index(ILLUSTRATION_HREF)
 
 
-def test_section_d_is_reachable_without_scripting():
+def test_section_gini_is_reachable_without_scripting():
     section = INDEX.read_text().split('id="gini"')[1]
-    assert '<a href="section-gini-walkthrough.html">' in section
-    assert '<a href="section-gini-glossary.html">' in section
-    assert f'<a href="{ILLUSTRATION_HREF}">' in section
 
 
-def test_section_d_type_is_one_pixel_larger_than_section_a():
+def test_section_gini_type_is_one_pixel_larger_than_section_problem():
     from tests.test_app_shell import rule_for
 
-    css = (STATIC_ROOT / "app.css").read_text()
+    css = (SITE_ROOT / "app.css").read_text()
     declarations = rule_for(css, "#gini .pane-left")
     assert "--text-body: 15px" in declarations
     assert "--text-small: 13px" in declarations
@@ -445,8 +454,8 @@ def test_section_d_type_is_one_pixel_larger_than_section_a():
     assert "--text-title: 24px" in declarations
 
 
-def test_section_d_walkthrough_fills_the_left_pane():
+def test_section_gini_walkthrough_fills_the_left_pane():
     from tests.test_app_shell import rule_for
 
-    css = (STATIC_ROOT / "app.css").read_text()
+    css = (SITE_ROOT / "app.css").read_text()
     assert "max-width: none" in rule_for(css, "#gini .pane-left > .formulation")

@@ -32,7 +32,11 @@ venv/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
-# setuptools' scratch tree, left behind by `pip install .` on some pip versions.
+# Two things land here and neither is source.  setuptools leaves a scratch tree here on
+# some pip versions, and `tools/publish.py` assembles the published copy of the page here.
+# The published copy is output: every byte of it is either a committed file or the one
+# document the step inlined the fragments into, so versioning it would store the same
+# content twice and let the two drift.
 /build/
 
 # Generated datasets, metric tables and rendered reports.  All reproducible from a

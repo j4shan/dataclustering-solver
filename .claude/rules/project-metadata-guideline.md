@@ -54,11 +54,31 @@ Keep project-owned documents under `project_metadata/`, relative to the project 
 
 ## 7. Place authored resources
 
-Keep authored exhibit and fixture assets under `resources/`, relative to the project root.
-Never put temporary or git-ignored resources there.
+Split authored assets by where they end up, not by what they are. Two trees, relative to
+the project root.
 
-- Put authored HTML, canvases, and formal documents in `resources/html/`.
-- Put figures in `resources/img/`.
+`site/` is the published exhibit. It is served as-is and copied as-is: whatever sits in it
+reaches the public, and nothing else does. The directory layout is the URL layout, so a
+path that works on disk works in the browser.
+
+- Put the page, its stylesheets, and its scripts at `site/`.
+- Put walkthrough and glossary fragments at `site/`, beside the page that mounts them.
+- Put illustration fragments in `site/figures/html/`.
+- Put figures in `site/figures/img/`.
+- Put formal documents in `site/docs/`.
+
+`resources/` is authoring material. It is never served and never published.
+
+- Put diagram sources in `resources/img_src/`.
 - Put figure prompts in `resources/img_prompt/`.
 - Put authored scenario and fixture data in `resources/data/`. Do not put runtime-generated
   data there.
+
+Never put temporary or git-ignored resources in either tree.
+
+Two rules follow from the split:
+
+- Adding a file to `site/` publishes it. If a reader should not have it, it belongs in
+  `resources/`.
+- A generator writes its source to `resources/` and its output to `site/`. A diagram
+  source and the raster it exports do not live together.

@@ -1,0 +1,73 @@
+OUTPUT
+One static PNG, 1920 x 1080, warm off-white ground, single light palette.
+Accepted path: resources/img/section_kpi_social.png.
+The raster is not in the repository yet. This prompt is the authority
+on what that file will show. Do not invent a second instance.
+
+SUBJECT
+A Finviz-style usage map of social content. Nested rectangles group
+posts by format. Tile area is impressions. Fill brightness is
+engagement rate. The dim group is content that drew none. It is the
+illustration of Business Signal in Cold Data §2.4. It is not an
+allocator and not a recommendation.
+
+STYLE
+Editorial flat 2D squarified treemap, one legend strip under the map.
+No perspective, realism, 3D, shadows, gradients, UI chrome, dashboard
+widgets, server racks, or emojis. System-ui labels; ui-monospace for
+every identifier and number. 1px group rules. Tile corners about 2px.
+
+COLOURS
+House explainer family only. No third hue.
+#FCFCFB canvas (paper, coldest fill).
+#EEF4F0 sage (warm-cold fill).
+#1B4D3E dark-green (hottest fill).
+#7A1F2B wine (cold-tile stroke only).
+#F8EEF0 rose (unused except as a hatch field if the hatch needs a tint).
+#0B0B0B ink. #52514E secondary. #DEDEDE rules. #FFFFFF card ground.
+
+Brightness is the KPI channel: higher engagement is deeper green, lower
+engagement fades toward paper. Colour is never the only state channel.
+Every cold tile also has a 2px wine stroke, a 45-degree hatch, and its
+printed engagement rate. Warm and hot tiles have no hatch.
+
+THE INSTANCE (fixed -- do not vary)
+Columns: group, tile_id, label, size, kpi, band.
+size is impressions.
+kpi is engagement rate in percent.
+band is hot, warm, or cold.
+
+group          tile_id   label              size    kpi    band
+Short video    v1        How-to 12s       820000    6.4    hot
+Short video    v2        Recap 18s        540000    4.1    warm
+Short video    v3        Duet 9s          310000    5.8    hot
+Photo          p1        Product still    210000    1.2    warm
+Photo          p2        Behind scenes    180000    2.8    warm
+Photo          p3        Carousel         150000    0.4    cold
+Thread         r1        Launch notes      90000    3.1    warm
+Thread         r2        AMA recap         70000    2.2    warm
+Live           i1        Studio Q&A       640000    0.08   cold
+Live           i2        Unbox stream     480000    0.11   cold
+Live           i3        Watch party      390000    0.06   cold
+Story          y1        Poll sticker     220000    3.8    warm
+Story          y2        Countdown        160000    1.1    warm
+Newsletter     n1        Weekly digest    280000    0.15   cold
+Newsletter     n2        Promo blast      350000    0.09   cold
+
+Live is the constructed cold pocket: large area, pale fill, wine
+stroke, hatch. Newsletter is also cold. Do not add a tile. Do not drop
+a tile. Do not change a number.
+
+LAYOUT
+Squarify groups, then tiles inside each group. Group label sits on the
+group. Tile label and kpi sit on the tile when the tile is large enough;
+otherwise the label is the tile_id. A legend at the foot states: area is
+impressions; brightness is engagement rate; hatch plus wine stroke
+marks cold.
+
+Do not print the pane title "Impressions and Engagement" on the raster.
+The HTML heading already carries it.
+
+PRODUCTION
+Deferred. A later pass draws the PNG from this instance. Until then the
+page shows an empty stage and this prompt remains the contract.

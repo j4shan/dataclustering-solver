@@ -16,8 +16,8 @@ from pathlib import Path
 
 import pytest
 
-STATIC = Path("simulator/gui/static")
-HTML = Path("resources/html")
+STATIC = Path("site")
+HTML = STATIC / "figures" / "html"
 
 #: The fragments mounted into a pane by `data-mount`, and the wrapper the document
 #: pre-render emits around every collapsed figure pair (12.3).

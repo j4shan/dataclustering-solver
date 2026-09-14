@@ -8,7 +8,7 @@ carries three rasters, one per walkthrough section.
 
 **Authority.** This document is the product spec for Drawing Storage Boundary.
 [`simulator-spec.md`](simulator-spec.md) governs the application shell, theme, and layout.
-[`problem-statement.md`](../../resources/html/problem-statement.md)
+[`problem-statement.md`](../../site/docs/problem-statement.md)
 remains the authority on the formal objective.
 [`technical_writing_instruction.md`](../instructions/technical_writing_instruction.md)
 is the writing contract for the left pane. Where this document and the product spec
@@ -40,9 +40,9 @@ that section's mechanism.
    studies that assignment as a multiple-choice knapsack on a static sample.
    The numeric result is tied to that frozen profile and may not transfer to
    a live system. It can still mark a cost-versus-benefit threshold. The leaf
-   benefit of a terminal group packed at count $K_g$ is the Poisson empty-unit
+   benefit of a terminal group packed at count $K_g$ is the Poisson empty-container
    volume $V_g(K_g)=n_g\Pr(X=0)=n_g e^{-\lambda_g}$, with
-   $\lambda_g=n_g p_g/K_g$, the same empty-unit model as Measuring Data
+   $\lambda_g=n_g p_g/K_g$, the same empty-container model as Measuring Data
    Layout Fitness §3.1.
 2. **Problem Generalization: Multiple-choice Knapsack** — map the storage
    allocation onto the multiple-choice knapsack problem: one class per
@@ -70,7 +70,7 @@ The left pane follows the writing contract: each section is mental model,
 terms, formula, observations, in that order. Graphics are step 4 of that
 flow and live only on the right. Conclusions fold into the last paragraph
 of the section; there is no labeled takeaway. The walkthrough does not use the
-word *production*.
+word *production*. The walkthrough does not use the word *teach*.
 
 ---
 
@@ -89,7 +89,7 @@ floor caps how large a group's count can grow.
 
 The model's option value is the leaf benefit
 $V_g(K_g)=n_g\Pr(X=0)=n_g e^{-\lambda_g}$, where $X$ is the selected-event
-count in one equal-size unit of group $g$ packed at $K_g$ containers,
+count in one equal-size container of group $g$ packed at $K_g$ containers,
 $p_g$ is the group-wide selection rate from the static query sample, and
 $\lambda_g=n_g p_g/K_g$. On this page $\lambda$ is only that Poisson
 parameter. It is not:
@@ -152,18 +152,21 @@ order:
 
 | id | Visible title | Walkthrough section |
 | --- | --- | --- |
-| `E.storage-limits` | *The Container Assignment Problem* | §1 Working with Storage Container Limits |
-| `E.knapsack-ladder` | *Convert to Multiple-Choice Knapsack Problem (MCKP)* | §2 Problem Generalization: Multiple-choice Knapsack |
-| `E.greedy-guardrails` | *Greedy Optimality relies on Decaying Marginal Efficiency* | §3 Greedy Optimization |
+| `budget.storage-limits` | *The Container Assignment Problem* | §1 Working with Storage Container Limits |
+| `budget.knapsack-ladder` | *Convert to Multiple-Choice Knapsack Problem (MCKP)* | §2 Problem Generalization: Multiple-choice Knapsack |
+| `budget.greedy-guardrails` | *Greedy Optimality relies on Decaying Marginal Efficiency* | §3 Greedy Optimization |
 
-Each figure carries a one-line caption naming its construction. No pane
-references a missing file.
+Each figure carries a one-line caption naming its construction. The pane
+heading is the visible title, and **no figure reprints that title inside
+itself** or adds a footnote — not the draw.io rasters and not the
+authored one. One line of spacing separates the three figures.
+No pane references a missing file.
 
 Each figure is authored from its retained prompt:
 
-- [`resources/img_prompt/e_storage_limits_prompt.txt`](../../resources/img_prompt/e_storage_limits_prompt.txt)
-- [`resources/img_prompt/e_knapsack_ladder_prompt.txt`](../../resources/img_prompt/e_knapsack_ladder_prompt.txt)
-- [`resources/img_prompt/e_greedy_guardrails_prompt.txt`](../../resources/img_prompt/e_greedy_guardrails_prompt.txt)
+- [`resources/img_prompt/section_budget_storage_limits_prompt.txt`](../../resources/img_prompt/section_budget_storage_limits_prompt.txt)
+- [`resources/img_prompt/section_budget_knapsack_ladder_prompt.txt`](../../resources/img_prompt/section_budget_knapsack_ladder_prompt.txt)
+- [`resources/img_prompt/section_budget_greedy_guardrails_prompt.txt`](../../resources/img_prompt/section_budget_greedy_guardrails_prompt.txt)
 
 Each prompt names the accepted PNG's path and is the authority on that
 figure's content. Two authoring routes are in use, and each prompt states
@@ -175,9 +178,9 @@ which one its figure takes:
   rasterizer antialiases small type and hairlines poorly. The renderer
   was removed after acceptance (10.3.3).
 - **draw.io** — figures 2 and 3. The accepted sources are
-  [`resources/img/section_e_knapsack_ladder.drawio`](../../resources/img/section_e_knapsack_ladder.drawio)
+  [`resources/img_src/section_budget_knapsack_ladder.drawio`](../../resources/img_src/section_budget_knapsack_ladder.drawio)
   and
-  [`resources/img/section_e_greedy_guardrails.drawio`](../../resources/img/section_e_greedy_guardrails.drawio);
+  [`resources/img_src/section_budget_greedy_guardrails.drawio`](../../resources/img_src/section_budget_greedy_guardrails.drawio);
   the accepted PNG is exported from that source with the draw.io desktop
   CLI at the target width. No supersample, because draw.io renders through
   a browser engine that antialiases correctly at any size. The one-time
@@ -191,7 +194,7 @@ A visual change starts a new authoring pass from the prompt.
 
 The three right-pane rasters do not use a provider dataset, the Data
 Skipping Experiment catalog, or the committed scenario file. Group
-states and printed metrics are hypothesized: they exist to teach the
+states and printed metrics are hypothesized: they exist to present / introduce the
 mechanism, not to report a scored workload. This section's figures are
 outside 12.6.4's catalog / manifest / scenario trace.
 
@@ -321,7 +324,7 @@ apply the §3 guardrails.
 
 ### 6.2 *Convert to Multiple-Choice Knapsack Problem (MCKP)* (§2)
 
-The composition teaches the multiple-choice knapsack mapping:
+The composition presents / introduces the multiple-choice knapsack mapping:
 
 1. one class per leaf of the price split, one option per geometric count
    $K\in\{1,4,16,64\}$, drawn as two chains of four nodes and three edges;
@@ -341,7 +344,7 @@ not rank all six edges or apply the §3 guardrails.
 
 ### 6.3 *Greedy Optimality relies on Decaying Marginal Efficiency* (§3)
 
-The composition teaches the condition and the three guardrails on one
+The composition presents / introduces the condition and the three guardrails on one
 container chain, $K_g=1\ldots K_{g,\max}$:
 
 1. one chart with one horizontal axis — number of containers $K_g$, one
@@ -368,7 +371,7 @@ container chain, $K_g=1\ldots K_{g,\max}$:
    count struck through.
 
 An axis title names its quantity and never says which side it is on. The
-raster carries no subtitle under the title, no legend, and no caption line:
+raster carries no title, no subtitle, no legend, and no caption line:
 the region banners, the verdict tokens and the struck counts each carry
 their own word or mark, so nothing needs a key. The closing sentence under
 the chain strip is the last element on the page.
@@ -381,7 +384,7 @@ against one another or draw a container budget.
 ## 7. Writing contract
 
 The left pane is
-[`section-budget-walkthrough.html`](../../simulator/gui/static/section-budget-walkthrough.html).
+[`section-budget-walkthrough.html`](../../site/section-budget-walkthrough.html).
 It is a technical presentation. Each section uses the
 six-step flow in
 [`technical_writing_instruction.md`](../instructions/technical_writing_instruction.md),
@@ -398,7 +401,8 @@ reference. Later emphasis uses the citation form *the concept description*
 (`symbol`, defined in §X), naming the document when $X$ is not a
 section of this walkthrough. The walkthrough contains no figure markup.
 The walkthrough refers to Measuring Data Layout Fitness and to Problem
-Statement's medicine-cabinet walkthrough by those names. On the left pane,
+Statement's medicine-cabinet walkthrough by those names.
+The walkthrough does not use the word *teach*. On the left pane,
 $\lambda$ is only the Poisson parameter; aggregate waste is written in words
 and cited to Problem Statement §2.5.
 
@@ -408,17 +412,17 @@ and cited to Problem Statement §2.5.
 
 | id | requirement |
 | --- | --- |
-| E1 | Walkthrough on the left; three figures on the right in §1, §2, §3 order; that order when stacked |
-| E2 | Left opens once split trees exposing high value potential are identified, then Problem Statement's medicine-cabinet walkthrough, then states $B$ and $s_{\min}$ |
-| E3 | Leaf benefit is $V_g(K_g)=n_g\Pr(X=0)=n_g e^{-\lambda_g}$ with $\lambda_g=n_g p_g/K_g$; $\lambda$ is only that Poisson parameter |
-| E4 | Section 2 maps the allocation onto MCKP with a geometric option ladder and predecessor-constrained upgrade edges |
-| E5 | Section 3 states the greedy scan, $O(E\log m)$ time, $O(m)$ extra space, and the cases where the geometric model fails the theorem |
-| E6 | Section 3 closes with three guardrails: $K_{g,0}\ge n_g p_g/2$, $n_g/K_g>s_{\min}$, and a typical ~50% group-level skip bar before $K_g>1$ |
-| E7 | No labeled takeaway; the walkthrough does not use the word *production* |
-| E8 | Right pane carries the three titled figures, each with a one-line caption; no `<img>` to a missing file |
-| E9 | Figure 1 uses the §5 price-tier instance; figure 2 the §5 price split; figure 3 the §5 single-group geographic instance; they do not read a provider dataset, catalog, or scenario file; every printed number is derived from the dictionary that figure names |
-| E10 | Figures use the wine / sage explainer family; state is never colour alone |
-| E11 | No winning allocation, recommendation badge, shipped engine constant, or claim of optimality |
-| E12 | Wiki / DOI links only at first introduction of those terms |
-| E13 | Left walkthrough fills the pane; type is one step above Problem Statement |
-| E14 | Figure 3 carries one terminal group as a single container chain $K_g=1\ldots K_{g,\max}$ on one horizontal axis, with $V_g(K_g)$ and $e=\Delta V/\Delta K$ on two vertical axes, and marks the inflection $K_{g,0}=n_gp_g/2$ where $\mathrm{d}^2V/\mathrm{d}K^2$ changes sign; it carries no subtitle, legend or caption |
+| I1 | Walkthrough on the left; three figures on the right in §1, §2, §3 order; that order when stacked |
+| I2 | Left opens once split trees exposing high value potential are identified, then Problem Statement's medicine-cabinet walkthrough, then states $B$ and $s_{\min}$ |
+| I3 | Leaf benefit is $V_g(K_g)=n_g\Pr(X=0)=n_g e^{-\lambda_g}$ with $\lambda_g=n_g p_g/K_g$; $\lambda$ is only that Poisson parameter |
+| I4 | Section 2 maps the allocation onto MCKP with a geometric option ladder and predecessor-constrained upgrade edges |
+| I5 | Section 3 states the greedy scan, $O(E\log m)$ time, $O(m)$ extra space, and the cases where the geometric model fails the theorem |
+| I6 | Section 3 closes with three guardrails: $K_{g,0}\ge n_g p_g/2$, $n_g/K_g>s_{\min}$, and a typical ~50% group-level skip bar before $K_g>1$ |
+| I7 | No labeled takeaway; the walkthrough does not use the word *production* |
+| I8 | Right pane carries the three titled figures, each with a one-line caption; no figure reprints that title inside itself or adds a footnote; one line of spacing separates the figures; no `<img>` to a missing file |
+| I9 | Figure 1 uses the §5 price-tier instance; figure 2 the §5 price split; figure 3 the §5 single-group geographic instance; they do not read a provider dataset, catalog, or scenario file; every printed number is derived from the dictionary that figure names |
+| I10 | Figures use the wine / sage explainer family; state is never colour alone |
+| I11 | No winning allocation, recommendation badge, shipped engine constant, or claim of optimality |
+| I12 | Wiki / DOI links only at first introduction of those terms |
+| I13 | Left walkthrough fills the pane; type is one step above Problem Statement |
+| I14 | Figure 3 carries one terminal group as a single container chain $K_g=1\ldots K_{g,\max}$ on one horizontal axis, with $V_g(K_g)$ and $e=\Delta V/\Delta K$ on two vertical axes, and marks the inflection $K_{g,0}=n_gp_g/2$ where $\mathrm{d}^2V/\mathrm{d}K^2$ changes sign; it carries no title, subtitle, legend or caption |

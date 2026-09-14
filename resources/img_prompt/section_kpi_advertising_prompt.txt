@@ -1,0 +1,76 @@
+OUTPUT
+One static PNG, 1920 x 1080, warm off-white ground, single light palette.
+Accepted path: resources/img/section_kpi_advertising.png.
+The raster is not in the repository yet. This prompt is the authority
+on what that file will show. Do not invent a second instance.
+
+SUBJECT
+A Finviz-style usage map of digital advertising. Nested rectangles
+group campaigns by channel. Tile area is ad spend. Fill brightness is
+conversion rate. The large dim group is spend that did not convert.
+It is the illustration of Business Signal in Cold Data §2.2. It is not
+an allocator and not a recommendation.
+
+STYLE
+Editorial flat 2D squarified treemap, one legend strip under the map.
+No perspective, realism, 3D, shadows, gradients, UI chrome, dashboard
+widgets, server racks, or emojis. System-ui labels; ui-monospace for
+every identifier and number. 1px group rules. Tile corners about 2px.
+
+COLOURS
+House explainer family only. No third hue.
+#FCFCFB canvas (paper, coldest fill).
+#EEF4F0 sage (warm-cold fill).
+#1B4D3E dark-green (hottest fill).
+#7A1F2B wine (cold-tile stroke only).
+#F8EEF0 rose (unused except as a hatch field if the hatch needs a tint).
+#0B0B0B ink. #52514E secondary. #DEDEDE rules. #FFFFFF card ground.
+
+Brightness is the KPI channel: higher conversion is deeper green, lower
+conversion fades toward paper. Colour is never the only state channel.
+Every cold tile also has a 2px wine stroke, a 45-degree hatch, and its
+printed conversion rate. Warm and hot tiles have no hatch.
+
+THE INSTANCE (fixed -- do not vary)
+Columns: group, tile_id, label, size, kpi, band.
+size is ad spend in thousands of dollars.
+kpi is conversion rate in percent.
+band is hot, warm, or cold.
+
+group        tile_id   label           size   kpi    band
+Search       s1        Brand Exact      420   8.2    hot
+Search       s2        Brand Broad      180   4.1    warm
+Search       s3        Competitor        95   3.8    warm
+Search       s4        Shopping         210   5.6    hot
+Social       o1        Prospecting      310   0.4    cold
+Social       o2        Retargeting      140   3.2    warm
+Social       o3        Lookalike        220   0.6    cold
+Social       o4        Stories           80   1.8    warm
+Display      d1        ROS Banner       380   0.12   cold
+Display      d2        Contextual       160   0.18   cold
+Display      d3        Programmatic     290   0.09   cold
+Display      d4        Native           110   0.22   cold
+Video        v1        Pre-roll         200   1.1    warm
+Video        v2        Mid-roll          90   0.8    cold
+Video        v3        Bumper            70   2.4    warm
+Affiliate    a1        Coupon           150   0.3    cold
+Affiliate    a2        Review            60   2.1    warm
+Affiliate    a3        Comparison        85   0.25   cold
+
+Display is the constructed cold pocket: large area, pale fill, wine
+stroke, hatch. Do not add a tile. Do not drop a tile. Do not change a
+number.
+
+LAYOUT
+Squarify groups, then tiles inside each group. Group label sits on the
+group. Tile label and kpi sit on the tile when the tile is large enough;
+otherwise the label is the tile_id. A legend at the foot states: area is
+ad spend; brightness is conversion rate; hatch plus wine stroke marks
+cold.
+
+Do not print the pane title "Ad Spend and Conversion" on the raster.
+The HTML heading already carries it.
+
+PRODUCTION
+Deferred. A later pass draws the PNG from this instance. Until then the
+page shows an empty stage and this prompt remains the contract.

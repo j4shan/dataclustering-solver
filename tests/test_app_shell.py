@@ -12,15 +12,11 @@ import re
 
 import pytest
 
-from simulator.gui import FIGURE_ROOT, STATIC_ROOT
+from simulator.gui import SITE_ROOT
 
-#: 12.2.13 — relative, so the page resolves it against its own document wherever the
-#: site is opened from.  A leading slash would address the host's root instead.
-FIGURE_PREFIX = "figures/"
-
-INDEX = STATIC_ROOT / "index.html"
-APP_CSS = STATIC_ROOT / "app.css"
-APP_JS = STATIC_ROOT / "app.js"
+INDEX = SITE_ROOT / "index.html"
+APP_CSS = SITE_ROOT / "app.css"
+APP_JS = SITE_ROOT / "app.js"
 
 
 @pytest.fixture(scope="module")
@@ -33,9 +29,11 @@ def css() -> str:
     return re.sub(r"/\*.*?\*/", "", APP_CSS.read_text(), flags=re.DOTALL)
 
 
-def test_browser_and_wordmark_use_the_formal_project_title(html):
+def test_browser_tab_uses_the_formal_project_title(html):
+    """12.1.3.3 — the formal name stays on the browser tab, not on the top bar."""
     assert "<title>The Data Storage Layout Problem</title>" in html
-    assert '<span class="wordmark">The Data Storage Layout Problem</span>' in html
+    assert "wordmark" not in html
+    assert "The Data Storage Layout Problem" not in html.split("<body>", 1)[1].split("</header>", 1)[0]
 
 
 @pytest.fixture(scope="module")
@@ -65,27 +63,30 @@ def media_block(css: str, query: str) -> str:
     raise AssertionError(f"unbalanced braces after {query}")
 
 
-# -- four sections, in order (12.1.1) -----------------------------------------------
+# -- five sections, in order (12.1.1) -----------------------------------------------
 
 
-def test_there_are_four_sections_in_fixed_order(html):
-    assert re.findall(r'<section class="section" id="([\w-]+)"', html) == [
+def test_there_are_five_sections_in_fixed_order(html):
+    assert re.findall(r'<section class="section(?:\s[^"]*)?" id="([\w-]+)"', html) == [
         "problem",
         "gini",
         "knapsack",
         "design",
+        "signal",
     ]
 
 
-def test_each_section_is_a_left_right_pair(html):
+def test_the_first_four_sections_are_left_right_pairs(html):
     assert html.count('class="split"') == 4
     assert html.count("pane pane-left") == 4
     assert html.count("pane-right") == 4
+    assert 'class="section section-single"' in html
+    assert html.count("pane pane-single") == 1
 
 
 def test_the_sections_are_individually_linkable(html):
     """12.1.3 — stable anchors, and a persistent control that selects between them."""
-    anchors = set(re.findall(r'<section class="section" id="([\w-]+)"', html))
+    anchors = set(re.findall(r'<section class="section(?:\s[^"]*)?" id="([\w-]+)"', html))
     navigated = set(re.findall(r'<a href="#([\w-]+)" data-nav=', html))
     assert navigated == anchors
 
@@ -106,9 +107,12 @@ def test_section_headings_match_their_navigation_labels(html):
     knapsack = html.split('id="knapsack"')[1].split('id="design"')[0]
     assert '<h1 id="knapsack-heading">Drawing Storage Boundary</h1>' in knapsack
     assert "pane-title" not in knapsack
-    design = html.split('id="design"')[1]
+    design = html.split('id="design"')[1].split('id="signal"')[0]
     assert '<h1 id="design-heading">Go Live on Databricks Lakehouse</h1>' in design
     assert "pane-title" not in design
+    signal = html.split('id="signal"')[1]
+    assert '<h1 id="signal-heading">Business Signal in Cold Data</h1>' in signal
+    assert "pane-title" not in signal
 
 
 def test_section_headings_stand_alone(html):
@@ -122,10 +126,10 @@ def test_every_section_is_labelled_for_a_screen_reader(html):
     for target in labelled:
         assert f'id="{target}"' in html
     panes = re.findall(r'<div class="pane(?:\s[^"]*)?"[^>]*>', html)
-    assert len(panes) == 10
+    assert len(panes) == 11
     assert all('role="region"' in pane for pane in panes)
     assert all('aria-label="' in pane for pane in panes)
-    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 10
+    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 11
 
 
 # -- the scroll model (12.1.2, 12.1.7) -----------------------------------------------
@@ -155,6 +159,28 @@ def test_the_header_contains_navigation_at_narrow_widths(css):
     assert "flex: 1" in navigation
     assert "min-width: 0" in navigation
     assert "overflow-x: auto" in navigation
+
+
+def test_the_top_bar_is_a_raised_3d_bar(css):
+    """12.1.3.4 — a ground-to-recessed face, a top-edge highlight, and a drop shadow."""
+    bar = rule_for(css, ".top-bar")
+    assert "linear-gradient(" in bar
+    assert "var(--ground)" in bar
+    assert "var(--recessed)" in bar
+    assert "inset 0 1px 0 var(--ground)" in bar
+    assert "box-shadow" in bar
+
+
+def test_selectable_tabs_highlight_on_hover(css):
+    """12.1.3.5 — a tab that can be chosen is visibly live before it is selected."""
+    hover = rule_for(css, ".section-nav a:hover:not([aria-current=\"true\"])")
+    assert "background" in hover
+    assert "var(--accent)" in hover
+
+
+def test_tab_labels_are_one_pixel_larger_than_chrome(css):
+    """12.7.2.5 — section-tab labels sit one pixel above 13px chrome."""
+    assert "font-size: calc(var(--text-body) + 1px)" in rule_for(css, ".section-nav a")
 
 
 def test_panes_are_bounded_and_scroll_independently(css):
@@ -228,12 +254,12 @@ def test_prose_is_set_for_sustained_reading(css):
     assert "line-height: var(--leading-prose)" in rule_for(css, ".pane:has(.formulation)")
 
 
-def test_section_a_formulation_fills_the_right_pane(css):
+def test_section_problem_formulation_fills_the_right_pane(css):
     """12.3 — the document uses the pane, not a character clamp inside it."""
     assert "max-width: none" in rule_for(css, "#problem .pane-right .formulation")
 
 
-def test_section_a_illustration_is_one_pixel_larger_than_chrome(css):
+def test_section_problem_illustration_is_one_pixel_larger_than_chrome(css):
     """12.3 — the left pane remaps the type tokens so every beat steps together."""
     declarations = rule_for(css, "#problem .pane-left")
     assert "--text-body: 14px" in declarations
@@ -242,7 +268,7 @@ def test_section_a_illustration_is_one_pixel_larger_than_chrome(css):
     assert "--text-title: 23px" in declarations
 
 
-def test_section_a_formulation_is_one_pixel_larger_than_chrome(css):
+def test_section_problem_formulation_is_one_pixel_larger_than_chrome(css):
     """12.3 — body, headings, and small type each step one pixel above 12.7.2."""
     assert "font-size: calc(var(--text-body) + 1px)" in rule_for(css, "#problem .pane-right")
     assert "font-size: calc(var(--text-title) + 1px)" in rule_for(
@@ -259,7 +285,7 @@ def test_section_a_formulation_is_one_pixel_larger_than_chrome(css):
     )
 
 
-def test_section_a_puts_the_illustration_on_the_left(html):
+def test_section_problem_puts_the_illustration_on_the_left(html):
     """12.3 / 12.3 — drawings first, then the dictionary, then the formulation."""
     section = html.split('id="problem"')[1].split('id="gini"')[0]
     assert section.index("section-problem-illustration.html") < section.index(
@@ -272,11 +298,10 @@ def test_section_a_puts_the_illustration_on_the_left(html):
     )
     assert re.search(r'data-mount="section-problem-glossary.html"', section)
     assert re.search(r'data-mount="formulation.html"', section)
-    assert "Open the medicine-cabinet walkthrough" in section
     assert "twelve events in three containers" not in section
 
 
-def test_section_a_right_column_stacks_the_dictionary_above_the_formulation(css):
+def test_section_problem_right_column_stacks_the_dictionary_above_the_formulation(css):
     """12.3 / 12.8 — dictionary 30% on top, independently bounded, lower band 70%."""
     stack = rule_for(css, ".pane-stack.pane-right")
     assert "grid-template-rows: minmax(8rem, 30%) minmax(0, 70%)" in stack
@@ -292,15 +317,19 @@ def test_the_page_ships_no_third_party_anything(html):
     assert "http://" not in html
     assert "https://" not in html
     for stylesheet in re.findall(r'<link rel="stylesheet" href="([^"]+)"', html):
-        assert (STATIC_ROOT / stylesheet).exists()
+        assert (SITE_ROOT / stylesheet).exists()
     for source in re.findall(r'<script[^>]+src="([^"]+)"', html):
-        assert (STATIC_ROOT / source).exists()
+        assert (SITE_ROOT / source).exists()
 
 
 def _mounted_path(fragment: str):
-    if fragment.startswith(FIGURE_PREFIX):
-        return FIGURE_ROOT / fragment[len(FIGURE_PREFIX) :]
-    return STATIC_ROOT / fragment
+    """Where a `data-mount` path lands on disk — which is simply where it lands.
+
+    12.2.13 — every mount is relative to the page, and the served tree is the repository
+    tree, so resolving one is a join rather than a prefix rule.  A leading slash would
+    address the host's root instead, which is what the inventory check below forbids.
+    """
+    return SITE_ROOT / fragment
 
 
 def test_every_mounted_fragment_exists(html):
@@ -310,11 +339,28 @@ def test_every_mounted_fragment_exists(html):
         assert _mounted_path(fragment).exists()
 
 
-def test_the_page_works_without_scripting_for_the_documents(html):
-    """Sections A and C are documents; a reader with no scripting still reaches them."""
-    assert html.count("<noscript>") >= 2
-    for fragment in re.findall(r'data-mount="([^"]+)"', html):
-        assert f'href="{fragment}"' in html
+def test_every_pane_declares_the_fragment_that_fills_it(html):
+    """12.2.14 — a reader without script gets the argument from the published copy.
+
+    That copy is made by inlining each `data-mount` fragment into the pane that names it,
+    so a pane with no `data-mount` is a pane that publishes empty.  The fallback this
+    replaces was a link to the fragment's own URL, which for an illustration fragment
+    rendered with every figure broken: the published document carries the content itself
+    instead, and `test_publish.py` is where that is checked end to end.
+
+    Fetching is what the *local* server does with these, and it is the reason each
+    fragment stays editable on its own.
+    """
+    sections = re.findall(r'<section class="section[^"]*" id="([\w-]+)"', html)
+    assert len(sections) == 5
+    for identifier in sections:
+        opened = html.split(f'id="{identifier}"')[1]
+        body = opened.split("</section>")[0]
+        assert "data-mount=" in body, identifier
+    mounted = re.findall(r'data-mount="([^"]+)"', html)
+    assert len(mounted) == len(set(mounted)) >= len(sections)
+    for fragment in mounted:
+        assert _mounted_path(fragment).is_file(), fragment
 
 
 # -- markup safety (12.6.5) ------------------------------------------------------------
@@ -370,7 +416,7 @@ def test_nothing_from_a_request_is_parsed_as_markup():
     scripts that do not exist yet.
     """
     mounting = "app.js"  # the one file allowed to, and only for a build artifact
-    for script in sorted(STATIC_ROOT.glob("*.js")):
+    for script in sorted(SITE_ROOT.glob("*.js")):
         source = re.sub(r"/\*.*?\*/|//[^\n]*", "", script.read_text(), flags=re.DOTALL)
         assert "insertAdjacentHTML" not in source, script.name
         assert ".outerHTML" not in source, script.name
@@ -387,13 +433,13 @@ def test_the_page_builds_its_nodes_rather_than_writing_them():
     The builder and all three report views construct through `dom.js`, so the rule is
     kept in one place rather than repeated in five files that could each drift.
     """
-    source = (STATIC_ROOT / "dom.js").read_text()
+    source = (SITE_ROOT / "dom.js").read_text()
     assert "created.textContent = text" in source
 
 
 def test_no_state_survives_a_reload():
     """12.2.7 — persistence is excluded outright, not relocated to a different store."""
-    for script in STATIC_ROOT.glob("*.js"):
+    for script in SITE_ROOT.glob("*.js"):
         text = script.read_text()
         for store in ("localStorage", "sessionStorage", "document.cookie", "history.pushState"):
             assert store not in text, script.name
@@ -432,8 +478,9 @@ def root_absolute(text: str) -> list[str]:
 
 #: Every document this process serves that a person authored or a generator wrote.
 SERVED = sorted(
-    [*STATIC_ROOT.rglob("*.html"), *STATIC_ROOT.rglob("*.js"), *STATIC_ROOT.rglob("*.css")]
-    + [*FIGURE_ROOT.rglob("*.html"), *FIGURE_ROOT.rglob("*.svg")]
+    document
+    for extension in ("*.html", "*.js", "*.css", "*.svg")
+    for document in SITE_ROOT.rglob(extension)
 )
 
 

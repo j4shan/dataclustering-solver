@@ -1,0 +1,75 @@
+OUTPUT
+One static PNG, 1920 x 1080, warm off-white ground, single light palette.
+Accepted path: resources/img/section_kpi_ecommerce.png.
+The raster is not in the repository yet. This prompt is the authority
+on what that file will show. Do not invent a second instance.
+
+SUBJECT
+A Finviz-style usage map of an ecommerce warehouse. Nested rectangles
+group SKUs by category. Tile area is on-hand inventory. Fill brightness
+is sell-through. The pale group is stock that does not sell. It is the
+illustration of Business Signal in Cold Data §2.3. It is not an
+allocator and not a recommendation.
+
+STYLE
+Editorial flat 2D squarified treemap, one legend strip under the map.
+No perspective, realism, 3D, shadows, gradients, UI chrome, dashboard
+widgets, server racks, or emojis. System-ui labels; ui-monospace for
+every identifier and number. 1px group rules. Tile corners about 2px.
+
+COLOURS
+House explainer family only. No third hue.
+#FCFCFB canvas (paper, coldest fill).
+#EEF4F0 sage (warm-cold fill).
+#1B4D3E dark-green (hottest fill).
+#7A1F2B wine (cold-tile stroke only).
+#F8EEF0 rose (unused except as a hatch field if the hatch needs a tint).
+#0B0B0B ink. #52514E secondary. #DEDEDE rules. #FFFFFF card ground.
+
+Brightness is the KPI channel: higher sell-through is deeper green,
+lower sell-through fades toward paper. Colour is never the only state
+channel. Every cold tile also has a 2px wine stroke, a 45-degree hatch,
+and its printed sell-through. Warm and hot tiles have no hatch.
+
+THE INSTANCE (fixed -- do not vary)
+Columns: group, tile_id, label, size, kpi, band.
+size is on-hand units.
+kpi is sell-through in percent.
+band is hot, warm, or cold.
+
+group      tile_id   label            size   kpi   band
+Brakes     b1        Ceramic pad      1200    78   hot
+Brakes     b2        Rotor pair        800    64   hot
+Brakes     b3        Hardware kit      400    41   warm
+Filters    f1        Oil filter       2200    82   hot
+Filters    f2        Cabin filter     1500    55   warm
+Filters    f3        Fuel filter       600    18   cold
+Lighting   l1        LED headlamp      900    48   warm
+Lighting   l2        Fog lamp          500    12   cold
+Lighting   l3        Interior bulb    1800     9   cold
+Trim       t1        Chrome tip       2400     3   cold
+Trim       t2        Spoiler kit      1600     2   cold
+Trim       t3        Badge pack       3100     1   cold
+Trim       t4        Door visor       1900     4   cold
+Tools      w1        Torque wrench     300    61   hot
+Tools      w2        OBD reader        450    33   warm
+Fluids     u1        5W-30 case        800    70   hot
+Fluids     u2        ATF jug           500    22   cold
+
+Trim is the constructed cold pocket: large area, pale fill, wine
+stroke, hatch. Do not add a tile. Do not drop a tile. Do not change a
+number.
+
+LAYOUT
+Squarify groups, then tiles inside each group. Group label sits on the
+group. Tile label and kpi sit on the tile when the tile is large enough;
+otherwise the label is the tile_id. A legend at the foot states: area is
+on-hand inventory; brightness is sell-through; hatch plus wine stroke
+marks cold.
+
+Do not print the pane title "On-hand Inventory and Sell-through" on the
+raster. The HTML heading already carries it.
+
+PRODUCTION
+Deferred. A later pass draws the PNG from this instance. Until then the
+page shows an empty stage and this prompt remains the contract.

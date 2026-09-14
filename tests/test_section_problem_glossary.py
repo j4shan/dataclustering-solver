@@ -6,7 +6,7 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-GLOSSARY = Path("simulator/gui/static/section-problem-glossary.html")
+GLOSSARY = Path("site/section-problem-glossary.html")
 
 TERMS = (
     "Event / record",

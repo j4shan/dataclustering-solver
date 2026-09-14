@@ -6,11 +6,11 @@ outbound request by reading the file that was served, because it is the file tha
 authored.
 
 **The server holds nothing and computes nothing** (12.2.5).  It hands over authored
-files: the page and its assets from this package, and the figures from the repository's
-own `resources/` tree.  There is no route of its own to declare — what the page fetches,
-it fetches as a document — so static serving and path containment are `StaticFiles`',
-and what this module adds around them is one middleware carrying the response headers
-12.6.5 requires.
+files from one tree, `site/`, exactly as they sit on disk.  There is no route of its own
+to declare and no prefix of its own to map — what the page fetches, it fetches as a
+document, at the path it occupies in the repository — so static serving and path
+containment are `StaticFiles`', and what this module adds around them is one middleware
+carrying the response headers 12.6.5 requires.
 """
 
 from __future__ import annotations
@@ -30,16 +30,11 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from . import (
     DEFAULT_HOST,
     DEFAULT_PORT,
-    FIGURE_ROOT,
-    STATIC_ROOT,
+    SITE_ROOT,
 )
 from .. import logs
 
 log = logs.get(__name__)
-
-#: URL prefix the page uses for explainer assets, mapped onto the repository's own
-#: `resources/` rather than a copy.
-FIGURE_PREFIX = "/figures/"
 
 #: Served for `/`.
 INDEX_FILE = "index.html"
@@ -157,11 +152,10 @@ def _canonical(name: bytes) -> bytes:
 def build_app() -> FastAPI:
     """The ASGI application, ready to be served or driven by a test client.
 
-    **This application declares no route of its own.**  Two static mounts answer every
-    request: `figures/` from the repository's `resources/` tree, and everything else from
-    the authored page beside this module.  Nothing is held between requests, because
-    there is nothing to hold — which is 12.2.7 read as a property of the shape rather
-    than a rule someone has to keep.
+    **This application declares no route of its own, and mounts one tree.**  Every
+    request is answered from `site/`, figures included, because the figures live in it.
+    Nothing is held between requests, because there is nothing to hold — which is 12.2.7
+    read as a property of the shape rather than a rule someone has to keep.
     """
     app = FastAPI(title=PROJECT_TITLE, docs_url=None, redoc_url=None, openapi_url=None)
 
@@ -194,10 +188,7 @@ def build_app() -> FastAPI:
     # root and refuses anything that leaves it, so `..`, an encoded `..`, a symlink out of
     # the tree and an absolute path all fail identically — and identically to a file that
     # simply is not there.
-    app.mount(
-        FIGURE_PREFIX.rstrip("/"), StaticFiles(directory=FIGURE_ROOT), name="figures"
-    )
-    app.mount("/", StaticFiles(directory=STATIC_ROOT, html=True), name="static")
+    app.mount("/", StaticFiles(directory=SITE_ROOT, html=True), name="site")
 
     app.add_middleware(ResponseHeaders, policy=CONTENT_SECURITY_POLICY)
     return app

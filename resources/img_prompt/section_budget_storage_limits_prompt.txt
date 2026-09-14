@@ -1,0 +1,258 @@
+OUTPUT
+One static PNG, 1920 x 1080, warm off-white ground, single light palette.
+Accepted path: resources/img/section_budget_storage_limits.png.
+
+SUBJECT
+The container assignment problem on an already-chosen logical split.
+A price-tier CASE cuts Original Data into two terminal groups. A shared
+store of 1,000 buckets can send containers to those groups. The objective
+is to raise the weighted-average Poisson data-skipping ratio without
+exceeding that fixed budget. It is the illustration of Drawing Storage
+Boundary §1. It is not an allocator, knapsack ladder, greedy ranking, or
+recommendation.
+
+STYLE
+Editorial flat 2D diagram, a split tree above a shared store. No header
+band and no title block: the pane heading above the stage carries the
+title, and the raster never reprints it. The drawing opens on 130px of
+plain canvas. No perspective, realism, 3D, shadows, gradients, UI chrome, dashboard
+widgets, server racks, or emojis. System-ui labels; ui-monospace for
+every identifier and number. Rounded corners about 8px on cards and 6px
+on count tokens. 1px rules.
+
+COLOURS
+Use the same explainer family as Problem Statement and Measuring Data Layout Fitness:
+#FCFCFB canvas . #7A1F2B wine-red . #F8EEF0 warm-rose . #0B0B0B ink .
+#52514E secondary . #DEDEDE rules . #FFFFFF card ground.
+Wine is the store and its arrows; the leaves are ink and secondary on
+white. This figure uses no sage or green: it carries no badge and no
+token. Do not use orange. Colour is never the only state channel.
+
+THE INSTANCE (fixed -- do not vary)
+The renderer holds this as one dictionary near the top. Values printed in
+the figure are derived from it; none is typed again in drawing code.
+This dictionary is this figure's own hypothesized instance. It is not
+the four-group geographic instance used by the §2 and §3 rasters.
+
+column = "Price"
+groups = {
+  "T1": {
+    "lower": 20, "upper": None,
+    "records": 500_000,
+    "n_id": "n1",
+    "K_id": "K1",
+    "p_id": "pg1",
+    "F_id": "F1",
+  },
+  "T0": {
+    "lower": 0, "upper": 20,
+    "records": 3_300_000,
+    "n_id": "n2",
+    "K_id": "K2",
+    "p_id": "pg2",
+    "F_id": "F2",
+  },
+}
+container_budget = 1000
+
+A column is named once, in `column`, and every reference to it is
+capitalized and wrapped in square brackets -- [Price] -- in the CASE
+ladder and in both edge tags. A bare column name fails the render.
+
+Two arms, and only two. The bounds tile the price line: the first arm is
+open above $20, the second closes at $0, and they meet at $20. The CASE
+ladder and the edge ranges are both read off those bounds, so the figure
+cannot show a ladder that disagrees with the ranges beside it.
+
+The two groups are a hypothesized price-tier cut, not a partition of a
+provider corpus or a catalog score. States and metrics on this figure
+are hypothesized and then derived from the dictionary above. n1, n2,
+K1, K2, pg1, pg2, F1 and F2 are designated symbols, not numeric values.
+The record counts in the dictionary fix the instance and are checked by
+the renderer; no record count is printed in the figure.
+
+DERIVATION (the renderer computes all of it)
+  N = sum(records)                              # 3,800,000
+  w_g = n_g / N                                 # population weight
+  ladder(groups)   -> the CASE string, from the bounds
+  range_tag(g)     -> "[Price] > $20" for the open arm,
+                      "[Price] <= $20" for the arm that closes at $0
+  F_i(K_i) = e^(-n_i * pg_i / K_i)              # the expected data
+                                                # skipping ratio: the
+                                                # Poisson empty-container
+                                                # probability, in (0, 1]
+  V_i(K_i) = n_i * F_i(K_i)                     # skipping volume, in
+                                                # records
+  marginal(g) = delta(n_i F_i) / delta K_i      # change in skipping
+                                                # volume per container
+
+Each leaf owns one n_i, one K_i, one pg_i and one F_i from the
+dictionary. The expected data skipping ratio on that leaf is the function
+F_i of its own container count, F_i(K_i) = e^(-n_i pg_i / K_i). Naming it
+as a function is what lets the marginal row be written as a change in
+volume rather than as a second exponential. This figure does not bind
+n_i, K_i, pg_i or F_i to a number.
+
+F_i carries no population weight. It is a per-group empty-container
+probability, defined inside the group. The weight w_g enters one level up,
+in the weighted average the objective states.
+
+The marginal benefit is the change in the leaf's skipping volume per
+container, written delta(n_i * F_i) / delta K_i with the delta glyph. The
+volume is spelled out as n_i * F_i so the record count is visibly inside
+the differentiated quantity. Every product prints its multiplication
+sign -- in the exponent and in the volume alike; no product is written by
+juxtaposition alone. Do not print a step size, an accepted
+upgrade, or a ranking of these values across leaves.
+
+Expected derived checks:
+  N = 3,800,000
+  w(T1) = 500,000 / 3,800,000
+  w(T0) = 3,300,000 / 3,800,000
+  K1 + K2 = 1,000
+  T1 -> (n1, K1, pg1, F1) . T0 -> (n2, K2, pg2, F2)
+  the arms meet at $20 and close at $0
+
+The renderer asserts N, the two weights, the two symbol quadruples, and
+the tiling of the bounds. It never reads these check values as source
+data.
+
+NO TITLE
+The raster carries no title, no subtitle, no kicker and no caption line.
+Drawing Storage Boundary's pane prints *The Container Assignment Problem*
+as the heading above the stage; printing it again inside the drawing says
+it twice and goes stale the moment the figure is renamed.
+
+COMPONENT 1 -- THE SPLIT TREE (upper band)
+Circular root node labelled "Original Data". Do not print a record count
+or a skipping ratio on the root.
+
+The CASE ladder sits once under the root, on the centreline, in a single
+white card, as the grain that produced the two leaves. Two single-stroke
+arrows fan from just below that card to two rectangular leaves in
+dictionary order, left to right: T1, T0. Each edge tag states its arm as
+a range -- "[Price] > $20" and "[Price] <= $20" -- so the reader can see the
+two arms cover the whole price line with no gap and no overlap, and so
+each leaf's condition is readable without colour. No tag reads "else".
+Each tag sits outboard of its own shaft.
+
+The leaf card holds one thing: a two-column table with an invisible
+header -- metric name in the left column, value in the right, no header
+row, no rules, no zebra. The value column starts at one x for all four
+rows so the column reads as a column. Every property is a row; none is
+promoted to a badge, a chip, or a coloured token. The rows, in this
+order:
+
+  Record count                  n1
+  Selectivity                   pg1
+  Expected data skipping ratio  F1(K1) = e^(-n1 * pg1 / K1)
+  Marginal benefit              delta(n1 * F1) / delta K1
+
+Every exponent is set as a raised run, not as a caret in the text. Row 1
+is the leaf's designated record count, never a number. Row 2 is the
+group-wide selection rate, likewise designated. Row 3 names the ratio as
+a function of that leaf's container count and gives its Poisson
+empty-container form from Measuring Data Layout Fitness §3.1. Row 4 is the
+marginal benefit as derived above. Each row uses that leaf's own symbols
+and no other leaf's. The K_id appears on no row; it labels that group's
+arrow from the store. The weighting belongs to the objective, not to a
+single leaf.
+
+The group id -- T1, T0 -- is not printed on the card. The leaf is
+identified by its edge range above it and its K_i arrow below it.
+
+Leaf cards share width and baseline. White ground, #DEDEDE outline,
+ink type. No leaf is emphasized. The two cards sit wide apart, flanking
+the centreline, so the store below them has clear air for its arrows.
+
+COMPONENT 2 -- THE SHARED STORE (lower band, centre)
+A storage-bin glyph, drawn as line marks, not an emoji and not a
+Unicode character. Labelled "container budget = 1,000" immediately under
+the glyph, mono Semibold. The count is container_budget.
+
+From the bin, two outbound arrows, one to each leaf, tagged with that
+leaf's K_id and the word it carries: "K1 containers" to T1, "K2
+containers" to T0. The tag is wine mono, set clear of its own shaft. The
+arrows are the assignment relationship. They do not carry a numeric share
+or a spend. Do not colour one of the arrows as used.
+
+The bin sits on the vertical centreline, below the two leaves, with
+enough clearance that the outbound shafts do not cross a leaf card or
+the CASE label. Its label sits under the glyph, and the objective is the
+only text below it.
+
+OBJECTIVE (bottom left)
+One sentence, 14.5px secondary, left-aligned in the bottom-left
+corner, on two lines. The budget equation is one atom and never breaks
+across the line ending:
+  "Maximize the weighted-average data-skipping ratio
+   while satisfying K1 + K2 = 1,000."
+
+The two K symbols and the budget are from the instance. Do not print a
+numeric weighted average; K1 and K2 are not bound.
+
+NO LEGEND AND NO CAPTION
+The objective is the last text on the canvas. This figure carries no
+legend row and no caption line: every mark is labelled where it sits --
+the root by its name, each leaf by its metric table, each edge by its
+range, each arrow by its K_i, and the store by its budget.
+
+TYPE SCALE (base sizes at 1920 x 1080)
+root name 17 mono Semibold .
+metric names 12.5 mono, secondary .
+metric values 11 mono Semibold, ink . raised exponent 8.5 mono Semibold .
+CASE line 13.5 mono . edge tags 12.5 mono . arrow tags 12.5 mono Semibold .
+bin label 15 mono Semibold . objective 14.5.
+
+KEEP OUT
+- No winning allocation, accepted-edge list, winner badge, ranking medal,
+  or "best", "optimal layout", "recommended", or "upper bound" language.
+- The marginal-benefit row is the one marginal quantity this figure
+  carries, and it carries it as a per-leaf property. No upgrade arrow, no
+  ladder of container counts, no predecessor-constrained edge, no
+  exposed-edge list, and no ranking or comparison of the two leaves'
+  marginal values. Those belong to the §2 figure.
+- No group id on a leaf card.
+- No legend row and no caption line.
+- No badge, chip, or coloured token on a leaf: every property is a table
+  row, formatted like every other row.
+- No bare column name. A column reference is capitalized and bracketed.
+- No greedy heap, exposed-edge ranking, inflection, or skip bar. Those
+  belong to the §3 figure.
+- No numeric n_i, K_i, pg_i, ratio percent, marginal benefit, or weighted
+  average -- the symbols are designated, not bound. The container budget
+  is the one bound number in the figure.
+- No population weight, w_g, or n_i / N factor inside a leaf's ratio or
+  marginal benefit. The weight belongs to the objective sentence only.
+- No claim that the skipping ratio is aggregate waste or physical replay.
+- No shipped engine constants, truncation threshold, holdout result, or
+  source notebook path. Do not print the word production.
+- The leaf ratio is the Poisson empty-container probability
+  e^(-n_i pg_i / K_i); do not substitute another empty-container model.
+- No container assignment within a group and no event-to-container drawing.
+- No distinction carried by colour alone.
+- No second dataset, no third leaf, and no size-floor card. This figure
+  states the assignment problem; it does not list blocked counts.
+- No caption line.
+
+PRODUCTION
+Draw at 3840 x 2160 and downsample once to 1920 x 1080 with LANCZOS. Load
+SFNS.ttf and SFNSMono.ttf from /System/Library/Fonts; select weight with
+set_variation_by_name and cache by (size, weight, mono). Use anchor= for
+text. Draw arrowheads, the bin, and marks as line glyphs, not Unicode.
+The delta glyph in the marginal row is typed from SFNSMono, which carries
+it; a codepoint that face lacks renders blank rather than as a box, so
+check any new glyph against a private-use codepoint before trusting it.
+
+All geometry is generated from the instance. The two leaves share widths
+and all four row baselines. Labels must clear arrow shafts by at least
+20 source pixels. Fail the render on clipping, overlap, an arrow missing
+its K_id tag, a metric row that overruns its card, a row that uses
+another leaf's symbols, a bare or lower-case column reference, arms that
+leave a gap in the price line, or a total that differs from the derived
+N. After
+rendering, read the PNG back and inspect it visually before acceptance.
+The PNG at the accepted path was rendered and accepted from this
+specification; the renderer that produced it was deleted with
+acceptance, as the authoring rules require. A later visual change
+starts a new authoring pass.

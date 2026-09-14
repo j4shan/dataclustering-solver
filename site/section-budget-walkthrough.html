@@ -1,0 +1,236 @@
+<article class="formulation"><h2 id="1-working-with-storage-container-limits">1. Working with Storage Container Limits</h2>
+<p>Once data split trees exposing high value potential are identified, those terminal groups still need a storage assignment a real data storage system can keep. Measuring Data Layout Fitness grows the grouping by cutting leaves and scores the grouping on data-skipping potential. The tree is a screen for where selection concentrates. Those groups then have to be assigned to containers the system can actually hold.</p>
+<p>Problem Statement's medicine-cabinet walkthrough already names the limit that makes the assignment finite. Each small drawer is one storage container. The cabinet holds only so many drawers, so the dispensary cannot give every medicine its own drawer. A table in a data storage system meets the same count limit.</p>
+<p>A storage container can be a local SSD block, a file, a partition, or an object in cloud storage. Every system pays metadata to keep each container addressable. Most systems therefore publish a container-count ceiling, such as a maximum number of files or partitions per table, and a soft container-size floor, such as a minimum byte size per S3 object.</p>
+<p>The objective is a storage assignment plan that maximizes estimated data skipping inside those two limits. This page studies the maximum skipping potential of that plan as a multiple-choice knapsack on a static query sample. The numeric result is tied to that frozen profile and may not transfer to a live system. It can still mark a cost-versus-benefit threshold: how much extra skipping the next increment of container count appears to buy on the observed log.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>terminal group</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+<td>one population produced by the already-chosen logical split</td>
+</tr>
+<tr>
+<td>group population</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub></mrow></math></td>
+<td>number of events in group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>container count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></math></td>
+<td>number of containers assigned to group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>container-count ceiling</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math></td>
+<td>maximum number of containers the system will keep for the table</td>
+</tr>
+<tr>
+<td>container-size floor</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>s</mi><mrow><mi>min</mi></mrow></msub></mrow></math></td>
+<td>smallest container the system will accept; it caps how large <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></math> can grow</td>
+</tr>
+</tbody>
+</table>
+<p>Reserve one container for every terminal group so each group stays addressable. The remaining count up to the ceiling is what the groups share. The size floor (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>s</mi><mrow><mi>min</mi></mrow></msub></mrow></math>, defined in this section) bounds the finest packing a group may take.</p>
+<p>Once group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math> is packed into <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></math> equal containers, each container has size <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub><mo>/</mo><msub><mi>K</mi><mi>g</mi></msub></mrow></math>. Measuring Data Layout Fitness §3.1 scores a packed leaf with the empty-container <a href="https://en.wikipedia.org/wiki/Poisson_distribution" target="_blank" rel="noopener noreferrer">Poisson</a> probability. This page uses that probability as a volume. The leaf benefit is the group's event count times the chance a packed container holds no selected event.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>group-wide rate</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math></td>
+<td>average, across training queries, of the fraction of group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math> each query selected</td>
+</tr>
+<tr>
+<td>selected count in a container</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math></td>
+<td>how many events a later query selects in one packed container of the group</td>
+</tr>
+<tr>
+<td>Poisson parameter</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mi>g</mi></msub></mrow></math></td>
+<td>expected selected-event count in one container, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mi>g</mi></msub><mo>=</mo><msub><mi>n</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub><mo>/</mo><msub><mi>K</mi><mi>g</mi></msub></mrow></math></td>
+</tr>
+<tr>
+<td>empty-container probability</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Pr</mi><mo stretchy="false">(</mo><mi>X</mi><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msub><mi>&#x003BB;</mi><mi>g</mi></msub></mrow></msup></mrow></math> under the Poisson model</td>
+</tr>
+<tr>
+<td>leaf benefit</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>V</mi><mi>g</mi></msub><mo stretchy="false">(</mo><msub><mi>K</mi><mi>g</mi></msub><mo stretchy="false">)</mo></mrow></math></td>
+<td>skipped-record volume, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub></mrow></math> times that empty-container probability</td>
+</tr>
+</tbody>
+</table>
+<p>On this page <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> is only the Poisson parameter. The formal statement's layout letter is written in words. The leaf benefit, exact under the Poisson model, is</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>V</mi><mi>g</mi></msub><mo stretchy="false">(</mo><msub><mi>K</mi><mi>g</mi></msub><mo stretchy="false">)</mo><mo>=</mo><msub><mi>n</mi><mi>g</mi></msub><mo>&#x022C5;</mo><mi>Pr</mi><mo stretchy="false">(</mo><mi>X</mi><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo><mo>=</mo><msub><mi>n</mi><mi>g</mi></msub><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msub><mi>&#x003BB;</mi><mi>g</mi></msub></mrow></msup><mo>=</mo><msub><mi>n</mi><mi>g</mi></msub><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msub><mi>n</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub><mo>/</mo><msub><mi>K</mi><mi>g</mi></msub></mrow></msup></mrow></math></p>
+<p>A finer packing lowers <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mi>g</mi></msub></mrow></math> and raises the empty-container probability, so the same group can return a larger leaf benefit at a larger container count. The allocation question is then</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>max</mo><mrow><mo stretchy="false">&#x0007B;</mo><msub><mi>K</mi><mi>g</mi></msub><mo stretchy="false">&#x0007D;</mo></mrow></msub><msub><mo>&#x02211;</mo><mi>g</mi></msub><msub><mi>V</mi><mi>g</mi></msub><mo stretchy="false">(</mo><msub><mi>K</mi><mi>g</mi></msub><mo stretchy="false">)</mo><mspace width="2em" /><mtext>subject&#x000A0;to</mtext><mspace width="2em" /><msub><mo>&#x02211;</mo><mi>g</mi></msub><msub><mi>K</mi><mi>g</mi></msub><mo>&#x02264;</mo><mi>B</mi><mo>&#x0002C;</mo><mspace width="1em" /><msub><mi>K</mi><mi>g</mi></msub><mo>&#x02265;</mo><mn>1</mn><mo>&#x0002E;</mo></mrow></math></p>
+<p>The input is the grouping and the observed query-level selection history. For each query, the history says which events inside each group were selected; those counts set the group-wide rate (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math>, defined in this section). The benchmark harness is where a physical assignment is replayed and scored against the aggregate waste of that assignment (defined in Problem Statement's formal statement, §2.5). Discrete upgrades may leave some of the ceiling unused when the next option is larger than the remainder.</p>
+<p>A split tree becomes a storage plan only after the container-count ceiling (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math>, defined in this section) and the size floor have been applied. Section 2 writes that step as a knapsack.</p>
+<h2 id="2-problem-generalization-multiple-choice-knapsack">2. Problem Generalization: Multiple-choice Knapsack</h2>
+<p>The allocation in §1 is a
+<a href="https://en.wikipedia.org/wiki/List_of_knapsack_problems#Multiple-choice_knapsack_problem" target="_blank" rel="noopener noreferrer">multiple-choice knapsack problem</a>.
+In the ordinary knapsack, one bag has a capacity, each item has a weight and a value, and the solver packs a subset that fits. The multiple-choice variant adds classes: the items are grouped, and the solver takes exactly one item from each class.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>capacity</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math></td>
+<td>the container-count ceiling from §1</td>
+</tr>
+<tr>
+<td>class</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+<td>one terminal group; the solver chooses exactly one option from this class</td>
+</tr>
+<tr>
+<td>option</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x0002C;</mo><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>one final container count and its estimated skipped-record value for group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+<tr>
+<td>weight</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+<td>how much of the ceiling that option consumes</td>
+</tr>
+<tr>
+<td>value</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+<td>the leaf benefit from §1, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub><mo>&#x022C5;</mo><mi>Pr</mi><mo stretchy="false">(</mo><mi>X</mi><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow></math></td>
+</tr>
+<tr>
+<td>growth factor</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003E;</mo><mn>1</mn></mrow></math></td>
+<td>the multiplier that steps from one option to the next in a group's chain</td>
+</tr>
+<tr>
+<td>group count cap</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mo>max</mo></mrow></msub></mrow></math></td>
+<td>largest count the ceiling and the size floor still allow for group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p>Listing every integer count between 1 and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mo>max</mo></mrow></msub></mrow></math> would make a large option set. A geometric series keeps a short upgrade chain. Starting from one container, multiply by the growth factor (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math>, defined in this section) until the group's count cap is reached:</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x02208;</mo><mo stretchy="false">&#x0007B;</mo><mn>1</mn><mo>&#x0002C;</mo><mi>r</mi><mo>&#x0002C;</mo><msup><mi>r</mi><mn>2</mn></msup><mo>&#x0002C;</mo><mi>&#x02026;</mi><mo stretchy="false">&#x0007D;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x02264;</mo><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mo>max</mo></mrow></msub><mo>&#x0002E;</mo></mrow></math></p>
+<p>The factor and the cap are modeling choices. The ladder is sparse: it samples a few increasingly fine packings rather than every intermediate count.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>upgrade edge</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>j</mi><mo>&#x02192;</mo><mi>j</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></math></td>
+<td>the predecessor-constrained step from one option to the next in the same group</td>
+</tr>
+<tr>
+<td>additional containers</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x02212;</mo><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+</tr>
+<tr>
+<td>marginal benefit</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x02212;</mo><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math>, the incremental estimated skipped-record volume from the higher count</td>
+</tr>
+<tr>
+<td>marginal efficiency</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>e</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+<td>estimated benefit per additional container, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x0002F;</mo><mi>&#x00394;</mi><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p>For each neighboring pair,</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x02212;</mo><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x00394;</mi><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x02212;</mo><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>e</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x00394;</mi><msub><mi>V</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow><mrow><mi>&#x00394;</mi><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></p>
+<p>A later option replaces the earlier option for the same group. An upgrade to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow></math> is reachable only after the chain has paid for the preceding count. The knapsack chooses one option per class. An incremental implementation consumes a prefix of that class's edge chain. Marginal efficiency (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>e</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math>, defined in this section) puts those prefixes on one axis: estimated skip per added container.</p>
+<h2 id="3-greedy-optimization">3. Greedy Optimization</h2>
+<p>A standard near-optimal procedure is a greedy scan that repeatedly accepts the currently exposed upgrade with the highest marginal efficiency that still fits the remaining ceiling. The values it ranks are the leaf benefits (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>V</mi><mi>g</mi></msub><mo stretchy="false">(</mo><msub><mi>K</mi><mi>g</mi></msub><mo stretchy="false">)</mo><mo>=</mo><msub><mi>n</mi><mi>g</mi></msub><mo>&#x022C5;</mo><mi>Pr</mi><mo stretchy="false">(</mo><mi>X</mi><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow></math>, defined in §1). When resource can be added one unit at a time, and every group's next marginal gain is no larger than its previous one, that scan is optimal. Federgruen and Groenevelt state the conditions in
+<a href="https://doi.org/10.1287/opre.34.6.909" target="_blank" rel="noopener noreferrer">The Greedy Procedure for Resource Allocation Problems: Necessary and Sufficient Conditions for Optimality</a>.
+This page does not prove the theorem. The useful fact is the condition: each chain must expose diminishing marginal returns in increments the allocator can actually take.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>diminishing marginal returns</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>e</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x02264;</mo><msub><mi>e</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math></td>
+<td>every later upgrade in one group is no more efficient than the previous one</td>
+</tr>
+<tr>
+<td>exposed edge</td>
+<td>—</td>
+<td>the next upgrade whose predecessors have already been accepted</td>
+</tr>
+<tr>
+<td>group count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math></td>
+<td>number of terminal groups in the split</td>
+</tr>
+<tr>
+<td>upgrade-edge count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>E</mi></mrow></math></td>
+<td>number of predecessor-constrained steps across all groups</td>
+</tr>
+</tbody>
+</table>
+<p>After the option values are known, a binary heap of the <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> currently exposed edges makes each accept <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>log</mi><mo>&#x02061;</mo><mi>m</mi><mo stretchy="false">)</mo></mrow></math>. At most <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>E</mi></mrow></math> accepts occur, so the scan is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>E</mi><mo>&#x02061;</mo><mi>log</mi><mo>&#x02061;</mo><mi>m</mi><mo stretchy="false">)</mo></mrow></math> time and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>m</mi><mo stretchy="false">)</mo></mrow></math> extra space, plus <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>E</mi><mo stretchy="false">)</mo></mrow></math> to hold the ladders. Enumerating every combination of one option per group grows as <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>J</mi><mi>m</mi></msup></mrow></math>, where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>J</mi></mrow></math> is the length of a ladder.</p>
+<p>The geometric model does not guarantee the theorem's conditions. An edge can consume several containers at once, so it is indivisible, and taking the highest ratio first can leave a remainder that another combination would have used. The ladder also skips intermediate counts. A modest first upgrade can hide a later edge whose efficiency is higher; a scan that ranks only currently exposed edges may spend the ceiling elsewhere before that later edge appears.</p>
+<p>The option values belong to one static sample. Group sizes and query selections can change after the sample is taken, and new groups each claim a first container. The greedy result is then a cheap static estimate of skipping potential, useful as a cost-versus-benefit threshold and without a general optimality guarantee.</p>
+<p>Three guardrails keep an offered count inside the theorem's region and inside what a real data storage system will hold.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>starting count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mn>0</mn></mrow></msub></mrow></math></td>
+<td>first offered container count, at or above the inflection <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub><mo>/</mo><mn>2</mn></mrow></math></td>
+</tr>
+<tr>
+<td>skip bar</td>
+<td>—</td>
+<td>group-level empty-container probability required before <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub><mo>&#x0003E;</mo><mn>1</mn></mrow></math> is granted; a typical engine bar is about 50%</td>
+</tr>
+</tbody>
+</table>
+<p>The first offered count on a group's ladder is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mn>0</mn></mrow></msub><mo>=</mo><msub><mi>n</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub><mo>/</mo><mn>2</mn></mrow></math>, or the next integer above that. There the Poisson parameter (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mi>g</mi></msub></mrow></math>, defined in §1) equals 2 and the empty-container probability (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Pr</mi><mo stretchy="false">(</mo><mi>X</mi><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow></math>, defined in §1) is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><mo>&#x02248;</mo><mn>13.5</mn><mo>&#x00025;</mo></mrow></math>. From that count onward the leaf benefit is concave in <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></math>, so marginal efficiency (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>e</mi><mrow><mi>g</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub></mrow></math>, defined in §2) decays. If <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub><mo>/</mo><mn>2</mn></mrow></math> is less than 1, the one-container floor is already past the inflection. If the starting count exceeds the largest <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></math> the size floor allows, the group stays at one container and receives no upgrades.</p>
+<p>The size floor (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>s</mi><mrow><mi>min</mi></mrow></msub></mrow></math>, defined in §1) still bounds the top of the chain: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>g</mi></msub><mo>/</mo><msub><mi>K</mi><mi>g</mi></msub><mo>&#x0003E;</mo><msub><mi>s</mi><mrow><mi>min</mi></mrow></msub></mrow></math>. That small-container bound keeps metadata and file count from growing without a matching volume per container.</p>
+<p>Grant <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub><mo>&#x0003E;</mo><mn>1</mn></mrow></math> only when that group's empty-container probability clears the engine's break-even for a skip structure against a full table scan. A typical bar is about 50%, which is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mi>g</mi></msub><mo>=</mo><mi>ln</mi><mo>&#x02061;</mo><mn>2</mn></mrow></math> and a count near <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1.44</mn><msub><mi>n</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub></mrow></math>. Treat 50% as a typical engine bar, not a constant this page ships. That bar is the cost-versus-benefit threshold from §1, and it is stricter than the 13.5% inflection: a ladder can already be concave and still fail to pay for an index. A group can clear the starting count and miss the skip bar, or clear both and still hit the size floor.</p>
+</article>

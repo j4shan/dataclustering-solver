@@ -6,16 +6,17 @@ import re
 
 import pytest
 
-from simulator.gui import FIGURE_ROOT, STATIC_ROOT
+from conftest import RESOURCES
+from simulator.gui import FIGURE_ROOT, SITE_ROOT
 
-FRAGMENT = STATIC_ROOT / "section-budget-walkthrough.html"
+FRAGMENT = SITE_ROOT / "section-budget-walkthrough.html"
 PLACEHOLDER = FIGURE_ROOT / "html" / "section-budget-illustration.html"
-INDEX = STATIC_ROOT / "index.html"
+INDEX = SITE_ROOT / "index.html"
 ILLUSTRATION_HREF = "figures/html/section-budget-illustration.html"
 FIGURE_IDS = (
-    "E.storage-limits",
-    "E.knapsack-ladder",
-    "E.greedy-guardrails",
+    "budget.storage-limits",
+    "budget.knapsack-ladder",
+    "budget.greedy-guardrails",
 )
 FIGURE_TITLES = (
     "The Container Assignment Problem",
@@ -85,7 +86,7 @@ def test_section_one_states_the_storage_limits_and_the_static_study(fragment):
     assert "Problem Statement" in body and "§2.5" in body
     assert "leaf benefit" in body
     assert "Poisson" in body
-    assert "empty-unit" in body
+    assert "empty-container" in body
     assert "Measuring Data Layout Fitness §3.1" in body
 
 
@@ -145,9 +146,9 @@ def test_the_right_pane_is_three_accessible_titled_figures(placeholder):
         assert f'id="{fig_id}"' in placeholder
         assert title in placeholder
     assert placeholder.count("<img") == 3
-    assert 'src="figures/img/section_e_storage_limits.png"' in placeholder
-    assert 'src="figures/img/section_e_knapsack_ladder.png"' in placeholder
-    assert 'src="figures/img/section_e_greedy_guardrails.png"' in placeholder
+    assert 'src="figures/img/section_budget_storage_limits.png"' in placeholder
+    assert 'src="figures/img/section_budget_knapsack_ladder.png"' in placeholder
+    assert 'src="figures/img/section_budget_greedy_guardrails.png"' in placeholder
     assert "Visualization placeholder" not in placeholder
     assert "<svg" not in placeholder
     assert "E.container-budget" not in placeholder
@@ -155,38 +156,43 @@ def test_the_right_pane_is_three_accessible_titled_figures(placeholder):
 
 def test_the_storage_limits_figure_is_served_and_described(placeholder):
     """An accepted raster needs the file behind it and text beside it."""
-    assert (FIGURE_ROOT / "img" / "section_e_storage_limits.png").is_file()
-    figure = placeholder.split('id="E.storage-limits"')[1].split("</figure>")[0]
+    assert (FIGURE_ROOT / "img" / "section_budget_storage_limits.png").is_file()
+    figure = placeholder.split('id="budget.storage-limits"')[1].split("</figure>")[0]
     alt = re.search(r'alt="([^"]+)"', figure)
     assert alt is not None and len(alt.group(1)) > 80
     assert "forthcoming" not in figure
     assert "K1 + K2 = 1,000" in figure
 
 
+def test_drawio_rasters_do_not_reprint_the_pane_title():
+    knapsack = (RESOURCES / "img_src" / "section_budget_knapsack_ladder.drawio").read_text()
+    greedy = (RESOURCES / "img_src" / "section_budget_greedy_guardrails.drawio").read_text()
+    assert "Convert to Multiple-Choice Knapsack Problem (MCKP)" not in knapsack
+    assert "Greedy Optimality relies on Decaying Marginal Efficiency" not in greedy
+
+
 def test_the_greedy_guardrails_figure_is_served_and_described(placeholder):
     """An accepted raster needs the file behind it and text beside it."""
-    assert (FIGURE_ROOT / "img" / "section_e_greedy_guardrails.png").is_file()
-    figure = placeholder.split('id="E.greedy-guardrails"')[1].split("</figure>")[0]
+    assert (FIGURE_ROOT / "img" / "section_budget_greedy_guardrails.png").is_file()
+    figure = placeholder.split('id="budget.greedy-guardrails"')[1].split("</figure>")[0]
     alt = re.search(r'alt="([^"]+)"', figure)
     assert alt is not None and len(alt.group(1)) > 80
     assert "forthcoming" not in figure
     assert "K = 11" in figure
 
 
-def test_section_e_keeps_text_on_the_left_and_visualization_on_the_right():
+def test_section_budget_keeps_text_on_the_left_and_visualization_on_the_right():
     section = INDEX.read_text().split('id="knapsack"')[1]
     assert 'data-mount="section-budget-walkthrough.html"' in section
     assert f'data-mount="{ILLUSTRATION_HREF}"' in section
     assert section.index("pane-left") < section.index("pane-right")
     assert section.index("section-budget-walkthrough.html") < section.index(ILLUSTRATION_HREF)
-    assert '<a href="section-budget-walkthrough.html">' in section
-    assert f'<a href="{ILLUSTRATION_HREF}">' in section
 
 
-def test_section_e_matches_section_d_type_and_fills_the_walkthrough_pane():
+def test_section_budget_matches_section_gini_type_and_fills_the_walkthrough_pane():
     from tests.test_app_shell import rule_for
 
-    css = (STATIC_ROOT / "app.css").read_text()
+    css = (SITE_ROOT / "app.css").read_text()
     declarations = rule_for(css, "#knapsack .pane-left")
     for declaration in (
         "--text-body: 15px",
@@ -197,4 +203,7 @@ def test_section_e_matches_section_d_type_and_fills_the_walkthrough_pane():
         assert declaration in declarations
     assert "max-width: none" in rule_for(
         css, "#knapsack .pane-left > .formulation"
+    )
+    assert "calc(var(--text-body) * var(--leading-prose) / 2)" in rule_for(
+        css, "#knapsack .illustration-stack"
     )

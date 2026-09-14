@@ -1,0 +1,238 @@
+OUTPUT
+One static PNG, 1920 x 1080, warm off-white ground, single light palette.
+
+SUBJECT
+A pharmacist filling a batch of prescriptions from a dispensary rack. The figure
+presents / introduces one mechanism in ordinary language: the chart names a drawer, the whole
+drawer comes out, and everything that shared that drawer is handled and put back.
+It is the first illustration of Problem Statement, so it stays entirely inside the
+dispensary. It carries no database vocabulary, no symbols, no formulas, no code
+and no technical mapping labels -- earning those names is the next figure's job.
+
+The rack is the centre of the drawing. It must read as a real dispensary
+fixture: a tall cabinet carcass with rows of small, identical drawers set into
+it, each drawer holding a handful of paper cartons and glass bottles.
+
+STYLE
+Editorial flat 2D diagram, horizontal flow, restrained dispensary palette. No
+perspective, realism, 3D, shadows, gradients, UI chrome, or emojis. Drawn as a
+straight-on elevation -- the viewer faces the rack squarely.
+System-ui labels; ui-monospace for drawer numbers and the counter readout.
+Rounded corners ~8px on drawers, cartons and slips, ~10px on the rack carcass
+and the counter panels. Crisp 2px arrows.
+
+COLOURS
+This figure shares one palette with the two problem-statement figures, slot for
+slot, so all three read as one family:
+#FCFCFB canvas . #7A1F2B wine-red (opened drawer stroke, wanted item, arrows) .
+#F8EEF0 warm-rose (opened drawer fill, hatch ground) . #1B4D3E dark-green (shut
+drawer stroke dashed, shut drawer type and contents) . #EEF4F0 cool-sage (shut
+drawer fill) . #0B0B0B ink . #52514E secondary . #DEDEDE rules . #F3F3F3 chart
+band . #FFFFFF counter and rack ground.
+Do not use orange. Do not introduce a fifth hue for the bottles or the cartons --
+they are told apart by shape, never by colour.
+
+THE INSTANCE (fixed -- do not vary)
+A rack of 9 small drawers, 3 rows of 3, numbered 1-9 in reading order. Every
+drawer holds exactly 4 items, so the rack holds 36 items in all, and the drawer
+capacity is the same everywhere and never changes in this figure.
+
+The counter batch is three prescriptions waiting together:
+    Rx 1 -> cough syrup       Rx 2 -> eye drops       Rx 3 -> antacid
+
+The drawer chart names three drawers -- 3, 6 and 9, the rightmost drawer of each
+row, so each one slides clear of the rack's right edge without colliding with a
+neighbour. Those three are drawn OPEN. The other six stay shut.
+
+Drawer contents, in order, with the packaging each item is drawn as:
+
+  1  plasters (carton) . gauze pads (carton) . adhesive tape (carton) .
+     antiseptic wipes (carton)
+  2  vitamin C (bottle) . vitamin D (bottle) . iron tablets (bottle) .
+     zinc tablets (bottle)
+  3  cough syrup (bottle) [WANTED] . throat lozenges (carton) .
+     chest rub (carton) . steam capsules (carton)
+  4  nasal spray (bottle) . sinus rinse (bottle) . decongestant tablets
+     (carton) . menthol inhaler (carton)
+  5  hand cream (carton) . lip balm (carton) . sunscreen (carton) .
+     aloe gel (bottle)
+  6  eye drops (bottle) [WANTED] . ear drops (bottle) . eye wash (bottle) .
+     lens solution (bottle)
+  7  pain relief tablets (carton) . muscle gel (carton) . heat patches
+     (carton) . cold pack (carton)
+  8  rehydration salts (carton) . anti-nausea tablets (carton) . motion bands
+     (carton) . fibre sachets (carton)
+  9  antacid (bottle) [WANTED] . indigestion tablets (carton) .
+     peppermint oil (bottle) . digestive enzymes (bottle)
+
+Therefore: 3 drawers opened, 6 drawers shut, 12 items on the counter, 3 items
+kept, 9 items put back, 24 items never touched. The wasted effort is three times
+the useful effort, and the drawing must make that ratio visible at a glance, not
+only in the readout.
+
+CUTAWAY CONVENTION
+The rack is drawn as a cutaway: the contents of the shut drawers are visible to
+the reader even though the pharmacist never sees them. The shut drawers keep
+their dashed border and their idle treatment throughout, which is what stops
+them reading as rummaged.
+
+THE ITEM GLYPHS
+Two silhouettes, and only two. The shape says what the packaging is; it never
+says anything about whether an item was wanted:
+  CARTON  a plain rounded rectangle, wider than tall, with one horizontal fold
+          line across the upper third and a short vertical seam at the right
+          edge -- a folded paper medicine box seen face on.
+  BOTTLE  a rounded rectangle with a narrower neck and a flat cap on top, and a
+          single label band across its middle -- a glass dispensary bottle.
+Both glyphs are the same overall height so a drawer's row of four sits on one
+baseline. Draw them at ~34 x 26 inside the rack, ~104 x 74 on the counter.
+
+STATE ENCODING (never colour alone -- each state carries all three channels)
+  wanted item        solid wine fill  + check glyph + "kept"
+  item that came out 45-degree hatch  + no glyph    + "put back"
+  item never touched dark-green outline on cool-sage, no fill pattern
+  drawer opened      solid wine stroke  + warm-rose fill + "opened whole"
+  drawer shut        dashed green stroke + cool-sage fill + "shut"
+  chart row matched  solid wine row + white type
+
+TITLE
+Top left: "Fulfill Prescription Requests"                 35px Bold, ink
+No subtitle. The title stands alone.
+
+SECTION TITLES
+Bold black labels, 18px Bold, ink, each left-aligned to the column it names. All
+four sit on ONE baseline above the four columns, not each one floating above its
+own block -- they read as column headers. The four stages carry a wine rounded badge
+(24 x 24, white mono 14) with their step number, placed to the left of the title.
+The badges mark reading order only; nothing in this figure moves.
+  [1] "Prescription Ask (query)"              above the prescription slips
+  [2] "Inventory Catalog (lookup table)"      above the catalog card
+  [3] "Medical Cabinet (storage containers)"  above the rack carcass
+  [4] "Retrieved items (query response)"      above the two counter panels
+The parenthetical in each title is the technical term the analogy stands for,
+and is the only place in this figure where a technical term appears.
+
+OVERALL LAYOUT (left -> right)
+1. Prescription slips, in the left margin, stacked vertically and aligned to the
+   same top edge as the other three columns.
+2. Drawer chart card, to their right.
+3. The rack, the largest element on the canvas.
+4. Counter at the right: two stacked panels sharing one left edge -- the upper
+   is what the patients get, the lower is what goes back. A readout row sits
+   beneath them.
+
+PRESCRIPTION SLIPS
+Three wine-stroke cards (2px), warm-rose fill, rounded 8px, stacked with 16px
+gaps. Each carries a mono 13 slip number at the left and the item in 15px
+Medium wine:
+  Rx 1 . cough syrup      Rx 2 . eye drops      Rx 3 . antacid
+No patient names, no dosages, no strengths, no instructions, no real brand names.
+
+DRAWER CHART
+White ground, 1px #DEDEDE border, rounded 10px, a #F3F3F3 header strip reading
+"INVENTORY CATALOG" in tracked 12.5px Semibold secondary. Thirty-six rows -- one
+per item in the rack -- set in two columns of eighteen, each row "item name ....
+n" with the name in 13px and the drawer number in mono 13. Rows are separated
+by 1px #DEDEDE rules; the two columns by a 1px vertical rule.
+The three rows the batch matches -- cough syrup, eye drops, antacid -- are drawn
+as wine-red filled rows with white type. The other thirty-three rows are
+secondary ink on white. Exactly three rows are wine.
+Beneath the card, 13.5px secondary: "36 lines, read end to end, every time".
+
+THE RACK
+A cabinet carcass: a 2px #DEDEDE frame with a visible top rail and a plinth at
+the bottom, rounded 10px, on white. Inside it, a 3 x 3 grid of drawers, each
+164 x 120, gaps 16px, rounded 8px. Between the rows draw a 1px #DEDEDE shelf
+rail spanning the carcass, so the fixture reads as rows of drawers set into a
+cabinet rather than nine free-floating boxes.
+Each drawer carries a mono 14 number badge at its top-left corner and a 3px
+horizontal pull-handle bar centred beneath its contents.
+
+  SHUT (drawers 1, 2, 4, 5, 7, 8): cool-sage fill, 2px dashed dark-green border,
+  handle and number in dark-green. Its four items are drawn as dark-green
+  outline glyphs on the sage ground -- carton and bottle silhouettes, unlabelled,
+  1.5px stroke, no fill pattern. Tagged "shut" in 11.5px dark-green beneath the
+  handle.
+
+  OPENED (drawers 3, 6, 9): warm-rose fill, 2px solid wine border, handle and
+  number in wine. The drawer body is offset to the right by slightly more than its own
+  width, so it clears the slot it left and overlaps the carcass edge, and the slot it left behind is drawn as a 1.5px
+  dashed #DEDEDE recess carrying the words "empty slot" in 11px #DEDEDE.
+  Its four items are drawn face on across the drawer and are NOT labelled there
+  -- the counter names them, and four labels do not fit across one drawer. The
+  wanted one is solid wine with a white check; the other three are 45-degree
+  hatched, 2px wine lines on warm-rose at ~6px pitch.
+  Tagged "opened whole" in 11.5px Semibold wine.
+
+Beneath the rack, 13.5px secondary:
+  "9 drawers . 4 items each . 36 items in the rack . 6 drawers never opened"
+
+COUNTER
+Upper panel -- white ground, 1px rule, rounded 10px, header "WHAT THE PATIENTS
+GET" in tracked 12.5px Semibold wine. Three items at ~104 x 74, solid wine, each
+drawn in its own packaging silhouette (cough syrup and eye drops and antacid are
+all bottles here), each with a large white check, its name in white 12.5px, and
+a "kept" tag in 11.5px wine beneath.
+Lower panel -- white ground, 1px rule, rounded 10px, header "WHAT GOES BACK" in
+tracked 12.5px Semibold secondary. Nine items at ~104 x 74 in three rows of
+three, each in its own carton or bottle silhouette, 45-degree hatched (2px wine
+on warm-rose, ~6px pitch), with a solid rose label plate behind its name in
+12.5px ink and a "put back" tag in 11.5px secondary beneath.
+The lower panel must be visibly the larger of the two -- three times the item
+count, and it must read that way without counting.
+Readout row beneath both panels, separated by a 1px rule, four columns each
+centred, mono 20 Semibold ink over a 12.5px secondary label:
+  36              12                3              9
+  "in the rack"   "items handled"   "items kept"   "items put back"
+
+ARROWS
+Three wine-red 2px solid curves, each with a planted arrowhead, flowing left to
+right, each leaving and landing on a container boundary and never on a single
+item or a single chart row:
+  slips -> chart card left edge        tagged "look up" in 12.5px Semibold wine
+  chart card right edge -> rack frame  tagged "open these"
+  rack frame -> counter upper panel    tagged "comes out"
+No arrow originates at one item, one slip, or one chart row -- nothing may depict
+a single item travelling on its own. No arrow reaches, wraps, or passes a shut
+drawer.
+
+LEGEND (bottom, one row, left-aligned, 14.5px secondary, 40 x 26 swatches)
+Names are short noun phrases, not sentences:
+1. Solid wine swatch with a check -- "Prescription item"
+2. Hatched swatch -- "Touched, not required"
+3. Dark-green outline glyph on cool-sage -- "Irrelevant item"
+4. Wine solid rounded-rect + warm-rose -- "Opened drawer"
+5. Dark-green dashed rounded-rect + cool-sage -- "Unvisited drawer"
+
+TYPE SCALE (base sizes at 1920 x 1080)
+Every size below EXCEPT the title is raised together by one uniform step of about
+13%, applied once at the font loader rather than at each call site, so the whole
+figure scales as one and the ratios between labels never drift. The title is set
+raw and does not move.
+
+title 35 Bold . subtitle 17.5 . section titles 18 Bold . step badges mono 14
+Semibold . slip numbers mono 13 . slip item 15 Medium . catalog header 12.5
+Semibold tracked . catalog rows 13 / drawer numbers mono 13 . drawer number
+badges mono 14 . drawer tags 11.5 . counter item names
+12.5 . counter tags 11.5 . panel headers 12.5 Semibold tracked . counter readout
+mono 20 Semibold . readout labels 12.5 . notes under groups 13.5 . arrow tags
+12.5 Semibold . legend 14.5.
+
+KEEP OUT
+- Technical vocabulary appears ONLY in the parenthetical of the four section
+  titles. Every other label, tag, note and legend entry stays in dispensary
+  language -- no data, warehouse, record, materialized, selected, layout,
+  assignment or strategy anywhere else in the image.
+- No patient names, ages, dosages, strengths, instructions, or real brand names.
+  The items are ordinary pharmacy stock and nothing reads as medical advice.
+- Only two item silhouettes, the carton and the bottle. No pill, capsule,
+  syringe, cross or caduceus pictograms.
+- No arrow originating at a single item, slip or chart row, and no arrow that
+  reaches, wraps or passes a shut drawer.
+- No distinction carried by colour alone.
+
+PRODUCTION
+Every label must clear its element; the chart's two columns must not collide;
+the opened drawers must overlap the carcass edge without touching the counter;
+and the lower counter panel must stay on canvas -- fail the render rather than
+clip.

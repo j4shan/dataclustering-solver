@@ -14,7 +14,7 @@
 | 1.2 | The project ships **no assignment strategy**, and no means of scoring one. It states the problem, the measures it is judged by, and what deploying a layout on a production engine involves. Naming a strategy as the answer is outside what it claims. | F |
 | 1.3 | Skipping is treated in a *logical* sense throughout — which containers a query would open and what that would cost. Nothing here executes a query against a storage system, and no figure is a wall-clock read time. | NF |
 | 1.4 | Every worked figure is indicative, not predictive. A small margin between two layouts is to be read as no margin. | NF |
-| 1.5 | The system has **one target and no external service dependency**: a local page, served from loopback by a process on a single developer machine. It reaches no third-party network, and the page itself fetches nothing from off its own origin (12.2.2). | NF |
+| 1.5 | The system has **two targets and no external service dependency**: a local page served from loopback by a process on a single developer machine, and a **published copy of that same page on static hosting** (12.2.14). Both are the same authored tree. Neither reaches a third-party network, and the page itself fetches nothing from off its own origin (12.2.2). | NF |
 | 1.6 | The **presentation page** is the product. It authors no number; each section's content lives in its own product spec. | F |
 
 ---
@@ -110,7 +110,7 @@
 | 10.3.2 | **No database and no query engine.** Persistence is inspectable files and in-process arrays. The page holds no store of its own and keeps no session state that survives a reload. | NF |
 | 10.3.3 | Explainer figures remain regenerable without a third-party drawing library. Raster-production tools are temporary: after their PNGs pass visual review and are committed, those tools may be removed while the prompt and accepted PNG remain. Those finalized rasters are intentionally not reproducible from the repository. | NF |
 | 10.3.4 | Data formats stay inspectable and diffable, accepting size cost to do so. This puts a practical ceiling on any committed corpus. | NF |
-| 10.3.5 | The browser side ships **no third-party JavaScript, CSS, font, or icon set**, and there is **no build step**. What is authored is what is served. | NF |
+| 10.3.5 | The browser side ships **no third-party JavaScript, CSS, font, or icon set**, and **nothing transforms the page between authoring and the browser**: no bundler, no transpiler, no template engine, no server-side rendering. What is served is a file someone authored or a generator wrote and the repository committed (10.3.10) — never a document assembled per request. | NF |
 | 10.3.6 | Tooling needed only to *produce* a committed artifact may take dependencies the runtime does not. It is declared as an optional dependency group, is absent from the default install, and the shipped product does not import it. | NF |
 | 10.3.7 | Every run writes an **execution log**: events and errors to stdout, and the same records to one file per run, named so the directory sorts into the order things happened. The file is a **tee, not a replacement** — the command is one a reader is watching, and moving errors somewhere they must go looking would make a failed demonstration harder to read. **Interface is not a record**: a prompt, a status line and the served URL stay on stdout as themselves. Run files are **not pruned, rotated, or capped** — the directory is disposable, and deleting it is the whole retention policy — but a name is never reused, because losing records is the one outcome worse than keeping too many. | F |
 | 10.3.7.2 | Records carry **no reader-supplied content** — not a request body, not a path a reader typed. Identifiers and counts stand in. This keeps 12.2.7's rule that operational state is never a channel between readers, and it disposes of log injection by having nothing to inject into rather than by escaping. | NF |
@@ -127,17 +127,20 @@
 
 | # | Requirement | Type |
 | --- | --- | :-: |
-| 12.1.1 | A **single page** with four sections in fixed order: Problem Statement, Measuring Data Layout Fitness, Drawing Storage Boundary, Go Live on Databricks Lakehouse. Each is a left/right pair on a wide viewport. **One section is displayed at a time**, chosen by 12.1.3's control; the other three are not laid out. The order is what the control presents and what the titles name, not a sequence the page is read through in one pass. | F |
-| 12.1.2 | On a wide viewport each pane **scrolls independently** within a bounded height, so the left explanation stays put while the right one is read. Wide content *inside* a pane — a table, a diagram, a long identifier — scrolls horizontally within its own container. The page itself never scrolls horizontally. | F |
+| 12.1.1 | A **single page** with five sections in fixed order: Problem Statement, Measuring Data Layout Fitness, Drawing Storage Boundary, Go Live on Databricks Lakehouse, Business Signal in Cold Data. The first four are each a left/right pair on a wide viewport. The fifth is one scrolling pane. **One section is displayed at a time**, chosen by 12.1.3's control; the other four are not laid out. The order is what the control presents and what the titles name, not a sequence the page is read through in one pass. | F |
+| 12.1.2 | On a wide viewport each pane **scrolls independently** within a bounded height. On the first four sections the left explanation stays put while the right one is read. The fifth section has one pane. Wide content *inside* a pane — a table, a diagram, a long identifier — scrolls horizontally within its own container. The page itself never scrolls horizontally. | F |
 | 12.1.3 | Sections carry stable anchors and are individually linkable; a persistent control **selects one of them for display**. A link to a section's anchor opens the page with that section showing, so the address bar names what is on screen and a copied URL reopens it. | F |
 | 12.1.3.1 | The **section heading is the navigation label**. When a section also has a distinct editorial name, that name is the **left pane title**, not a second heading above the split. | F |
 | 12.1.3.2 | The section heading **stands alone**. It is not followed by a one-line footnote, lede, or subtitle under the title. | F |
+| 12.1.3.3 | The top bar is the **section control only**. It does not carry the project title. The browser tab title remains the formal project name. | F |
+| 12.1.3.4 | The top bar is a **raised 3D bar**: a ground-to-recessed face, a top-edge highlight, and a drop shadow, composed from 12.7 tokens. | NF |
+| 12.1.3.5 | A selectable tab **highlights on mouse-over** so it is visibly choosable before it is selected. | NF |
 | 12.1.4 | The design language is **standard macOS**. Where an earlier proposal for this project diverged from the platform, the platform wins: AppKit metrics, AppKit control behaviour, Core Animation timing, and the platform's keyboard-only focus convention. The single exception is colour and type, which 12.1.5 takes from elsewhere. | NF |
 | 12.1.5 | The **colour theme and font configuration are taken from the Claude Code documentation** (`code.claude.com/docs`), not from AppKit's system palette. Its ground is a warm paper white and its type is configured as a branded stack that falls through to the system font. Resolved values and their measured contrast are fixed in 12.7. | NF |
 | 12.1.5.1 | The page is **light only** and offers no dark variant — a deliberate single-look commitment in service of 12.1's first objective, not an unfinished palette. The document declares a light colour scheme so native controls match, and every colour is painted explicitly rather than inherited from the host. | NF |
 | 12.1.6 | Below the split's breakpoint the panes stack, right beneath left, in the same order the sections are listed. Nothing is hidden at a narrow width. | NF |
-| 12.1.7 | The **page-level scroll model is stated, not left to emerge**. On a wide viewport the **selected section fills the height below the top bar** and its panes are bounded to that height — which is what gives 12.1.2's independent scroll something to be bounded by. Scrolling belongs to the panes: the page itself has nothing to scroll through, because the sections 12.1.3 does not select are not laid out. Below 12.1.6's breakpoint the bound is **released**: the selected section's panes grow to their content and the page scrolls once, so a stacked reader never meets a scroll inside a scroll. | F |
-| 12.1.9 | Type is set for **sustained reading**: leading generous enough for long passages, and numerals aligned in tables. Problem Statement's illustration, terminology, and formulation panes are each set one pixel larger than chrome — body **14px** against 13px, and headings and small type by the same step. Measuring Data Layout Fitness, Drawing Storage Boundary, and Go Live on Databricks Lakehouse use a reading size one pixel larger than Problem Statement's — body **15px**. The formulation fills its pane. Those three walkthroughs fill their walkthrough panes. Other reading prose keeps a character-width measure. | NF |
+| 12.1.7 | The **page-level scroll model is stated, not left to emerge**. On a wide viewport the **selected section fills the height below the top bar** and its panes are bounded to that height — which is what gives 12.1.2's independent scroll something to be bounded by. The fifth section's one pane is bounded the same way. Scrolling belongs to the panes: the page itself has nothing to scroll through, because the sections 12.1.3 does not select are not laid out. Below 12.1.6's breakpoint the bound is **released**: the selected section's panes grow to their content and the page scrolls once, so a stacked reader never meets a scroll inside a scroll. | F |
+| 12.1.9 | Type is set for **sustained reading**: leading generous enough for long passages, and numerals aligned in tables. Problem Statement's illustration, terminology, and formulation panes are each set one pixel larger than chrome — body **14px** against 13px, and headings and small type by the same step. Measuring Data Layout Fitness, Drawing Storage Boundary, Go Live on Databricks Lakehouse, and Business Signal in Cold Data use a reading size one pixel larger than Problem Statement's — body **15px**. The formulation fills its pane. Those walkthroughs fill their walkthrough panes. Other reading prose keeps a character-width measure. | NF |
 | 12.1.10 | Embedded images and graphs carry a **reusable zoom widget**: a `+` / `−` pair at the top-right of the figure stage. The default size remains today's fit-width. The buttons step a short scale ladder, are keyboard reachable and labelled, use 12.7 chrome, and hold the scale only for the current view. A stage that grows past its frame scrolls inside itself. Tables and prose are not zoomed. | F |
 
 ### 12.2 Serving and process model
@@ -145,10 +148,11 @@
 | # | Requirement | Type |
 | --- | --- | :-: |
 | 12.2.1 | Served over **HTTP**, started by **one command**, in **one process**, **bound to loopback**. The page is a local reading surface: the process that serves it is reachable only from the machine running it. | F |
-| 12.2.2 | The page makes **no outbound request**. Every asset is served from the local process. | NF |
-| 12.2.5 | The server **hands over authored files and adds no logic of its own**. It declares no route: two static mounts answer every request, and what they answer with is what the repository ships. | NF |
+| 12.2.2 | The page makes **no outbound request**. Every asset comes from the origin that served the page, on either target (1.5). | NF |
+| 12.2.5 | The server **hands over authored files and adds no logic of its own**. It declares no route: one static mount over one tree answers every request, and what it answers with is what the repository ships. | NF |
 | 12.2.7 | **No reader's data outlives the request that produced it, and nothing one reader sends is reachable by another.** A request carries everything needed to answer it and a response is complete in itself: no session, no per-reader identity, no memory of what was asked before, and no cache keyed by a request's content or its sender. Nothing at all is held across requests, because the answer to every request is a file read off disk. **What a reader wants kept is theirs to keep.** | NF |
 | 12.2.8 | **One command serves the page, in the foreground.** It binds, prints the URL, and opens the reader's browser unless told not to; Ctrl-C or `SIGTERM` stops it. A port already in use fails the bind and says so, rather than being taken from whatever holds it. | F |
+| 12.2.14 | **The published copy is produced by one documented command and carries nothing the exhibit does not display.** The served tree is the published tree: a reader's copy contains the page, its assets and its figures, and never the material the exhibit was authored from — diagram sources, figure prompts, scenario data. The published document is **complete without script**: the section content is present in the file the host sends, so a reader with JavaScript disabled, a link preview, and a crawler all receive the argument rather than an empty shell. The published copy carries the same response headers the local server sends (12.6.5). | F |
 | 12.2.13 | **Every URL a page emits is relative to its own document.** A leading slash resolves against whatever host the page was opened from rather than against the page, so it breaks the moment the site is served from anywhere but the root of an origin. | F |
 
 ### 12.3 Problem Statement
@@ -174,6 +178,12 @@
 | # | Requirement | Type |
 | --- | --- | :-: |
 | 12.9 | The section's reader-facing title is **Drawing Storage Boundary**, matching its navigation label. The same **two-pane** split as the other sections: independently scrolling panes on the 12.1.5 / 12.7 theme. The walkthrough sits on the **left**; the three deferred figures sit on the **right**; that order when stacked. Content and the deferred figures are specified by [`section-budget-illustration.md`](section-budget-illustration.md). | F |
+
+### 12.10 Business Signal in Cold Data
+
+| # | Requirement | Type |
+| --- | --- | :-: |
+| 12.10 | The section's reader-facing title is **Business Signal in Cold Data**, matching its navigation label. **One scrolling pane** on the 12.1.5 / 12.7 theme: opening paragraph, then three beats of one paragraph plus one figure. The three rasters are deferred; their prompts name the accepted paths. Content, vocabulary, and figures are specified by [`section-kpi-illustration.md`](section-kpi-illustration.md). | F |
 
 ### 12.6 Quality
 
@@ -205,6 +215,7 @@
 | 12.7.2.2 | **No font file is shipped or fetched** (10.3.5, 12.2.2). `Anthropic Sans` is proprietary and will not resolve locally, so the stack falls through to `-apple-system` and renders as SF on a Mac. Adopting the configuration therefore costs nothing and lands on the platform font by design, not by accident. | NF |
 | 12.7.2.3 | Monospace is `ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace`, used for identifiers, byte counts, and dataset ids. | NF |
 | 12.7.2.4 | Body text is **13px** — AppKit's `systemFontSize`. The 17pt Dynamic Type body is an iOS metric and reads as a ported iOS app on a Mac; it is not used. | NF |
+| 12.7.2.5 | Section-tab labels are **14px** — one pixel above chrome (12.7.2.4). | NF |
 
 #### 12.7.3 Metrics
 

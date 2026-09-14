@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from simulator.gui import STATIC_ROOT
+from simulator.gui import SITE_ROOT
 
 RUNNER = Path(__file__).parent / "js" / "test_figure_zoom.mjs"
 
@@ -21,7 +21,7 @@ needs_node = pytest.mark.skipif(
 @needs_node
 def test_attach_zoom_steps_and_is_idempotent():
     finished = subprocess.run(
-        ["node", str(RUNNER), str(STATIC_ROOT)],
+        ["node", str(RUNNER), str(SITE_ROOT)],
         capture_output=True,
         text=True,
         check=False,
@@ -33,13 +33,13 @@ def test_attach_zoom_steps_and_is_idempotent():
 
 
 def test_the_widget_is_not_a_second_html_assignment():
-    source = (STATIC_ROOT / "figure-zoom.js").read_text()
+    source = (SITE_ROOT / "figure-zoom.js").read_text()
     assert ".innerHTML" not in source
     assert "localStorage" not in source
     assert "sessionStorage" not in source
 
 
 def test_the_shell_attaches_after_mount():
-    app = (STATIC_ROOT / "app.js").read_text()
+    app = (SITE_ROOT / "app.js").read_text()
     assert 'from "./figure-zoom.js"' in app
     assert "attachZoom(pane)" in app

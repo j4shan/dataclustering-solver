@@ -10,7 +10,7 @@ Single palette, light only. No dark variant, no theme switching.
 
 SUBJECT
 Container activation for a single query, as defined in §2.4 of the problem
-statement. The figure teaches one mechanism: activation is a max over a
+statement. The figure presents / introduces one mechanism: activation is a max over a
 container's events, and an activated container is fetched whole.
 
 STYLE

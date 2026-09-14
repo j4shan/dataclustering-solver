@@ -1,0 +1,529 @@
+<mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1436" pageHeight="1329" math="0" shadow="0" background="#FCFCFB">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+<object id="legend" label="" spec_id="legend" spec_category="chrome">
+  <mxCell style="rounded=0;fillColor=#F3F3F3;strokeColor=#DEDEDE;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="64" y="26" width="1308" height="48" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="legend_t" value="LEGEND" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;fontStyle=1;letterSpacing=2;" vertex="1" parent="legend">
+  <mxGeometry x="16" y="0" width="70" height="48" as="geometry"/>
+</mxCell>
+<object id="legend_key_persisted" label="" spec_id="legend_key_persisted" spec_category="chrome">
+  <mxCell style="rounded=0;fillColor=#FFFFFF;strokeColor=#1B4D3E;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="legend">
+    <mxGeometry x="96" y="13" width="38" height="22" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="legend_key_persisted_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=10;fontColor=#FCFCFB;" vertex="1" parent="legend_key_persisted">
+  <mxGeometry x="0" y="0" width="38" height="7" as="geometry"/>
+</mxCell>
+<mxCell id="legend_key_persisted_t" value="persisted table" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#0B0B0B;" vertex="1" parent="legend">
+  <mxGeometry x="143" y="0" width="76" height="48" as="geometry"/>
+</mxCell>
+<object id="legend_key_frozen" label="" spec_id="legend_key_frozen" spec_category="chrome">
+  <mxCell style="rounded=0;fillColor=#EEF4F0;strokeColor=#1B4D3E;strokeWidth=2.4;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="legend">
+    <mxGeometry x="245" y="13" width="38" height="22" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="legend_key_frozen_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=10;fontColor=#FCFCFB;" vertex="1" parent="legend_key_frozen">
+  <mxGeometry x="0" y="0" width="38" height="7" as="geometry"/>
+</mxCell>
+<mxCell id="legend_key_frozen_t" value="frozen input" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#0B0B0B;" vertex="1" parent="legend">
+  <mxGeometry x="292" y="0" width="61" height="48" as="geometry"/>
+</mxCell>
+<object id="legend_key_operation" label="" spec_id="legend_key_operation" spec_category="chrome">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=10;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="legend">
+    <mxGeometry x="379" y="13" width="38" height="22" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="legend_key_operation_bar" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=10;fontColor=#FCFCFB;" vertex="1" parent="legend_key_operation">
+  <mxGeometry x="0" y="0" width="38" height="7" as="geometry"/>
+</mxCell>
+<mxCell id="legend_key_operation_t" value="operation" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#0B0B0B;" vertex="1" parent="legend">
+  <mxGeometry x="426" y="0" width="50" height="48" as="geometry"/>
+</mxCell>
+<object id="legend_key_transient" label="" spec_id="legend_key_transient" spec_category="chrome">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=10;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;dashed=1;dashPattern=7 4;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="legend">
+    <mxGeometry x="502" y="13" width="38" height="22" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="legend_key_transient_bar" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=10;fontColor=#FCFCFB;" vertex="1" parent="legend_key_transient">
+  <mxGeometry x="0" y="0" width="38" height="7" as="geometry"/>
+</mxCell>
+<mxCell id="legend_key_transient_t" value="transient source" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#0B0B0B;" vertex="1" parent="legend">
+  <mxGeometry x="549" y="0" width="82" height="48" as="geometry"/>
+</mxCell>
+<object id="legend_key_assembly" label="" spec_id="legend_key_assembly" spec_category="chrome">
+  <mxCell style="rounded=0;fillColor=#FFFFFF;strokeColor=#52514E;strokeWidth=1.4;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="legend">
+    <mxGeometry x="657" y="13" width="38" height="22" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="legend_key_assembly_bar" value="" style="rounded=0;fillColor=#DEDEDE;strokeColor=#DEDEDE;fontFamily=Helvetica;fontSize=10;fontColor=#FCFCFB;" vertex="1" parent="legend_key_assembly">
+  <mxGeometry x="0" y="0" width="38" height="7" as="geometry"/>
+</mxCell>
+<mxCell id="legend_key_assembly_t" value="assembly line frame" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#0B0B0B;" vertex="1" parent="legend">
+  <mxGeometry x="704" y="0" width="102" height="48" as="geometry"/>
+</mxCell>
+<object id="legend_key_dash" label="" spec_id="legend_key_dash" spec_category="chrome">
+  <mxCell style="shape=line;strokeColor=#7A1F2B;strokeWidth=1.8;dashed=1;dashPattern=2 3;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="legend">
+    <mxGeometry x="832" y="13" width="38" height="22" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="legend_key_dash_t" value="dotted = CRON trigger" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#0B0B0B;" vertex="1" parent="legend">
+  <mxGeometry x="879" y="0" width="114" height="48" as="geometry"/>
+</mxCell>
+<mxCell id="rail_1" value="" style="rounded=0;fillColor=#F3F3F3;strokeColor=#DEDEDE;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+  <mxGeometry x="64" y="108" width="1308" height="172" as="geometry"/>
+</mxCell>
+<mxCell id="rail_1_badge" value="1" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#7A1F2B;strokeColor=#7A1F2B;align=center;verticalAlign=middle;fontFamily=Courier New;fontSize=13;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="1">
+  <mxGeometry x="82" y="113" width="24" height="24" as="geometry"/>
+</mxCell>
+<mxCell id="rail_1_name" value="LAND" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=#0B0B0B;fontStyle=1;letterSpacing=2;" vertex="1" parent="1">
+  <mxGeometry x="114" y="113" width="230" height="24" as="geometry"/>
+</mxCell>
+<mxCell id="rail_2" value="" style="rounded=0;fillColor=#F3F3F3;strokeColor=#DEDEDE;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+  <mxGeometry x="64" y="340" width="1308" height="731" as="geometry"/>
+</mxCell>
+<mxCell id="rail_2_badge" value="2" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#7A1F2B;strokeColor=#7A1F2B;align=center;verticalAlign=middle;fontFamily=Courier New;fontSize=13;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="1">
+  <mxGeometry x="82" y="345" width="24" height="24" as="geometry"/>
+</mxCell>
+<mxCell id="rail_2_name" value="WRITE" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=#0B0B0B;fontStyle=1;letterSpacing=2;" vertex="1" parent="1">
+  <mxGeometry x="114" y="345" width="230" height="24" as="geometry"/>
+</mxCell>
+<mxCell id="rail_3" value="" style="rounded=0;fillColor=#F3F3F3;strokeColor=#DEDEDE;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+  <mxGeometry x="924" y="1131" width="448" height="158" as="geometry"/>
+</mxCell>
+<mxCell id="rail_3_badge" value="3" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#7A1F2B;strokeColor=#7A1F2B;align=center;verticalAlign=middle;fontFamily=Courier New;fontSize=13;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="1">
+  <mxGeometry x="942" y="1136" width="24" height="24" as="geometry"/>
+</mxCell>
+<mxCell id="rail_3_name" value="COMPACT" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=#0B0B0B;fontStyle=1;letterSpacing=2;" vertex="1" parent="1">
+  <mxGeometry x="974" y="1136" width="230" height="24" as="geometry"/>
+</mxCell>
+<object id="stream" label="" spec_id="stream" spec_category="data_transient">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;dashed=1;dashPattern=7 4;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="88" y="168" width="230" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="stream_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="stream">
+  <mxGeometry x="0" y="0" width="230" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="stream_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="stream">
+  <mxGeometry x="0" y="14" width="230" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="stream_type" value="Data Source:" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#E8C6CB;" vertex="1" parent="stream">
+  <mxGeometry x="14" y="0" width="67" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="stream_name" value="an event stream" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="stream">
+  <mxGeometry x="87" y="0" width="129" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="stream_b" value="Carry events as they arrive, under no layout of their own" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="stream">
+  <mxGeometry x="14" y="46" width="202" height="28" as="geometry"/>
+</mxCell>
+<object id="auto_loader" label="" spec_id="auto_loader" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="364" y="168" width="320" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="auto_loader_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="auto_loader">
+  <mxGeometry x="0" y="0" width="320" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="auto_loader_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="auto_loader">
+  <mxGeometry x="0" y="14" width="320" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="auto_loader_name" value="Spark Structured Streaming / Auto Loader" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="auto_loader">
+  <mxGeometry x="14" y="0" width="292" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="auto_loader_b" value="Persist the arriving stream and hand each micro-batch to the stream writer" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="auto_loader">
+  <mxGeometry x="14" y="46" width="292" height="28" as="geometry"/>
+</mxCell>
+<object id="stream_writer" label="" spec_id="stream_writer" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="730" y="168" width="240" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="stream_writer_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="stream_writer">
+  <mxGeometry x="0" y="0" width="240" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="stream_writer_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="stream_writer">
+  <mxGeometry x="0" y="14" width="240" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="stream_writer_name" value="Stream Writer" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="stream_writer">
+  <mxGeometry x="14" y="0" width="212" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="stream_writer_b" value="Append every micro-batch to the landing table as it arrives" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="stream_writer">
+  <mxGeometry x="14" y="46" width="212" height="28" as="geometry"/>
+</mxCell>
+<object id="streaming_sink" label="" spec_id="streaming_sink" spec_category="data_persisted">
+  <mxCell style="rounded=0;fillColor=#FFFFFF;strokeColor=#1B4D3E;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="1016" y="168" width="330" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="streaming_sink_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="streaming_sink">
+  <mxGeometry x="0" y="0" width="330" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="streaming_sink_type" value="Landing Table:" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#C9DAD2;" vertex="1" parent="streaming_sink">
+  <mxGeometry x="14" y="0" width="76" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="streaming_sink_name" value="streaming_sink" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="streaming_sink">
+  <mxGeometry x="96" y="0" width="220" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="streaming_sink_b" value="Hold the landing copy unsplit, so high-frequency arrivals never fragment the container layout" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="streaming_sink">
+  <mxGeometry x="14" y="46" width="302" height="28" as="geometry"/>
+</mxCell>
+<object id="cron" label="" spec_id="cron" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="88" y="400" width="240" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="cron_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="cron">
+  <mxGeometry x="0" y="0" width="240" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="cron_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="cron">
+  <mxGeometry x="0" y="14" width="240" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="cron_name" value="CRON Scheduler" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="cron">
+  <mxGeometry x="14" y="0" width="212" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="cron_b" value="Fire the consistency checker and the consolidation optimizer on one schedule" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="cron">
+  <mxGeometry x="14" y="46" width="212" height="28" as="geometry"/>
+</mxCell>
+<object id="consistency_checker" label="" spec_id="consistency_checker" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="388" y="407" width="400" height="72" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="consistency_checker_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="consistency_checker">
+  <mxGeometry x="0" y="0" width="400" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="consistency_checker_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="consistency_checker">
+  <mxGeometry x="0" y="14" width="400" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="consistency_checker_name" value="Consistency Checker" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="consistency_checker">
+  <mxGeometry x="14" y="0" width="372" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="consistency_checker_b" value="Read the write-ahead log, clear any partial ingest state, then launch the writer" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="consistency_checker">
+  <mxGeometry x="14" y="46" width="372" height="14" as="geometry"/>
+</mxCell>
+<object id="checkpoint" label="" spec_id="checkpoint" spec_category="data_persisted">
+  <mxCell style="rounded=0;fillColor=#FFFFFF;strokeColor=#1B4D3E;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="848" y="400" width="300" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="checkpoint_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="checkpoint">
+  <mxGeometry x="0" y="0" width="300" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="checkpoint_type" value="Write-Ahead Log:" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#C9DAD2;" vertex="1" parent="checkpoint">
+  <mxGeometry x="14" y="0" width="89" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="checkpoint_name" value="checkpoint" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="checkpoint">
+  <mxGeometry x="109" y="0" width="177" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="checkpoint_b" value="Record every multi-table write so a repeated fan-out stays idempotent" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="checkpoint">
+  <mxGeometry x="14" y="46" width="272" height="28" as="geometry"/>
+</mxCell>
+<object id="tree_frozen" label="" spec_id="tree_frozen" spec_category="data_accepted">
+  <mxCell style="rounded=0;fillColor=#EEF4F0;strokeColor=#1B4D3E;strokeWidth=2.4;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="88" y="612" width="280" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="tree_frozen_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="tree_frozen">
+  <mxGeometry x="0" y="0" width="280" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="tree_frozen_type" value="Split Tree:" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#C9DAD2;" vertex="1" parent="tree_frozen">
+  <mxGeometry x="14" y="0" width="53" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="tree_frozen_name" value="Pre-Built" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="tree_frozen">
+  <mxGeometry x="73" y="0" width="132" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="tree_frozen_tag" value="FROZEN" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#C9DAD2;fontStyle=1;letterSpacing=2;" vertex="1" parent="tree_frozen">
+  <mxGeometry x="135" y="0" width="61" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="tree_frozen_b" value="Carry the split decision that held up on holdout into the splitter" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="tree_frozen">
+  <mxGeometry x="14" y="46" width="252" height="28" as="geometry"/>
+</mxCell>
+<object id="specialized_writer" label="SPECIALIZED WRITER" spec_id="specialized_writer" spec_category="group">
+  <mxCell style="swimlane;startSize=34;container=1;collapsible=0;recursiveResize=0;fillColor=#DEDEDE;swimlaneFillColor=#FFFFFF;strokeColor=#52514E;strokeWidth=1.4;align=left;spacingLeft=16;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontFamily=Helvetica;fontSize=14;fontColor=#0B0B0B;fontStyle=1;letterSpacing=2;" vertex="1" parent="1">
+    <mxGeometry x="428" y="554" width="400" height="428" as="geometry"/>
+  </mxCell>
+</object>
+<object id="data_splitter" label="" spec_id="data_splitter" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="specialized_writer">
+    <mxGeometry x="24" y="58" width="352" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="data_splitter_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="data_splitter">
+  <mxGeometry x="0" y="0" width="352" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="data_splitter_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="data_splitter">
+  <mxGeometry x="0" y="14" width="352" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="data_splitter_name" value="Data Splitter" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="data_splitter">
+  <mxGeometry x="14" y="0" width="324" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="data_splitter_b" value="Divide each batch into logical groupings with a conditional group-by built from the frozen tree" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="data_splitter">
+  <mxGeometry x="14" y="46" width="324" height="28" as="geometry"/>
+</mxCell>
+<object id="container_allocator" label="" spec_id="container_allocator" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="specialized_writer">
+    <mxGeometry x="24" y="188" width="352" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="container_allocator_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="container_allocator">
+  <mxGeometry x="0" y="0" width="352" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="container_allocator_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="container_allocator">
+  <mxGeometry x="0" y="14" width="352" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="container_allocator_name" value="Container Allocator" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="container_allocator">
+  <mxGeometry x="14" y="0" width="324" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="container_allocator_b" value="Read container fill from the tracker and finalize a partition_id for every record" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="container_allocator">
+  <mxGeometry x="14" y="46" width="324" height="28" as="geometry"/>
+</mxCell>
+<object id="fanout_distributor" label="" spec_id="fanout_distributor" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="specialized_writer">
+    <mxGeometry x="24" y="318" width="352" height="86" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="fanout_distributor_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="fanout_distributor">
+  <mxGeometry x="0" y="0" width="352" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="fanout_distributor_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="fanout_distributor">
+  <mxGeometry x="0" y="14" width="352" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="fanout_distributor_name" value="Fanout Distributor" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="fanout_distributor">
+  <mxGeometry x="14" y="0" width="324" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="fanout_distributor_b" value="Write the assigned batch to the index, the tracker and the event table, then commit" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="fanout_distributor">
+  <mxGeometry x="14" y="46" width="324" height="28" as="geometry"/>
+</mxCell>
+<object id="index_table" label="" spec_id="index_table" spec_category="data_persisted">
+  <mxCell style="rounded=0;fillColor=#FFFFFF;strokeColor=#1B4D3E;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="948" y="554" width="400" height="147" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="index_table_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="index_table">
+  <mxGeometry x="0" y="0" width="400" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="index_table_type" value="Index Table:" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#C9DAD2;" vertex="1" parent="index_table">
+  <mxGeometry x="14" y="0" width="64" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="index_table_name" value="index_table" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="index_table">
+  <mxGeometry x="84" y="0" width="302" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="index_table_sc0" value="predicate_1" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="index_table">
+  <mxGeometry x="16" y="46" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="index_table_sc1" value="predicate_2" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="index_table">
+  <mxGeometry x="16" y="63" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="index_table_sc2" value="partition_id" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="index_table">
+  <mxGeometry x="16" y="80" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="index_table_b" value="Carry the query predicate features and partition_id only, so a prescan never opens the event table" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="index_table">
+  <mxGeometry x="14" y="107" width="372" height="28" as="geometry"/>
+</mxCell>
+<object id="container_tracker" label="" spec_id="container_tracker" spec_category="data_persisted">
+  <mxCell style="rounded=0;fillColor=#FFFFFF;strokeColor=#1B4D3E;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="948" y="745" width="400" height="72" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="container_tracker_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="container_tracker">
+  <mxGeometry x="0" y="0" width="400" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="container_tracker_type" value="Assignment Tracker:" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#C9DAD2;" vertex="1" parent="container_tracker">
+  <mxGeometry x="14" y="0" width="104" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="container_tracker_name" value="container_tracker" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="container_tracker">
+  <mxGeometry x="124" y="0" width="262" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="container_tracker_b" value="Keep one row for every grouping, recording how full its open container is" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="container_tracker">
+  <mxGeometry x="14" y="46" width="372" height="14" as="geometry"/>
+</mxCell>
+<object id="partitioned_sink" label="" spec_id="partitioned_sink" spec_category="data_persisted">
+  <mxCell style="rounded=0;fillColor=#FFFFFF;strokeColor=#1B4D3E;strokeWidth=1.6;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="948" y="861" width="400" height="184" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="partitioned_sink_bar" value="" style="rounded=0;fillColor=#1B4D3E;strokeColor=#1B4D3E;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="0" y="0" width="400" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_type" value="Event Table:" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=#C9DAD2;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="14" y="0" width="65" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_name" value="partitioned_sink" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="85" y="0" width="301" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_sc0" value="predicate_1" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="16" y="46" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_sc1" value="predicate_2" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="16" y="63" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_sc2" value="attribute_1" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="16" y="80" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_sc3" value="attribute_2" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="16" y="97" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_sc4" value="partition_id" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="16" y="114" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_sc5" value="record_id" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Courier New;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="16" y="131" width="368" height="17" as="geometry"/>
+</mxCell>
+<mxCell id="partitioned_sink_b" value="Hold the full event attributes under their finalized container assignment" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="partitioned_sink">
+  <mxGeometry x="14" y="158" width="372" height="14" as="geometry"/>
+</mxCell>
+<object id="optimizer" label="" spec_id="optimizer" spec_category="operation">
+  <mxCell style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#F8EEF0;strokeColor=#7A1F2B;strokeWidth=1.8;fontFamily=Helvetica;fontSize=12;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="948" y="1191" width="400" height="72" as="geometry"/>
+  </mxCell>
+</object>
+<mxCell id="optimizer_bar" value="" style="rounded=1;absoluteArcSize=1;arcSize=14;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="optimizer">
+  <mxGeometry x="0" y="0" width="400" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="optimizer_bar_foot" value="" style="rounded=0;fillColor=#7A1F2B;strokeColor=#7A1F2B;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;" vertex="1" parent="optimizer">
+  <mxGeometry x="0" y="14" width="400" height="18" as="geometry"/>
+</mxCell>
+<mxCell id="optimizer_name" value="Continuous Consolidation Optimizer" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=#FCFCFB;fontStyle=1;" vertex="1" parent="optimizer">
+  <mxGeometry x="14" y="0" width="372" height="32" as="geometry"/>
+</mxCell>
+<mxCell id="optimizer_b" value="Rewrite each partition back to one file on disjoint commits, without Z-order" style="text;html=0;strokeColor=none;fillColor=none;whiteSpace=wrap;overflow=hidden;align=left;verticalAlign=top;fontFamily=Helvetica;fontSize=10;fontColor=#52514E;" vertex="1" parent="optimizer">
+  <mxGeometry x="14" y="46" width="372" height="14" as="geometry"/>
+</mxCell>
+<object id="fanout_bus" label="" spec_id="fanout_bus" spec_category="chrome">
+  <mxCell style="ellipse;fillColor=#0B0B0B;strokeColor=#0B0B0B;strokeWidth=1.4;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;" vertex="1" parent="1">
+    <mxGeometry x="911" y="908" width="14" height="14" as="geometry"/>
+  </mxCell>
+</object>
+<object id="e_stream_loader" label="" spec_id="e_stream_loader" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="stream" target="auto_loader">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_loader_writer" label="" spec_id="e_loader_writer" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="auto_loader" target="stream_writer">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_writer_sink" label="write" spec_id="e_writer_sink" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="stream_writer" target="streaming_sink">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_cron_checker" label="schedule" spec_id="e_cron_checker" spec_category="trigger">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#7A1F2B;strokeWidth=1.8;dashed=1;dashPattern=2 3;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#7A1F2B;fontStyle=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="cron" target="consistency_checker">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_checker_wal" label="read" spec_id="e_checker_wal" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=1;exitY=0.32;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.32;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="consistency_checker" target="checkpoint">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_wal_checker" label="offsets" spec_id="e_wal_checker" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0;exitY=0.72;exitDx=0;exitDy=0;exitPerimeter=1;entryX=1;entryY=0.72;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="checkpoint" target="consistency_checker">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_checker_writer" label="launch" spec_id="e_checker_writer" spec_category="trigger">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#7A1F2B;strokeWidth=1.8;dashed=1;dashPattern=2 3;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#7A1F2B;fontStyle=1;exitX=0.45;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.45;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="consistency_checker" target="data_splitter">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_sink_splitter" label="landed rows" spec_id="e_sink_splitter" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.86;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="streaming_sink" target="data_splitter">
+    <mxGeometry x="-0.78" relative="1" as="geometry">
+      <Array as="points"><mxPoint x="1181" y="310"/><mxPoint x="818" y="310"/><mxPoint x="818" y="520"/><mxPoint x="755" y="520"/></Array>
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_tree_splitter" label="grouping rule" spec_id="e_tree_splitter" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="tree_frozen" target="data_splitter">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_splitter_alloc" label="groupings" spec_id="e_splitter_alloc" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="data_splitter" target="container_allocator">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_alloc_fanout" label="partition_id" spec_id="e_alloc_fanout" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="container_allocator" target="fanout_distributor">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_tracker_alloc" label="read fill" spec_id="e_tracker_alloc" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;jumpStyle=arc;jumpSize=8;exitX=0;exitY=0.72;exitDx=0;exitDy=0;exitPerimeter=1;entryX=1;entryY=0.72;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="container_tracker" target="container_allocator">
+    <mxGeometry x="-0.4" relative="1" as="geometry">
+      <Array as="points"><mxPoint x="858" y="797"/><mxPoint x="858" y="804"/></Array>
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_fanout_bus" label="assigned batch" spec_id="e_fanout_bus" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="fanout_distributor" target="fanout_bus">
+    <mxGeometry x="-0.25" relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_fanout_index" label="" spec_id="e_fanout_index" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.3;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="fanout_bus" target="index_table">
+    <mxGeometry relative="1" as="geometry">
+      <Array as="points"><mxPoint x="918" y="598"/></Array>
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_fanout_tracker" label="" spec_id="e_fanout_tracker" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.3;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="fanout_bus" target="container_tracker">
+    <mxGeometry relative="1" as="geometry">
+      <Array as="points"><mxPoint x="918" y="767"/></Array>
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_fanout_psink" label="" spec_id="e_fanout_psink" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.3;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="fanout_bus" target="partitioned_sink">
+    <mxGeometry relative="1" as="geometry">
+      <Array as="points"><mxPoint x="918" y="916"/></Array>
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_fanout_wal" label="commit" spec_id="e_fanout_wal" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=1;exitY=0.22;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.6;entryY=1;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="fanout_distributor" target="checkpoint">
+    <mxGeometry x="0.8" relative="1" as="geometry">
+      <Array as="points"><mxPoint x="888" y="891"/><mxPoint x="888" y="520"/><mxPoint x="1028" y="520"/></Array>
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_cron_optimizer" label="schedule" spec_id="e_cron_optimizer" spec_category="trigger">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#7A1F2B;strokeWidth=1.8;dashed=1;dashPattern=2 3;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#7A1F2B;fontStyle=1;exitX=0.14;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="cron" target="optimizer">
+    <mxGeometry x="0.66" relative="1" as="geometry">
+      <Array as="points"><mxPoint x="122" y="510"/><mxPoint x="44" y="510"/><mxPoint x="44" y="1101"/><mxPoint x="890" y="1101"/><mxPoint x="890" y="1227"/></Array>
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_psink_opt" label="read" spec_id="e_psink_opt" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.25;exitY=1;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="partitioned_sink" target="optimizer">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+<object id="e_opt_psink" label="compact" spec_id="e_opt_psink" spec_category="data_flow">
+  <mxCell style="edgeStyle=orthogonalEdgeStyle;rounded=1;arcSize=10;jettySize=auto;html=0;strokeColor=#0B0B0B;strokeWidth=1.8;endArrow=blockThin;endFill=1;endSize=8;labelBackgroundColor=#F3F3F3;verticalAlign=middle;fontFamily=Helvetica;fontSize=10;fontColor=#0B0B0B;exitX=0.75;exitY=0;exitDx=0;exitDy=0;exitPerimeter=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;entryPerimeter=1;" edge="1" parent="1" source="optimizer" target="partitioned_sink">
+    <mxGeometry relative="1" as="geometry">
+    </mxGeometry>
+  </mxCell>
+</object>
+  </root>
+</mxGraphModel>

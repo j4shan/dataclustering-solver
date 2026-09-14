@@ -1,0 +1,24 @@
+# 12.6.5 — the response headers the local server sends on every response, restated for
+# static hosting, where there is no middleware to send them.  Cloudflare Pages and
+# Netlify both read this file from the root of the published directory and neither
+# serves it.  Losing these is silent: the page renders, and only the protections go.
+#
+# The policy is the server's, unchanged.  `'self'` names the page's own origin, which is
+# the whole origin: nothing the page loads comes from anywhere else.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Cache-Control: public, max-age=300, must-revalidate
+
+# Assets carry no content hash in their names, so a figure replaced under the same name
+# has to reach a reader who already has the old one.  A week is the compromise: long
+# enough that a return visit costs nothing, short enough that a correction lands.
+/figures/img/*
+  Cache-Control: public, max-age=604800
+
+/*.css
+  Cache-Control: public, max-age=604800
+
+/*.js
+  Cache-Control: public, max-age=604800

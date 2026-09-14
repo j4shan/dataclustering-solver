@@ -20,7 +20,7 @@ function stage() {
   const box = document.createElement("div");
   box.className = "illustration-stage";
   const image = document.createElement("img");
-  image.setAttribute("src", "figures/img/section_a_medical_cabinet.png");
+  image.setAttribute("src", "figures/img/section_problem_medical_cabinet.png");
   box.append(image);
   return box;
 }

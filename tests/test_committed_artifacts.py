@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COMMITTED = {
     "resources/data/closet-scenario.json":
         "the source of truth the two Problem Statement rasters are rendered from (9.7)",
-    "simulator/gui/static/formulation.html":
+    "site/formulation.html":
         "Problem Statement's left pane; committing it is what lets a default install serve "
         "the page without rebuilding (10.3.10)",
 }

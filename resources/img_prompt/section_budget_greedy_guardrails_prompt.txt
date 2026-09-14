@@ -1,0 +1,278 @@
+OUTPUT
+One diagram, landscape, warm off-white ground, single light palette.
+Authored in draw.io. Source: resources/img/section_budget_greedy_guardrails.drawio.
+Future accepted path: resources/img/section_budget_greedy_guardrails.png, exported
+from that source (see PRODUCTION).
+
+SUBJECT
+One terminal group carried as a single container chain, K = 1 to K_max, and
+the count at which each added container starts buying less than the one
+before it. The figure presents / introduces the problem and the solution on that one
+chain: the expected data skipping volume V(K) is convex below its inflection, so the
+greedy theorem's condition -- non-increasing marginal gains -- does not hold
+there; three guardrails then cut the chain back to the region where it does.
+It is the illustration of Drawing Storage Boundary section 3. It is a
+feasibility illustration, not an allocator, layout score, or recommendation.
+
+STYLE
+Editorial flat 2D diagram, two bands. No perspective, realism, 3D,
+shadows, gradients, UI chrome, dashboard widgets, server racks, or
+emojis. System-ui labels; ui-monospace for every identifier and number.
+Rounded corners about 8px on cards and 6px on count tokens. 1px rules.
+
+COLOURS
+Use the same explainer family as Problem Statement and Measuring Data Layout Fitness:
+#FCFCFB canvas . #7A1F2B wine-red . #F8EEF0 warm-rose .
+#1B4D3E dark-green . #EEF4F0 cool-sage . #0B0B0B ink .
+#52514E secondary . #DEDEDE rules . #F3F3F3 header band .
+#FFFFFF card ground.
+Do not use orange. Colour is never the only state channel.
+
+THE INSTANCE (fixed -- do not vary)
+These values are fixed. Every number printed in the figure is derived from
+them; none is typed a second time. Values printed in
+the figure are derived from it; none is typed again in drawing code. This
+figure owns the instance; it is not shared with the section 1 or section 2
+rasters, each of which owns its own.
+
+predicate = "Price > 20"
+branch = "Yes"
+records = 1600
+selected_per_query = [32, 24, 18, 40, 0, 12]
+query_ids = ["q1", "q2", "q3", "q4", "q5", "q6"]
+size_floor = 80
+typical_skip_bar = 0.50
+
+The group is the Yes branch of a hypothesized price predicate, written in
+the same form as the section 2 figure's split. It is an introductory slice, not a
+partition of a provider corpus or a catalog score, and its record count is
+this figure's own. States and metrics on this figure are hypothesized and
+then derived from the dictionary above. The 50% skip bar is a typical engine
+break-even used for this illustration, not a constant the page ships.
+
+There is no geometric option ladder here and no container budget. The chain
+is every integer count the size floor allows, which is what makes both
+curvature regions visible on one axis.
+
+DERIVATION (every printed value comes from this)
+For the group with n records:
+
+  np = mean(selected_per_query)                 # lambda at K = 1
+  K_max = floor(n / size_floor)                 # the chain is 1 .. K_max
+  lambda(K) = np / K
+  Pr_empty(K) = exp(-lambda(K))
+  V(K) = n * Pr_empty(K)                        # expected data skipping volume
+
+  marginal efficiency, one unit step of the chain:
+    e(K) = delta_V / delta_K = V(K + 1) - V(K)  with delta_K = 1
+
+  concavity:
+    d2V/dK2 = V(K) * (np / K^3) * (np / K - 2)
+    The figure writes this expression in n and p. It does not use the
+    lambda symbol here, even though np / K is that parameter.
+    Only the bracket can turn negative, so the sign flips at np / K = 2:
+    K_0 = np / 2                                # the inflection
+    K < K_0  convex   e rising   greedy has no guarantee
+    K > K_0  concave  e decaying the region the theorem needs
+
+  K_skip = np / ln(1 / typical_skip_bar) = np / ln 2
+
+Guardrail outcomes, all derived (do not type them as source):
+  starting count  offer only K >= K_0; counts below it are cut
+  size floor      n / K >= s_min, i.e. the chain closes at K_max
+  skip bar        grant K > 1 only when some surviving K has
+                  Pr_empty(K) >= typical_skip_bar; this chain has none,
+                  because K_skip exceeds K_max
+
+Expected derived checks, rounded only for display:
+  np = 21.0        K_0 = 10.5       K_max = 20       K_skip = 30.3
+  V(1) = 0.0       V(11) = 237.1    V(20) = 559.9
+  tallest step  K = 10 -> K = 11 with e = 41.2; it straddles K_0
+  Pr(11) = 14.8%   Pr(20) = 35.0%   (never reaches the 50% bar)
+  starting count cuts K = 1 .. K = 10; offered chain is K = 11 -> K = 20
+
+These checks are verified against the derivation before the figure is
+drawn, together with the three structural facts the figure exists to show:
+the inflection lies strictly inside the chain, the tallest step straddles
+it, every K below it is convex and every K above it is concave. The check
+values are a verification target, never source data.
+
+NO TITLE
+The right pane already carries the visible title. Do not print a title,
+subtitle, or footnote on the canvas. One line of space sits above the
+first section title.
+
+SECTION TITLES
+Bold black labels, 18px Bold, ink. Each has a wine rounded badge
+(24 x 24, white mono 14):
+  [1] "One chain covers both curvature regions of the volume curve"
+  [2] "Three guardrails put the chain back inside the region"
+
+COMPONENT 1 -- THE CHAIN ON ONE PAIR OF AXES (top band)
+One chart, two vertical axes, one horizontal axis. Absolute magnitudes are
+not the subject; the pattern and the inflection are. Each series is scaled
+to its own axis, and each axis top is a round number above its series.
+
+Horizontal axis, left to right: number of containers K, one tick per integer
+count from K = 1 to K_max. Ticks below the inflection are set in secondary,
+ticks at or above it in ink. Axis title beneath: "number of containers K --
+one chain, K = 1 to K_max = 20".
+
+Left vertical axis, dark-green: V(K) in records, titled "Expected data
+skipping volume  V(K)" over "records a query can skip at that container
+count". An axis title names the quantity; it never says which side it is on.
+The series is
+a 2.6px dark-green polyline through every count, with a 10px circle marker
+at each: hollow below K_0, filled at or above it.
+
+Right vertical axis, wine: e = delta_V / delta_K, titled "Marginal
+efficiency  e = delta_V / delta_K" over "extra volume gained per added
+container".
+The series is one bar per unit step, drawn between its two counts:
+warm-rose fill with a dashed wine outline while the step is still rising,
+cool-sage fill with a solid dark-green outline once it is decaying. The
+tallest bar carries a heavier outline. The right axis prints no zero label;
+the left axis already carries that baseline.
+
+The plot ground is tinted in two halves, split at K_0, and each half is
+named in words so colour is never the only channel:
+  left  warm-rose  "convex . marginal efficiency still rising" /
+                   "The incremental data skipping volume brought by every
+                    new container increases" /
+                   "greedy has no guarantee here"
+  right cool-sage  "concave . marginal efficiency decaying" /
+                   "The incremental data skipping volume brought by every
+                    new container decreases" /
+                   "the region the greedy theorem needs"
+
+A 2px dashed ink line stands at K_0 and runs above the plot to its readout:
+"K_0 = np / 2 = 10.5" (16px mono Bold) over "inflection . d2V/dK2 changes
+sign . Pr(X = 0) = e^(-2) ~ 13.5%" (12.5px secondary).
+
+A warm-rose callout with a short dashed wine leader points down to the
+tallest bar: "tallest step K = 10 -> K = 11 . e = 41.2 . it straddles K_0".
+It must clear the region banners above it and the bar below it.
+
+Right of the plot, a white card, "Poisson estimation model", carrying in
+order: the instance line (predicate, branch, n, np, s_min); "expected data
+skipping volume" with V(K) = n . e^(-np/K); "marginal efficiency" with
+the delta_V / delta_K fraction equal to V(K + 1) - V(K), noted "one step of
+the chain, so delta_K = 1"; "concavity" with the d2V/dK2 expression and the
+sentence that the bracket is the only factor that can turn negative, so the
+sign flips where np / K = 2, that is K_0 = np / 2 = 10.5; then "what the
+chain reads" as two tokens -- "K = 1 ... K = 10" against "incremental volume
+increases" in warm-rose dashed, "K = 11 ... K = 20" against "incremental
+volume decreases" in cool-sage solid; and closing: greedy accepts the best exposed step first, which is
+safe only on the decaying half, because on the rising half a later step
+beats the one in front of it.
+
+COMPONENT 2 -- THREE GUARDRAILS (bottom band)
+Three equal white cards, each with a top rule -- dark-green when the chain
+clears the gate, wine when it does not -- a wine number badge, the term, the
+rule as mono type, one sentence of detail, and a derived verdict token
+(cool-sage solid when cleared, warm-rose dashed when not):
+
+  [1] "starting count"        K >= K_0 = np / 2 = 10.5
+      Refuse the rising half. The first count that survives is K = 11;
+      below it the chain is convex.
+      verdict "cuts K = 1 ... K = 10"                          wine
+  [2] "size floor"            n / K >= s_min = 80 records
+      Keep every container worth opening. K_max = floor(n / s_min) = 20
+      closes the chain from above.
+      verdict "closes at K = 20"                               green
+  [3] "skip bar before K > 1" Pr(X = 0) >= 50% . np / K = ln 2
+      A typical engine break-even. This page does not ship it as a constant.
+      It needs K ~ 1.44 np = 30.3, past K_max.
+      verdict "missed . Pr(20) = 35.0%"                        wine
+
+Beneath them, "the same chain after the three cuts": one token per count
+from 1 to K_max. A cut count is a white token with a dashed wine outline and
+a wine strike through it; a surviving count is a cool-sage token with a
+solid dark-green outline and bold mono type. A closing cool-sage chip reads
+"offered . K = 11 -> K = 20".
+
+One sentence under the strip, not a closer badge, derived rather than typed:
+the three cuts do not coincide -- the starting count removes K = 1 ... K = 10,
+the size floor closes the chain at K = 20, and the skip bar needs K ~ 31,
+which the floor never reaches. The Yes branch is offered K = 11 -> K = 20 with
+no count at break-even.
+
+Do not mark any count as chosen, winner, or recommended. Do not draw a
+budget, a spend, or a second group.
+
+NO FOOTER
+The raster carries no title, no caption line and no legend. The closing sentence under
+the chain strip is the last element on the page. Every state is already named
+in place -- the region banners carry their words, each verdict token carries
+its word, and a cut count carries a strike -- so no key is needed to read
+them, and colour still never carries a distinction on its own.
+
+TYPE SCALE (base sizes at 1920 x 1216)
+section titles 18 Bold .
+step badges mono 14 Semibold . K_0 readout mono 16 Bold .
+axis titles 14 Semibold . axis sublabels 12.5 . axis ticks mono 12 .
+region headings 13.5 Semibold . region detail 12.5 .
+panel headings 13.5 Semibold . panel formulas mono 14 . panel prose 12.5 .
+card terms 14.5 Semibold . card rules mono 13 . card detail 12.5 .
+verdict tokens mono 12.5 Semibold . chain tokens mono 13 .
+closing sentence 13.5.
+
+KEEP OUT
+- No winning allocation, accepted-edge list, winner badge, ranking medal,
+  or "best", "optimal layout", "recommended", or "upper bound" language.
+- No claim that V(K) is per-query skipping, aggregate waste, or physical
+  replay.
+- No shipped engine constant presented as a product setting. The 50%
+  bar is labelled typical. Do not print the word production.
+- The expected data skipping volume is the Poisson empty-container volume
+  n * Pr(X = 0); do not substitute another empty-container model. Do not call it
+  a leaf benefit.
+- Do not redraw the six query cells or the geometric option ladder with
+  V on every card; those belong to the section 1 and section 2 figures.
+- No second group, no geometric ladder, no container budget, no reserved
+  count strip, and no cross-group ranking. Those were the subject of an
+  earlier composition and are not this one.
+- No container assignment within the group and no event-to-container drawing.
+- No distinction carried by colour alone.
+
+PRODUCTION
+The diagram is authored directly as draw.io mxGraph XML. The source of
+record is `resources/img/section_budget_greedy_guardrails.drawio`; it is edited
+in the draw.io editor or as XML, and no intermediate program stands between
+this prompt and that file.
+
+The accepted PNG is exported straight from that source with the draw.io
+desktop CLI, at the target width:
+
+  /Applications/draw.io.app/Contents/MacOS/draw.io --export --format png \
+      --width 1920 --border 24 \
+      --output resources/img/section_budget_greedy_guardrails.png \
+      resources/img/section_budget_greedy_guardrails.drawio
+
+No 2x-and-downsample pass. That rule in the image-generation guideline exists
+because Pillow antialiases small type and hairlines poorly, so a supersample
+is needed to clean them up. draw.io renders through a browser engine that
+antialiases correctly at any requested size, so exporting large and shrinking
+would only add a resampling pass and soften the result. Export at the size you
+want.
+
+NOTATION
+A step is written with a real arrow glyph and both of its counts -- "K = 10 ->
+K = 11", never "10 -> 11"; a range of counts is written "K = 1 ... K = 10".
+Subscripts and exponents are set as real subscripts and superscripts --
+K_0, K_max, s_min, e^(-2), d2V/dK2 -- never as an underscore or a caret.
+A marginal efficiency and the second derivative are real stacked fractions,
+and where a value follows one the two sit on one optical axis.
+
+Every printed value is computed from THE INSTANCE by the derivation above
+before it is placed, and re-checked against the expected values. The
+chart's two series share one horizontal axis and one tick per count.
+Labels must clear rules and each other by at least 20 source pixels.
+
+Reject the drawing on clipping, on overlap, on a bar or token whose state
+is carried by colour without a matching fill or shape channel, on an
+inflection that does not lie strictly inside the chain, on a tallest step
+that does not straddle it, or on a value that differs from the derived
+check. After exporting, open the PNG and inspect it visually before
+acceptance. A later visual change starts a new authoring pass from this
+prompt.
