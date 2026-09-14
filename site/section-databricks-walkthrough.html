@@ -1,0 +1,111 @@
+<article class="formulation">
+<p>Once container assignment is exercised, the solution can be deployed to a production data lake such as Databricks. This page takes knowledge already on Problem Statement, Measuring Data Layout Fitness, and Drawing Storage Boundary and maps it onto a Lakehouse write path and a Spark read path. The figure <em>Deployment Process Flow</em> draws that planning path.</p>
+<h2 id="1-collect-query-usage-statistics">1. Collect query usage statistics</h2>
+<p>Persist <code>usage_summary</code>, a usage-statistics table. Each cell is a boolean flag for one query and one row: whether that query selected that row. The table is the wide boolean view of the same history as the two-column selection log. The usage statistics collector on the query path in §6 writes this store. Figure 3 draws that write; Figure 1 reads the same named store.</p>
+<p>Databricks <code>system.query.history</code> records predicates, not selected rows, so construct the table by replay, instrumentation, or sampling. Aggregating those per-instance flags into minute, hour, or date bins shrinks the table and loses resolution.</p>
+<p>That analysis is a screening estimate. The benchmark harness reports exact workload replay.</p>
+<h2 id="2-optimize-split-decision-trees">2. Optimize split decision trees</h2>
+<p>Grow split decision trees from <strong>training</strong> samples with the techniques in Measuring Data Layout Fitness. Run the search under a resource monitor and a complexity bound. Keep a beam of candidates so holdout sees several competing trees.</p>
+<p>Delta Lake and Iceberg cannot host hundreds of millions of table partitions. Each leaf occupies at least one table partition, so project the table's partition limit onto the search stop and prune tests.</p>
+<p>When holdout in §4 fails, the fail path writes heuristics of the unqualified split conditions: the cuts or predicates that did not transfer. Search then reads those heuristics and omits those conditions on the next pass. The inner list, score, and replace cycle stays on Measuring Data Layout Fitness.</p>
+<h2 id="3-optimistic-knapsack-simulation">3. Optimistic knapsack simulation</h2>
+<p>Apply the <a href="https://en.wikipedia.org/wiki/List_of_knapsack_problems#Multiple-choice_knapsack_problem" target="_blank" rel="noopener noreferrer">Multiple-Choice Knapsack Problem</a> (MCKP) from Drawing Storage Boundary. Set the Delta Lake table partition limit as the global container budget. Run MCKP on every beam candidate from §2.</p>
+<p>MCKP starts at one container per leaf and spends the budget piecemeal. Estimated skipping ratio and marginal efficiency appear at each iteration.</p>
+<p>An overlay chart on a log container-count axis that continues past the limit compares table metadata overhead with skipping performance and shows what a more granular store could still buy. That overlay may sit on Figure 1 as a panel on the MCKP spend node.</p>
+<p>Keep an ingestion-time dimension (minute, hour, day, or month) in the bottom split layer. Age commonly tracks usage frequency, so the last cut should leave that grain on the leaf.</p>
+<h2 id="4-experiment-simplified-assignment-on-holdout">4. Experiment simplified assignment on holdout</h2>
+<p>MCKP is a maximum-potential analysis on a static dataset. Relative marginal-efficiency ranking on training can move a long way on a forward stream. Apply the beam from §2 and a simplified assignment that ignores the ranking and enforces one global equal-size container policy.</p>
+<p>Set container capacity from the observed compressed record size so the files are fragmented micro-partitions (for example at least 8 MB on AWS S3), still inside the global table-partition overhead.</p>
+<p>Inspect the estimated weighted-average data skipping ratio on the <strong>holdout</strong>. That quantity is the check that a training tree transfers. Holdout is a gate: a tree that transfers freezes for ingest; a tree that fails writes the unqualified-split heuristics of §2 and returns to search.</p>
+<h2 id="5-deploy-container-assignment-during-ingestion">5. Deploy container assignment during Ingestion</h2>
+<p>Map the layout onto the write path of a Databricks Lakehouse. The figure <em>Ingestion Time Integration</em> shows the landing path, the writer assembly, and the fan-out.</p>
+<p>Spark Structured Streaming / Auto Loader and a stream writer persist a transient brand-sales stream into <code>streaming_sink</code>. That landing table stores arriving batches as they come.</p>
+<p>One CRON scheduler fires a consistency checker. The checker reads a custom checkpoint table that records a write-ahead log so a multi-table write can be idempotent. Delta Lake has no such log for this fan-out. The checker may clean partial ingest state, then launches the specialized writer.</p>
+<p>The specialized writer is one assembly line. A data splitter reads <code>streaming_sink</code> and the frozen tree from §4. A container allocator reads the tracker and finalizes <code>partition_id</code>. A fan-out writes the narrow index, the tracker, and <code>partitioned_sink</code>, then appends a WAL commit.</p>
+<table>
+<thead>
+<tr>
+<th>schema</th>
+<th>Databricks realization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>split decision</td>
+<td>a grouping or a predicate</td>
+</tr>
+<tr>
+<td>container assignment</td>
+<td>Delta Lake partition assignment (<code>partition_id</code>)</td>
+</tr>
+<tr>
+<td>feature index and events</td>
+<td>a narrow Delta table and a wide Delta event table (<code>partitioned_sink</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>On each arriving batch (a micro-batch when the stream is incremental), Spark applies a conditional group-by expression built from the custom layout decision tree in §2. That cut divides the batch into logical groupings. The brand-sales example groups by <code>brand_id</code> and <code>pricing_tier</code>.</p>
+<p>A <strong>stateful assignment tracker</strong> is a dedicated table with one row per logical grouping. It records container fill so the job can assign <code>partition_id</code> without a partition-sort. The bucket-hash-assign is an approximation: collisions are accepted.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>grouping identity key</td>
+<td>—</td>
+<td>the grouping the tree produced</td>
+</tr>
+<tr>
+<td>container sequence number</td>
+<td><code>k</code></td>
+<td>monotonic per grouping, starting at 1</td>
+</tr>
+<tr>
+<td>filled count</td>
+<td><code>s_1</code></td>
+<td>records already in the one partial container</td>
+</tr>
+<tr>
+<td>container capacity</td>
+<td><code>T</code></td>
+<td>target records per container</td>
+</tr>
+<tr>
+<td>batch size</td>
+<td><code>N</code></td>
+<td>records in this batch for that grouping</td>
+</tr>
+<tr>
+<td>virtual slot</td>
+<td><code>V</code></td>
+<td>the hashed address in <code>[s_1, s_1 + N)</code></td>
+</tr>
+</tbody>
+</table>
+<p>A grouping has only one partially filled container. Every earlier container in that grouping is full. A partition is identified by its grouping key and its sequence number.</p>
+<p>The job maps the batch onto virtual slots, then reads a sequence number from the slot. Let the tracker's current sequence be <code>k</code> and its filled count be <code>s_1</code> (<code>s_1 &lt; T</code>). For each record:</p>
+<p class="scroll-x"><code>V = s_1 + pmod(xxhash64(identity), N)</code><br /><code>seq = k + floor(V / T)</code></p>
+<p>Identity is the record identity columns. <code>xxhash64</code> and <code>pmod</code> are the Spark SQL functions. Two records may share a <code>V</code>; that collision is accepted, so a container's achieved size may miss <code>T</code>.</p>
+<p>The grouped, assigned stream is written to two destinations:</p>
+<ul>
+<li>a <strong>narrow index table</strong> of query-predicate features plus <code>partition_id</code>;</li>
+<li>a <strong>wide event table</strong> (<code>partitioned_sink</code>) of the full attributes plus <code>partition_id</code> plus <code>record_id</code>.</li>
+</ul>
+<p>The index written here has no <code>record_id</code> and no non-predicate attribute, because the §6 prescan only collects <code>partition_id</code> values.</p>
+<p>Continuous ingest into a micro-partition layout creates fragmented new file objects. Left unattended, tens of millions of small files overwhelm the catalog metadata system. §7 states the detailed solution.</p>
+<h2 id="6-activate-data-skipping-optimization">6. Activate data skipping optimization</h2>
+<p>Container-skipping maps onto the read path. The figure <em>Query Time Integration</em> follows that path: index scan, driver activation, worker fetch, durable output, then the usage collector.</p>
+<p>Spark Dynamic Partition Pruning (DPP) is Spark's out-of-the-box mechanism for granular container skipping. A multi-select query prescans the narrow index and computes the set of matching <code>partition_id</code> values. Spark DPP broadcasts that set to each Databricks worker as a metadata filter. Each worker fetches only the activated containers from <code>partitioned_sink</code> (the event table) and writes a durable query result. The usage statistics collector reads that result and persists aggregated <code>usage_summary</code>.</p>
+<p>DPP over millions of internal partition-metadata records needs a large driver node, for example an AWS rgd series instance with at least 256 GB. The adaptive query planner also needs a high broadcast threshold, for example 256 MB, so it can inject a broadcast partition filter into the target table scan. <a href="https://spark.apache.org/docs/latest/sql-performance-tuning.html" target="_blank" rel="noopener noreferrer">Spark config: autoBroadcastJoinThreshold</a> is that threshold. Activation stays at partition grain.</p>
+<h2 id="7-hybrid-table-architecture-and-continuous-consolidation">7. Hybrid table architecture and continuous consolidation</h2>
+<p><code>streaming_sink</code> is the landing copy. <code>partitioned_sink</code> is the containerized event store downstream of that landing.</p>
+<p>The same CRON that fires the consistency checker also fires an optimizer. The optimizer reads <code>partitioned_sink</code> and writes it back so each partition stays one file, with Z-order left off and the fan-out left to the writer.</p>
+<p>Do not run one <code>OPTIMIZE</code> over the whole table as a single Delta transaction; that commit is prone to concurrency failures. Bucket millions of partitions into tasks so disjoint subsets optimize in parallel and each subset commits on its own, non-conflicting transaction.</p>
+<p>For streaming ingest, split on ingestion time. The landing tier takes the high-frequency stream as landed rows; a tree-split layout there makes small-file fragmentation worse. The specialized writer periodically copies from the landing at a frequency that can tolerate granular containerization. Recent rows stay in the unoptimized tier, so maintenance is spent where skipping coverage is worth it.</p>
+<p>Rows that share a schema need not share one storage strategy. Complementary layouts, and different engines or hardware under them, can sit behind one user-facing table.</p>
+</article>

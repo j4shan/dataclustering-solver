@@ -1,0 +1,171 @@
+<!doctype html>
+<!--
+  The application shell (12.1).
+
+  Five sections in fixed order — understand, examine one screening search,
+  draw a storage boundary, go live, then read query density as a business
+  insight. The first four are each a left/right pair on a wide viewport; the
+  fifth is one scrolling pane. One of them is displayed at a time (12.1.1).
+  Measuring Data Layout Fitness, Drawing Storage Boundary, Go Live on
+  Databricks Lakehouse, and Business Insights as Byproduct are authored
+  `hidden` so the page opens on Problem Statement without a frame of all
+  five: `app.js` hands the choice to the location hash from there.
+  What is authored here is what the server sends: no bundler, no transpiler, no
+  template engine, and nothing assembled per request (10.3.5, 10.3.1).
+
+  The pane bodies are *fragments*, committed beside this file and fetched from the same
+  origin at load.  That is not an outbound request — every asset comes from the server
+  that sent this page (12.2.2).  Fetching them at load is what keeps each fragment
+  editable on its own.
+
+  Every URL below is relative to *this document* (12.2.13).  A leading slash resolves
+  against whatever host the page is opened from rather than against the page, so it
+  breaks the moment this is served from anywhere but the root of an origin.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Data Storage Layout Problem</title>
+    <!--
+      A link preview reads these tags and does not run script.  They describe the page
+      a reviewer opens.
+    -->
+    <meta name="description" content="Storage engines fetch whole containers even when a query selects a few records inside them. This page states the resulting waste as a problem, the measures it is judged by, and what deploying a layout on Databricks involves. It recommends no solution." />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="The Data Storage Layout Problem" />
+    <meta property="og:description" content="A data-layout problem in very large analytical lakes: which records share a container, measured against an observed query workload." />
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="app.css" />
+    <!--
+      Every figure but the first is `loading="lazy"`, so opening the page costs one
+      image rather than all of them.  These prefetches are the other half of that: the
+      browser fetches the rest quietly at low priority once the page is interactive, so
+      a reader who clicks to another section — or presents all five in front of an
+      audience — finds each figure already in cache instead of watching an empty box.
+      Same bytes as before, moved off the critical path rather than removed from it.
+    -->
+    <link rel="prefetch" href="figures/img/section_problem_smart_organizer.png" as="image" />
+    <link rel="prefetch" href="figures/img/demo_index_table.png" as="image" />
+    <link rel="prefetch" href="figures/img/demo_container_activation.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_budget_storage_limits.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_budget_knapsack_ladder.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_budget_greedy_guardrails.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_databricks_layout_planning.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_databricks_ingestion.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_databricks_query.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_gini_tree_split_cycle.png" as="image" />
+    <link rel="prefetch" href="figures/img/section_kpi_ecommerce.png" as="image" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <nav class="section-nav" aria-label="Sections">
+        <a href="#problem" data-nav="problem">Problem Statement</a>
+        <a href="#gini" data-nav="gini">Measuring Data Layout Fitness</a>
+        <a href="#knapsack" data-nav="knapsack">Drawing Storage Boundary</a>
+        <a href="#design" data-nav="design">Go Live on Databricks Lakehouse</a>
+        <a href="#signal" data-nav="signal">Business Insights as Byproduct</a>
+      </nav>
+    </header>
+
+    <main class="shell" id="shell">
+      <!-- problem ----------------------------------------------------------- -->
+      <section class="section" id="problem" tabindex="-1" aria-labelledby="problem-heading">
+        <header class="section-head">
+          <h1 id="problem-heading">Problem Statement</h1>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Problem Statement illustration">
+            <h2 class="pane-title">Organizing Data Like a Medicine Cabinet</h2>
+            <div class="pane-body" data-mount="figures/html/section-problem-illustration.html">
+              <p class="empty">Loading the illustration…</p>
+            </div>
+          </div>
+          <div class="pane-stack pane-right">
+            <div class="pane" role="region" aria-label="Problem Statement terminology"
+                 data-mount="section-problem-glossary.html">
+              <p class="empty">Loading the terminology…</p>
+            </div>
+            <div class="pane" role="region" aria-label="Problem Statement formal statement"
+                 data-mount="formulation.html">
+              <p class="empty">Loading the formal statement…</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- gini -------------------------------------------------------------- -->
+      <section class="section" id="gini" tabindex="-1" hidden aria-labelledby="gini-heading">
+        <header class="section-head">
+          <h1 id="gini-heading">Measuring Data Layout Fitness</h1>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Measuring Data Layout Fitness walkthrough"
+               data-mount="section-gini-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
+          </div>
+          <div class="pane-stack pane-right">
+            <div class="pane" role="region" aria-label="Measuring Data Layout Fitness terminology"
+                 data-mount="section-gini-glossary.html">
+              <p class="empty">Loading the terminology…</p>
+            </div>
+            <div class="pane" role="region" aria-label="Measuring Data Layout Fitness figures"
+                 data-mount="figures/html/section-gini-illustration.html">
+              <p class="empty">Loading the figures…</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- budget ------------------------------------------------------------ -->
+      <section class="section" id="knapsack" tabindex="-1" hidden aria-labelledby="knapsack-heading">
+        <header class="section-head">
+          <h1 id="knapsack-heading">Drawing Storage Boundary</h1>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Drawing Storage Boundary walkthrough"
+               data-mount="section-budget-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
+          </div>
+          <div class="pane pane-right" role="region" aria-label="Drawing Storage Boundary visualizations"
+               data-mount="figures/html/section-budget-illustration.html">
+            <p class="empty">Loading the visualizations…</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- go live ----------------------------------------------------------- -->
+      <section class="section" id="design" tabindex="-1" hidden aria-labelledby="design-heading">
+        <header class="section-head">
+          <h1 id="design-heading">Go Live on Databricks Lakehouse</h1>
+        </header>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Go Live on Databricks Lakehouse walkthrough"
+               data-mount="section-databricks-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
+          </div>
+          <div class="pane pane-right" role="region" aria-label="Go Live on Databricks Lakehouse figures"
+               data-mount="figures/html/section-databricks-illustration.html">
+            <p class="empty">Loading the figures…</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- cold data --------------------------------------------------------- -->
+      <section class="section section-single" id="signal" tabindex="-1" hidden aria-labelledby="signal-heading">
+        <header class="section-head">
+          <h1 id="signal-heading">Business Insights as Byproduct</h1>
+        </header>
+        <div class="pane pane-single" role="region" aria-label="Business Insights as Byproduct"
+             data-mount="figures/html/section-kpi-illustration.html">
+          <p class="empty">Loading the walkthrough…</p>
+        </div>
+      </section>
+    </main>
+
+    <!--
+      Native ES modules, loaded as authored: no bundler and no transpiler (10.3.5).
+    -->
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

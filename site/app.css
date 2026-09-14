@@ -1,0 +1,1180 @@
+/*
+ * Layout for the application shell (12.1).
+ *
+ * Every colour, metric and easing comes from tokens.css, which is the only file allowed
+ * to hold a literal value (12.7).  Nothing here invents one.
+ *
+ * The scroll model is 12.1.7's, stated rather than left to emerge:
+ *
+ *   wide    the selected section fills the height below the top bar; each pane is
+ *           bounded to that height and scrolls inside it. On the paired sections the
+ *           left explanation stays put while the right one is read (12.1.2). The
+ *           fifth section has one pane. The shell has nothing to scroll through:
+ *           the sections the nav did not select are not laid out (12.1.1)
+ *
+ *   narrow  the bound is released.  Panes grow to their content and the page scrolls
+ *           once, so a stacked reader never meets a scroll inside a scroll (12.1.6)
+ *
+ * `min-height: 0` appears on every flex and grid child in the chain.  Without it a
+ * child's automatic minimum size is its content, the bound never takes effect, and the
+ * pane pushes the section taller instead of scrolling.
+ */
+
+/* -- The top bar (12.1.3) -------------------------------------------------------- */
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--top-bar-height);
+  padding: 0 var(--space-3);
+  background: linear-gradient(
+    to bottom,
+    var(--ground) 0%,
+    var(--recessed) 18%,
+    color-mix(in srgb, var(--recessed) 78%, var(--rule)) 100%
+  );
+  border-bottom: 1px solid var(--rule-strong);
+  box-shadow:
+    inset 0 1px 0 var(--ground),
+    inset 0 -1px 0 var(--rule-strong),
+    0 2px 0 color-mix(in srgb, var(--rule-strong) 70%, var(--ink)),
+    0 6px 12px color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+/* A persistent control that selects which section is displayed (12.1.3). */
+.section-nav {
+  display: flex;
+  flex: 1;
+  gap: var(--space-half);
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.section-nav a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: var(--control-height);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--ink-secondary);
+  font-size: calc(var(--text-body) + 1px);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 120ms var(--ease-default),
+    color 120ms var(--ease-default),
+    box-shadow 120ms var(--ease-default);
+}
+
+.section-nav a:hover:not([aria-current="true"]) {
+  background: color-mix(in srgb, var(--accent) 38%, var(--ground));
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, var(--rule));
+}
+
+.section-nav a b {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+
+/*
+ * The current section is marked by weight and a filled ground as well as by colour, so
+ * the state survives greyscale and forced colours (12.6.2).
+ */
+.section-nav a[aria-current="true"] {
+  background: var(--ground);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+}
+
+.section-nav a[aria-current="true"] b {
+  color: var(--ink);
+}
+
+/* -- The shell and its sections (12.1.1, 12.1.7) --------------------------------- */
+
+/*
+ * The shell bounds the selected section rather than scrolling between sections (12.1.7).
+ * `overflow-y: hidden` is the honest statement of that: with one section laid out and
+ * capped below, there is never content here to scroll, and a scrollbar would mean the cap
+ * had failed.
+ */
+.shell {
+  height: calc(100dvh - var(--top-bar-height));
+  overflow-y: hidden;
+  overflow-x: hidden; /* 12.1.2 — the page itself never scrolls horizontally */
+}
+
+/*
+ * The selected section occupies the height below the top bar and no more (12.1.7).
+ * `height`, not `min-height`: a minimum lets the section grow to its content, which
+ * overflows the shell and leaves the panes with nothing to be bounded by — 12.1.2's
+ * independent scroll then silently does not exist.
+ */
+.section {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  height: 100%;
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+
+/*
+ * One section is displayed at a time (12.1.1), and `hidden` is what says so — the same
+ * attribute the report's stale state uses, rather than a class beside it.  The rule is
+ * authored rather than left to the user agent because `.section`'s own `display: flex`
+ * would otherwise race the default `[hidden] { display: none }` on equal specificity.
+ */
+.section[hidden] {
+  display: none;
+}
+
+.section-head {
+  flex: none;
+}
+
+.section-head h1 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+
+/* -- The single-pane section (12.1.1, 12.10) -------------------------------------- */
+
+.section-single > .pane-single {
+  flex: 1;
+  min-height: 0;
+}
+
+/* -- The left/right split (12.1.1) ------------------------------------------------ */
+
+.split {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.pane {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+  background: var(--card);
+}
+
+/*
+ * A pane title sits above the mounted body so a replace of that body cannot wipe it.
+ * The pane itself stops scrolling; the body is what 12.1.2 bounds.
+ */
+.pane:has(> .pane-title) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pane-title {
+  flex: none;
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Problem Statement and Measuring Data Layout Fitness: terminology 30%, lower band 70% (12.3, 12.8). */
+.pane-stack.pane-right {
+  display: grid;
+  grid-template-rows: minmax(8rem, 30%) minmax(0, 70%);
+  gap: var(--space-3);
+  min-height: 0;
+}
+
+/* Prose set for sustained reading — generous leading (12.1.9).
+ * Default formulation keeps a character-width measure; Problem Statement's fills its pane
+ * (12.3) and is set one pixel larger than chrome (12.3). */
+.pane:has(.formulation) {
+  line-height: var(--leading-prose);
+}
+
+.pane:has(> .formulation) > .formulation,
+.pane-body:has(> .formulation) > .formulation {
+  max-width: var(--measure);
+}
+
+#problem .pane-left {
+  --text-body: 14px;
+  --text-small: 12px;
+  --text-heading: 18px;
+  --text-title: 23px;
+  font-size: var(--text-body);
+}
+
+#problem .pane-right {
+  font-size: calc(var(--text-body) + 1px);
+}
+
+#problem .pane-right h1 {
+  font-size: calc(var(--text-title) + 1px);
+}
+
+#problem .pane-right h2 {
+  font-size: calc(var(--text-heading) + 1px);
+}
+
+#problem .pane-right h3 {
+  font-size: calc(var(--text-body) + 1px);
+}
+
+#problem .pane-right :is(code, kbd, samp, pre) {
+  font-size: calc(var(--text-small) + 1px);
+}
+
+#problem .pane-right .formulation {
+  max-width: none;
+}
+
+/* Measuring Data Layout Fitness, Drawing Storage Boundary, Go Live, and
+ * Business Insights as Byproduct: one pixel above A's reading size; each
+ * walkthrough fills its pane (12.1.9, 12.8, 12.9, 12.5, 12.10). */
+#gini .pane-left,
+#gini .pane-right,
+#knapsack .pane-left,
+#knapsack .pane-right,
+#design .pane-left,
+#design .pane-right,
+#signal .pane-single {
+  --text-body: 15px;
+  --text-small: 13px;
+  --text-heading: 19px;
+  --text-title: 24px;
+  font-size: var(--text-body);
+}
+
+#gini .pane-left > .formulation,
+#knapsack .pane-left > .formulation,
+#design .pane-left > .formulation {
+  max-width: none;
+}
+
+#gini .formulation table,
+#knapsack .formulation table,
+#design .formulation table {
+  display: table;
+  width: 100%;
+}
+
+#gini .pane-left h1,
+#knapsack .pane-left h1,
+#design .pane-left h1 {
+  font-size: var(--text-title);
+}
+
+#gini .pane-left h2,
+#knapsack .pane-left h2,
+#design .pane-left h2 {
+  font-size: var(--text-heading);
+}
+
+#gini .pane-left h3 {
+  font-size: calc(var(--text-body) + 2px);
+}
+
+#gini .pane-left :is(code, kbd, samp, pre),
+#knapsack .pane-left :is(code, kbd, samp, pre),
+#design .pane-left :is(code, kbd, samp, pre) {
+  font-size: var(--text-small);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--recessed);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+/*
+ * Wide content scrolls inside its own container rather than widening the pane (12.1.2).
+ * A table of twenty rows by a dozen columns is the case this exists for.
+ */
+.scroll-x {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.pane table,
+.pane pre {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.glossary h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.glossary table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.glossary th,
+.glossary td {
+  padding: var(--space-half) var(--space-1);
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.glossary thead th {
+  background: var(--recessed);
+  font-weight: 600;
+}
+
+.glossary td:first-child {
+  font-weight: 600;
+  white-space: nowrap;
+  width: 28%;
+}
+
+/* -- Below the breakpoint (12.1.6, 12.1.7) --------------------------------------- */
+
+@media (max-width: 1000px) {
+  .shell {
+    height: auto;
+    overflow: visible; /* the page scrolls once, and the panes do not */
+  }
+
+  /*
+   * The bound is released: the selected section grows to its content and the page
+   * scrolls once.  This is load-bearing rather than a refinement — the wide case caps
+   * the shell at the viewport, so without the release a tall stacked section would be
+   * clipped rather than merely double-scrolled.
+   */
+  .section {
+    height: auto;
+    min-height: 0;
+  }
+
+  .split {
+    grid-template-columns: minmax(0, 1fr); /* right beneath left, in section order */
+  }
+
+  .pane {
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .pane-stack.pane-right {
+    grid-template-rows: none;
+    height: auto;
+  }
+
+  .pane:has(> .pane-title) {
+    overflow: visible;
+  }
+
+  .pane-body {
+    overflow: visible;
+  }
+
+  .top-bar {
+    gap: var(--space-1);
+    padding: 0 var(--space-2);
+  }
+}
+
+/* -- Problem Statement's mounted fragments ------------------------------------------------ */
+
+.formulation .toc {
+  margin-bottom: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-control);
+  background: var(--recessed);
+}
+
+/*
+ * The list starts collapsed, and the whole summary row is the control (12.3).  A native
+ * `<details>` is the only disclosure this page can afford: no script runs in a mounted
+ * fragment and no library is available to it (10.3.5, 10.3.5).  It renders closed, so the
+ * document itself is the first thing in the pane.
+ */
+.formulation .toc summary {
+  position: relative;
+  padding-right: var(--space-4); /* the arrow's lane — long labels never run under it */
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none; /* the default marker, replaced by .toc-arrow below */
+}
+
+.formulation .toc summary::-webkit-details-marker {
+  display: none;
+}
+
+/*
+ * The arrow, drawn rather than fetched — no icon set ships with this page (12.2.2).  It
+ * points down when the list is closed and up when it is open, so the glyph names the
+ * state rather than the action.
+ */
+.formulation .toc .toc-arrow {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--ink-secondary);
+  transform: translateY(-50%);
+  transition: transform 120ms var(--ease-default);
+}
+
+.formulation .toc[open] .toc-arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.formulation .toc ol {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-2);
+  list-style: none;
+}
+
+/* The two levels the contents list carries, stated as a pair: a section sits flush and a
+   subsection is indented under it. The flush one is written out rather than left to the
+   default, so neither level is styled by omission (12.6.5). */
+.formulation .toc .toc-h2 {
+  margin-left: 0;
+}
+
+.formulation .toc .toc-h3 {
+  padding-left: var(--space-2);
+}
+
+.formulation .toc a {
+  color: var(--ink-secondary);
+}
+
+.formulation h2 {
+  margin-top: var(--space-4);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--rule);
+}
+
+.formulation h3 {
+  margin-top: var(--space-3);
+}
+
+.formulation figure {
+  max-width: 100%;
+  margin: var(--space-3) 0;
+}
+
+.formulation img,
+.illustration svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 12.8 — Measuring Data Layout Fitness labels stay at least 11px just above the split breakpoint. */
+#gini .illustration-stage svg,
+#gini .raster-illustration .illustration-stage img {
+  min-width: 640px;
+}
+
+/*
+ * Editorial prose shared by the two authored illustration fragments.  The pane has no
+ * `--measure` clamp of its own, so each prose beat sets its own (12.1.9, 12.3,
+ * 12.5).
+ */
+.illustration-stack .illustration-lede,
+.editorial-lede,
+.signal-beat,
+.cabinet-story,
+.closet-story,
+.editorial-bridge,
+.warehouse-walkthrough,
+.framework-handoff,
+.hypothesis-lede {
+  max-width: var(--measure);
+  margin: 0;
+  line-height: var(--leading-prose);
+  color: var(--ink);
+}
+
+.editorial-bridge,
+.warehouse-walkthrough,
+.framework-handoff {
+  padding-left: var(--space-2);
+  border-left: 2px solid var(--accent);
+}
+
+.hypothesis-lede strong {
+  font-weight: 600;
+}
+
+/* 12.3 — every illustration is announced to a sighted reader, not only to a screen
+   reader.  The heading size establishes the editorial sequence without asking 11px
+   diagram annotations to carry it. */
+.illustration h3 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--ink);
+}
+
+.illustration-stage {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: var(--space-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+  background: var(--ground);
+}
+
+.illustration-stage.is-empty {
+  min-height: 18rem;
+  aspect-ratio: 16 / 9;
+}
+
+.raster-illustration .illustration-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 12.1.10 — reusable zoom chrome, top-middle of the figure stage.
+ * The stage itself does not scroll: overflow lives on `.zoom-viewport` so the
+ * + / − pair stays pinned to the placeholder while the drawing pans. */
+.is-zoomable {
+  position: relative;
+  overflow: hidden;
+}
+
+.zoom-viewport {
+  overflow: auto;
+  overscroll-behavior: contain;
+  max-width: 100%;
+}
+
+.is-zoomable.is-pannable .zoom-viewport {
+  cursor: grab;
+  touch-action: none;
+}
+
+.is-zoomable.is-panning .zoom-viewport {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.is-zoomable img,
+.is-zoomable svg {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.zoom-widget {
+  position: absolute;
+  top: var(--space-1);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  width: max-content;
+  margin-inline: auto;
+  gap: var(--space-half);
+}
+
+.zoom-widget button {
+  box-sizing: border-box;
+  width: var(--control-height-small);
+  height: var(--control-height-small);
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--ink);
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1;
+  cursor: default;
+}
+
+.zoom-widget button:disabled {
+  color: var(--ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-zoomable img,
+  .is-zoomable svg {
+    transition: none;
+  }
+}
+
+.keyword-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height-small);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--ground);
+  color: var(--ink);
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.keyword-chip::before {
+  width: 6px;
+  height: 6px;
+  margin-right: var(--space-half);
+  border-radius: 50%;
+  background: var(--accent);
+  content: "";
+}
+
+.figure-callout {
+  max-width: var(--measure);
+  margin: var(--space-1) auto 0;
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
+}
+
+.open-arrow {
+  fill: none;
+  stroke: var(--ink-secondary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.closet-wood {
+  fill: color-mix(in srgb, var(--accent) 58%, var(--ground));
+  stroke: var(--ink-secondary);
+}
+
+.closet-drawer,
+.closet-door,
+.closet-tag {
+  fill: var(--ground);
+  stroke: var(--ink-secondary);
+}
+
+.garment-shape {
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+
+.is-solid {
+  fill: var(--accent);
+}
+
+.is-hatched {
+  stroke: var(--ink);
+}
+
+.is-quiet {
+  opacity: 0.45;
+}
+
+.is-active {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.figure-equation {
+  margin-top: var(--space-2);
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
+  text-align: center;
+}
+
+.figure-equation math {
+  font-size: 1em;
+}
+
+/* The legend pairs each outcome with its sentence on one row. */
+.illustration-legend {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-half) var(--space-2);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+}
+
+.illustration-legend dt {
+  display: flex;
+  gap: var(--space-half);
+  align-items: center;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.illustration-legend dd {
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
+/*
+ * 12.6.2 — a swatch repeats the drawing's encoding rather than only its colour, so the
+ * legend can still be matched to the figure in greyscale or forced-colours: selected is
+ * solid, wasted is striped at the figure's own 45 degrees, skipped is an empty dashed
+ * outline.  The hatch is drawn in CSS because a fragment cannot reach the SVG pattern the
+ * figure defines.
+ */
+.swatch {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-checkbox);
+}
+
+.swatch-selected {
+  background: var(--accent);
+}
+
+.swatch-wasted {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--rule-strong) 0 3px,
+    var(--ground) 3px 6px
+  );
+}
+
+.swatch-skipped {
+  border-style: dashed;
+  border-color: var(--rule);
+  background: none;
+}
+
+.illustration-arithmetic {
+  max-width: var(--measure);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-small);
+  line-height: var(--leading-prose);
+  color: var(--ink-secondary);
+}
+
+.illustration-quantities {
+  max-width: var(--measure);
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-2);
+  font-size: var(--text-small);
+  line-height: var(--leading-prose);
+  color: var(--ink-secondary);
+}
+
+/* The wrapper the document pre-render emits around every collapsed figure pair
+   (12.3), which otherwise fell through to element styling alone. */
+.figure {
+  margin: var(--space-3) 0;
+}
+
+/* MathML at the body size rather than the browser's larger default for maths. */
+.formulation math {
+  font-size: 1em;
+}
+
+/*
+ * `\boxed` compiles to `<menclose>`, which MathML Core does not implement, so the rule is
+ * drawn here instead. The committed formulation tags boxed maths with `is-boxed`.
+ * Without it the objective function, the one equation the formulation boxes, renders as
+ * unremarkable body maths.
+ */
+.formulation math.is-boxed {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+}
+
+@media print {
+  .top-bar {
+    display: none;
+  }
+
+  .shell,
+  .pane {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+/* -- Illustration stacks (12.5, 12.8, 12.9) -------------------------------------------------------------- */
+
+.illustration-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+#knapsack .illustration-stack,
+#signal .illustration-stack {
+  gap: calc(var(--text-body) * var(--leading-prose) / 2);
+  max-width: none;
+}
+
+.illustration-stack .illustration {
+  margin: 0;
+}
+
+.illustration-rule {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: var(--rule);
+}
+
+.continued-example > h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.illustration-kicker {
+  margin: 0 0 var(--space-1);
+  max-width: var(--measure);
+  font-size: var(--text-small);
+  line-height: var(--leading-prose);
+  color: var(--ink-secondary);
+}
+
+.split-tree-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.split-tree {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.split-tree + .split-tree {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+.split-tree-heading,
+.split-tree-insight,
+.split-tree-score {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+  text-align: center;
+}
+
+.split-tree-heading,
+.split-tree-insight {
+  white-space: nowrap;
+}
+
+.split-tree-heading {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.split-tree-insight {
+  color: var(--ink-secondary);
+}
+
+.split-tree-score {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+#gini .illustration > .split-tree-insight {
+  margin-bottom: var(--space-2);
+}
+
+.split-gini-low,
+.split-gini-high {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+#gini .split-metrics {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.split-metrics th {
+  width: 6.5rem;
+  text-align: left;
+}
+
+.split-metrics td {
+  text-align: center;
+  white-space: nowrap;
+  padding-left: 0.15em;
+  padding-right: 0.15em;
+}
+
+.split-metrics .is-hot {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.split-metrics .is-cold {
+  color: var(--ink-secondary);
+}
+
+#gini .split-tree svg {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 6.5rem;
+}
+
+.split-sql-lead {
+  margin-top: var(--space-2);
+  max-width: none;
+}
+
+.split-sql {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2);
+  overflow-x: auto;
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+  background: var(--recessed);
+  border-radius: var(--radius-card);
+}
+
+.illustration figcaption {
+  margin-top: var(--space-1);
+  max-width: var(--measure);
+  font-size: var(--text-small);
+  line-height: var(--leading-prose);
+  color: var(--ink-secondary);
+}
+
+#gini .lorenz-metrics {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin-top: var(--space-2);
+}
+
+.lorenz-metrics th {
+  text-align: left;
+}
+
+.lorenz-metrics td {
+  text-align: center;
+}
+
+.index-explanation {
+  max-width: var(--measure);
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
+}
+
+/* 12.5 — event table and index table. `.pane table { display: block }` would
+ * collapse the grid; these figures need real columns. */
+.illustration-stack table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+}
+
+.illustration-stack th,
+.illustration-stack td {
+  padding: 0.2em 0.45em;
+  border: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.illustration-stack th {
+  font-weight: 600;
+  color: var(--ink-secondary);
+  background: var(--plane);
+}
+
+.event-banks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: var(--space-2);
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: var(--space-half);
+}
+
+.container-bank {
+  position: relative;
+  min-width: 0;
+}
+
+.container-bank > .callout-arrow {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: 48px;
+  margin: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.overlay-event .container-bank > .callout-arrow {
+  right: var(--space-1);
+  bottom: -37px;
+  height: 73px;
+}
+
+.overlay-container .container-bank > .callout-arrow {
+  bottom: -35px;
+  left: 50%;
+  height: 45px;
+  transform: translateX(-50%);
+}
+
+.overlay-event .event-banks,
+.overlay-container .event-banks {
+  margin-bottom: var(--space-6);
+}
+
+.bank-label {
+  margin-bottom: var(--space-half);
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.blob {
+  width: 28%;
+  min-width: 2.5em;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--rule) 0 2px,
+    var(--plane) 2px 7px
+  );
+}
+
+.blob-swatch {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin: 0 0.25em -0.1em 0;
+  border: 1px solid var(--rule-strong);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--rule) 0 2px,
+    var(--plane) 2px 7px
+  );
+}
+
+.index-table {
+  table-layout: fixed;
+}
+
+.flags-heading {
+  border-left: 10px solid var(--card);
+  text-align: center;
+}
+
+.index-table thead tr:last-child th:nth-child(4),
+.index-table tbody td:nth-child(4) {
+  border-left: 10px solid var(--card);
+}
+
+.is-selected {
+  border: 2px solid var(--ink);
+  font-weight: 700;
+  text-align: center;
+}
+
+.overlay-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.overlay-event .is-focal {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.overlay-container .container-bank.is-focal {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.callout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-half);
+  max-width: var(--measure);
+  margin: 0 auto;
+  color: var(--ink);
+}
+
+.callout p {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
+}
+
+.callout-arrow {
+  width: 48px;
+  height: 28px;
+  color: var(--ink);
+}
+
+@media (max-width: 1000px) {
+  .event-banks {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-6);
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .overlay-event .event-banks,
+  .overlay-container .event-banks {
+    margin-bottom: var(--space-6);
+  }
+}

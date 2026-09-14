@@ -9,10 +9,10 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-ILLUSTRATION = ROOT / "resources/html/section-problem-illustration.html"
+ILLUSTRATION = ROOT / "site/figures/html/section-problem-illustration.html"
 FIGURES = {
-    "A.medical-cabinet": "figures/img/section_a_medical_cabinet.png",
-    "A.smart-organizer": "figures/img/section_a_smart_organizer.png",
+    "problem.medical-cabinet": "figures/img/section_problem_medical_cabinet.png",
+    "problem.smart-organizer": "figures/img/section_problem_smart_organizer.png",
 }
 DATABASE_TERMS = (
     "data",
@@ -102,7 +102,7 @@ def test_both_local_raster_illustrations_have_useful_alternative_text(pane):
         image = images[0]
         assert image.get("src") == source
         assert len(image.get("alt", "").split()) >= 12
-        assert (ROOT / "resources/img" / Path(source).name).is_file()
+        assert (ROOT / "site/figures/img" / Path(source).name).is_file()
 
 
 def test_technical_walkthrough_defines_terms_beside_the_cabinet_model(pane):
@@ -130,7 +130,7 @@ def test_technical_walkthrough_defines_terms_beside_the_cabinet_model(pane):
 
 def test_smart_organizer_is_framed_as_a_demonstration_not_a_recommendation(pane):
     """1.2, 12.3 — the fixture exposes the seam without ranking it."""
-    organizer = figures(pane)["A.smart-organizer"]
+    organizer = figures(pane)["problem.smart-organizer"]
     caption = text_of(organizer).lower()
     for phrase in (
         "deliberately simple",
@@ -152,14 +152,27 @@ def test_the_pane_carries_no_extra_graphics_or_outbound_links(pane):
         assert excluded not in body
 
 
-def test_embedded_illustrations_live_under_resources():
-    """Every pane fragment the page mounts lives in resources/html/, and nothing else does."""
-    folder = ROOT / "resources/html"
+def test_embedded_illustrations_live_under_the_site_tree():
+    """Every pane fragment the page mounts lives in site/figures/html/, and nothing else does."""
+    folder = ROOT / "site/figures/html"
     names = sorted(path.name for path in folder.glob("*.html"))
     assert names
     for name in names:
         assert re.fullmatch(r"section-[a-z]+-illustration\.html", name), name
-        assert not (ROOT / "simulator/gui/static" / name).exists(), name
-    assert not (ROOT / "resources/illustrations").exists()
-    assert not (ROOT / "resources/canvas").exists()
-    assert not (ROOT / "resources/graphics").exists()
+        assert not (ROOT / "site" / name).exists(), name
+    for retired in ("resources/html", "resources/img", "simulator/gui/static"):
+        assert not (ROOT / retired).exists(), retired
+
+
+def test_authoring_material_is_not_reachable_through_the_site():
+    """A diagram source or a figure prompt in the served tree would be published with it.
+
+    The split is what keeps a public deployment from carrying the working notes behind
+    the exhibit, and it holds only while nothing drifts back across it.
+    """
+    site = ROOT / "site"
+    assert not list(site.rglob("*.drawio"))
+    assert not list(site.rglob("*_prompt.*"))
+    assert not (site / "img_prompt").exists()
+    assert (ROOT / "resources/img_src").is_dir()
+    assert (ROOT / "resources/img_prompt").is_dir()

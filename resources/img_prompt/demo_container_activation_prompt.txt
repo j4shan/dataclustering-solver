@@ -2,7 +2,7 @@ OUTPUT
 One looping APNG, 1920 × 1080, warm off-white ground. Not a static PNG, not a
 JPEG, not an SVG. 15 frames, uniform 240 ms delay, period 3.6 s, infinite play
 (num_plays = 0). The last frame is pixel-identical to the first, so the loop
-closes seamlessly. File extension stays .png.
+closes seamlessly.
 Only the highlight described under ANIMATION changes between frames. Every other
 pixel — containers, tiles, text, formulas, tray, legend, footnote — is identical
 on all 15 frames.
@@ -10,7 +10,7 @@ Single palette, light only. No dark variant, no theme switching.
 
 SUBJECT
 Container activation for a single query, as defined in §2.4 of the problem
-statement. The figure teaches one mechanism: activation is a max over a
+statement. The figure presents / introduces one mechanism: activation is a max over a
 container's events, and an activated container is fetched whole.
 
 STYLE
@@ -229,21 +229,16 @@ KEEP OUT
 - No dark-mode variant and no second palette.
 
 PRODUCTION
-Render each frame at 2× and downsample (LANCZOS) so the small type, the hatch
-lines and the ✓ stay clean. Draw the static scene once — resting borders
-included — and redraw only the lit borders, halos and arrows per frame, so the
-frames differ in the swept region alone and APNG inter-frame deltas hold the
-file near 1 MB.
+Small type, the hatch lines and the ✓ stay clean at final size. Between frames
+only the lit borders, halos and arrows change; the resting borders, type and
+layout are identical throughout.
 
-Apply the +1 type bump inside the font loader and at the entry of the maths-run
-typesetter, not at each call site: subscripts are then derived from the bumped
-size and keep their ~0.68 em / ~0.54 em proportions instead of drifting.
+Subscripts derive from the bumped type size and hold their ~0.68 em / ~0.54 em
+proportions rather than drifting.
 
-Typesetting: do NOT use Unicode subscript characters — the monospace system face
-has no glyphs for them and they vanish silently. Set every subscript as a real
+Typesetting: no Unicode subscript characters. Set every subscript as a real
 run: the same face at ~0.68 em dropped ~0.30 em below the baseline, with a
 second level at ~0.54 em and ~0.46 em for the nested index in c₁ / c₂. The
-set-membership glyph ∈ (U+2208) is absent from both macOS system faces and must
-come from a covering face such as Arial Unicode, at the matching size. When
-checking glyph coverage, compare the rendered bitmap against a known-missing
-private-use character — a .notdef box is not blank and will pass a naive test.
+set-membership glyph ∈ (U+2208) is set at the matching size in a face that
+carries it. A glyph the face lacks must never reach the raster, as a .notdef
+box or as blank space.

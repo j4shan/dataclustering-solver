@@ -1,0 +1,70 @@
+<!--
+  Problem Statement, left pane (12.3.5): medicine-cabinet mental model, technical
+  mapping, and demand-informed restocking.
+-->
+<div class="illustration-stack">
+  <p class="cabinet-story editorial-lede">
+    Picture the start of a busy morning at a dispensary. Three patients are
+    waiting at the counter: one needs cough syrup, one needs eye drops, and one
+    needs an antacid. The pharmacist checks the drawer chart on the medicine
+    cabinet and finds each medicine box. But a small drawer cannot be opened
+    one box at a time. The whole drawer comes to the counter, even when only
+    one box in it is prescribed. Three boxes go to the patients; nine
+    neighboring boxes are handled and put back unused. Six drawers stay shut.
+    The chart avoids searching the whole cabinet, yet the pharmacist still
+    handles twelve boxes to fulfill three prescriptions. Those nine extra
+    boxes are the wasted effort.
+  </p>
+
+  <figure class="illustration raster-illustration" id="problem.medical-cabinet">
+    <div class="illustration-stage">
+      <img
+        src="figures/img/section_problem_medical_cabinet.png"
+        alt="Three prescriptions are looked up in an inventory catalog. Drawers 3, 6, and 9 are opened whole; three medicine boxes are kept, nine boxes are put back, and six drawers remain shut."
+        width="1920"
+        height="1080"
+      />
+    </div>
+    <figcaption>
+      The catalog narrows which drawers to open. It does not narrow what comes
+      out of an opened drawer: every box inside reaches the counter.
+    </figcaption>
+  </figure>
+
+  <p class="warehouse-walkthrough editorial-bridge">
+    The figure places technical names beside that familiar retrieval. In a
+    data warehouse, the medicine cabinet is the <strong>corpus</strong>, a
+    small drawer is a <strong>storage container</strong>, and each medicine
+    box is a <strong>record</strong>. The counter batch is a
+    <strong>query</strong>. The drawer chart acts as the
+    <strong>index table</strong>: its lookup identifies containers that hold
+    selected records, so the other containers can be skipped. Pulling a named
+    drawer is <strong>container activation</strong>. Every record in an
+    activated container is <strong>materialized</strong>, although only the
+    prescribed records are <strong>selected</strong>. The remaining records
+    are materialized but not selected — the warehouse version of boxes handled
+    and put back. Both settings therefore pay for the whole containing unit.
+    The open question is the <strong>assignment</strong>: which records should
+    share a container? A restocking scheme can use
+    <strong>demand history</strong> — past retrievals — to estimate how often
+    each item is requested and rearrange equal-capacity drawers by demand band.
+  </p>
+
+  <figure class="illustration raster-illustration" id="problem.smart-organizer">
+    <div class="illustration-stage">
+      <img
+        src="figures/img/section_problem_smart_organizer.png"
+        alt="A usage report calculates average pulls per hour for 36 medicines. Two thresholds divide the medicines into low, medium, and high demand bands, then place them into nine equal-capacity drawers."
+        width="1920"
+        height="1080"
+        loading="lazy"
+      />
+    </div>
+    <figcaption>
+      This deliberately simple rule makes the tunable relationship visible:
+      demand evidence changes which medicines share a drawer, while drawer
+      capacity and whole-drawer retrieval stay fixed. It is a demonstration,
+      not a recommended assignment strategy.
+    </figcaption>
+  </figure>
+</div>

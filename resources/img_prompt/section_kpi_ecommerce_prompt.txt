@@ -1,0 +1,213 @@
+OUTPUT
+One static PNG, 1920 x 1080, warm off-white ground, single light palette.
+This prompt is the authority on what the raster will show. Do not
+invent a second instance.
+
+SUBJECT
+A Finviz-style usage map of an ecommerce warehouse. Nested rectangles
+group stock by department, then by product line. Tile area is on-hand
+inventory. Fill colour is query demand: the share of queries that
+selected that stock over a two-week ingestion window. The pale group is
+stock that does not sell. It is the illustration of Business Insights as
+Byproduct §2.2. It is not an allocator and not a recommendation.
+
+STYLE
+Editorial flat 2D subdivided treemap, one legend strip under the map.
+No perspective, realism, 3D, shadows, gradients, UI chrome, dashboard
+widgets, server racks, or emojis. System-ui labels; ui-monospace for
+every identifier and number. 1px group rules.
+
+Square corners everywhere. No rounded corners: a rounded corner leaves a
+visible gap where two tiles meet. Every tile and every group is a plain
+rectangle with a solid border.
+
+COLOURS
+House explainer family for the data. Green and wine are the only hues
+that ever carry a value. A light orange is admitted for the level-2
+title cell chrome alone: it names a department, it never stands for a
+rate, and it appears nowhere else on the map.
+#FCFCFB canvas (paper).
+#EEF4F0 sage (the pale green low end of the fill ramp).
+#A8C8B8 soft green (top of the cold band).
+#CBA8AE dusty rose (foot of the warm band).
+#7A1F2B wine (the red high end of the fill ramp).
+#FCEFE0 light orange (level-2 title cell ground).
+#E0A96D orange (level-2 title cell border).
+#0B0B0B ink. #52514E secondary. #DEDEDE rules. #FFFFFF card ground.
+
+Fill colour is the demand channel and runs green to red: 0% query
+demand is green, 25% is red, and a leaf's position on the ramp is its
+demand itself, so the legend axis can be read off any leaf. Lightness
+falls along the ramp, so the green end is also the pale end.
+
+Two house hues and a falling lightness force a neutral where green
+hands over to red, around the middle of the axis. Keep that crossing
+narrow, and keep the instance off it.
+
+Fill colour is the only channel the map carries. A leaf has no stroke,
+halo or pattern standing for its band: nothing marks a threshold,
+because the axis measures the rate continuously and a threshold would
+assert a cliff the data does not have. Every leaf takes the same 1px
+#DEDEDE border, whatever its demand.
+
+THE INSTANCE (fixed -- do not vary)
+Columns: department, tile_id, label, size, demand, band.
+size is on-hand units. demand is query demand in percent over a two-week
+ingestion window. band is hot, warm, or cold.
+
+Departments are listed by descending area, leaves likewise inside a
+department. 16 departments, 80 leaves, 100,150 units on hand.
+
+department              tile_id  label                  size    demand  band
+Industrial & Scientific ins1     Lab Supplies           3625    0.3     cold
+Industrial & Scientific ins2     Safety Gear            3625    1.0     cold
+Industrial & Scientific ins3     Abrasives              2725    1.1     cold
+Industrial & Scientific ins4     Bulk Fasteners         2650    0.7     cold
+Industrial & Scientific ins5     Test Equipment         2025    0.3     cold
+Industrial & Scientific ins6     Material Handling      1925    0.3     cold
+Industrial & Scientific ins7     Janitorial             1475    0.9     cold
+Industrial & Scientific ins8     Packaging              950     0.4     cold
+Electronics             ele1     Headphones             2150    15.4    hot
+Electronics             ele2     Laptops                1550    22.0    hot
+Electronics             ele3     Tablets                1200    18.4    hot
+Electronics             ele4     Smart Speakers         1000    22.6    hot
+Electronics             ele5     Cameras                950     22.5    hot
+Electronics             ele6     Monitors               925     18.0    hot
+Electronics             ele7     Cables                 500     23.8    hot
+Grocery                 gro1     Snacks                 3500    14.8    hot
+Grocery                 gro2     Beverages              2225    14.1    hot
+Grocery                 gro3     Pantry Staples         1575    21.3    hot
+Health & Household      heh1     Vitamins               3750    13.5    hot
+Health & Household      heh2     First Aid              1800    18.9    hot
+Health & Household      heh3     Cleaning               1325    12.2    hot
+Beauty                  bea1     Skincare               1575    18.9    hot
+Beauty                  bea2     Haircare               1475    17.9    hot
+Beauty                  bea3     Makeup                 1375    18.9    hot
+Beauty                  bea4     Fragrance              950     14.4    hot
+Beauty                  bea5     Nail Care              900     13.1    hot
+Apparel                 app1     T-Shirts               2025    15.1    hot
+Apparel                 app2     Denim                  1850    15.7    hot
+Apparel                 app3     Outerwear              1675    17.0    hot
+Kitchen & Dining        kid1     Cookware               1850    14.1    hot
+Kitchen & Dining        kid2     Small Appliances       900     14.4    hot
+Kitchen & Dining        kid3     Cutlery                875     15.2    hot
+Kitchen & Dining        kid4     Dinnerware             875     14.2    hot
+Kitchen & Dining        kid5     Food Storage           850     11.7    hot
+Pet Supplies            pes1     Dog Food               1250    12.6    hot
+Pet Supplies            pes2     Cat Food               1025    13.3    hot
+Pet Supplies            pes3     Pet Toys               775     13.3    hot
+Pet Supplies            pes4     Beds & Crates          650     12.3    hot
+Pet Supplies            pes5     Grooming               600     13.3    hot
+Pet Supplies            pes6     Pet Health             600     12.7    hot
+Pet Supplies            pes7     Aquarium               525     13.3    hot
+Toys & Games            tog1     Building Sets          1175    4.9     warm
+Toys & Games            tog2     Board Games            850     5.4     warm
+Toys & Games            tog3     Dolls                  850     4.7     warm
+Toys & Games            tog4     Outdoor Play           825     6.3     warm
+Toys & Games            tog5     Puzzles                675     5.2     warm
+Toys & Games            tog6     Action Figures         575     5.9     warm
+Baby                    bab1     Diapers                2050    7.2     warm
+Baby                    bab2     Feeding                1925    5.6     warm
+Baby                    bab3     Strollers              1075    7.3     warm
+Sports & Outdoors       spo1     Fitness                1075    5.5     warm
+Sports & Outdoors       spo2     Camping                875     6.6     warm
+Sports & Outdoors       spo3     Cycling                825     6.7     warm
+Sports & Outdoors       spo4     Water Sports           800     4.2     warm
+Sports & Outdoors       spo5     Team Sports            675     6.9     warm
+Sports & Outdoors       spo6     Hiking                 525     4.5     warm
+Books                   boo1     Fiction                1400    5.7     warm
+Books                   boo2     Nonfiction             1025    3.6     warm
+Books                   boo3     Children's             1000    5.0     warm
+Books                   boo4     Textbooks              775     3.0     warm
+Books                   boo5     Cookbooks              675     6.1     warm
+Home Improvement        hoi1     Power Tools            950     3.1     warm
+Home Improvement        hoi2     Hand Tools             925     4.6     warm
+Home Improvement        hoi3     Paint                  700     5.0     warm
+Home Improvement        hoi4     Plumbing               650     4.0     warm
+Home Improvement        hoi5     Light Fixtures         600     4.0     warm
+Home Improvement        hoi6     Hardware               600     4.2     warm
+Furniture               fur1     Seating                1600    3.5     warm
+Furniture               fur2     Tables                 1100    4.0     warm
+Furniture               fur3     Storage                1000    2.0     cold
+Furniture               fur4     Bedroom                500     3.3     warm
+Garden & Outdoor        gao1     Planters               925     3.0     warm
+Garden & Outdoor        gao2     Seeds & Bulbs          750     3.1     warm
+Garden & Outdoor        gao3     Grills                 650     1.8     cold
+Garden & Outdoor        gao4     Patio                  650     3.0     warm
+Garden & Outdoor        gao5     Lawn Care              550     2.3     warm
+Garden & Outdoor        gao6     Watering               500     3.1     warm
+Automotive              aut1     Car Care               1375    1.9     cold
+Automotive              aut2     Interior Accessories   1275    2.0     cold
+Automotive              aut3     Exterior Accessories   1150    1.9     cold
+
+Industrial & Scientific is the constructed cold pocket: the largest
+department by inventory, the lowest query demand in the taxonomy, and
+every one of its leaves cold. It holds about 18% of the map.
+
+The taxonomy is an ordinary retail one, and the breakdown is artificial
+and derived from the composition rather than the other way round: each
+size is its leaf's share of the drawn area, so area is on-hand inventory
+by construction, to within the 25-unit rounding step.
+
+Department demand ranges avoid 8.75% to 11.25%, which is where the ramp
+crosses its neutral. The distribution is hypothesised, so it is shaped
+to keep every leaf on a hue rather than letting a leaf land grey.
+
+Do not add a leaf. Do not drop a leaf. Do not change a number.
+
+LAYOUT
+The map is a recursive subdivision, five levels deep. Level 1 is the
+whole map. Level 2 is the department. Levels 3 to 5 are product lines.
+Maximum split depth is therefore 4.
+
+Level 1 cuts into 16 departments. That count is derived, not chosen.
+With a 0.75 continue probability and three levels below the
+department, expected leaves per department would be L(3) = 4.5625,
+where L(0) = 1 and L(r) = 0.25 + 1.5*L(r-1). The guaranteed-depth pass
+below raises that to 5.152 measured over the generator. A target of 80
+leaves gives 80 / 5.152 = 15.53, so 16 departments, for 82.4 expected
+leaves.
+
+Below level 2 the depth is built like a skip list: a cell continues to
+the next level with probability 0.75 and otherwise stops, so depth is
+geometric rather than uniform and departments differ in how finely
+they are cut.
+
+A scan-and-mutate pass then repairs the runs that stopped too early. A
+department whose first roll fails holds one rectangle filling its own
+cell, which draws as a titled empty box with no substructure at all.
+So after the probabilistic pass, every department is scanned: one that
+has not reached level 4 is cut again, deepest cell first, until it
+does. Every department therefore contains level 3 and level 4. The
+repair runs after the fact rather than biasing the 0.75 rule that
+produced the run, and it is refused only when the minimum leaf size
+makes the depth impossible, which rejects the whole composition.
+
+Every cut splits the longer axis, at a fraction between about a third
+and two thirds, so cells stay near-square and no cut lands near an
+edge. A cut is refused when either side would fall below the minimum
+leaf size, and that minimum is set by the label: a leaf must hold its
+subcategory name at a legible size, wrapped to two lines where it must
+be. Keep the minimum near-square for the same reason the cuts are — an
+elongated floor makes elongated leaves, whatever the cuts above it
+did. The cold pocket is reserved as a corner block, never an edge
+strip: a strip holding a fifth of a 16:9 map is many times longer than
+it is tall.
+
+Every rectangle is labelled. Each department carries its name at level
+2 in a title cell of its own — a light orange ground inside a visible
+1px orange border, spanning the department's width — and every leaf
+carries its subcategory name, set as large as the cell allows and
+wrapped where it must be. No demand figure and no size is printed
+anywhere on the map; the rate is read from the legend axis. Leaves
+carry no card ground, so the map reads as one surface.
+
+The legend at the foot is the colour axis and nothing else. Fill is
+the only channel the map uses, so there is nothing else to decode: no
+area note and no band key. It spans the width of the map, titled
+"Selection rate", running from 0% at the green end to 25% at the red
+end, ticked every 5%, with the line "Query demand % with 2 weeks of
+ingestion" beneath it.
+
+Do not print the pane title "Ecommerce warehouse usage map" on the
+raster. The HTML heading already carries it.

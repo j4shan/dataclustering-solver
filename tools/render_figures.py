@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Render the documentation figures, and write light/dark SVG pairs into
-resources/img/:
+site/figures/img/:
 
     python3 tools/render_figures.py
 
@@ -18,7 +18,7 @@ from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parent.parent
 SCENARIO = ROOT / "resources" / "data" / "closet-scenario.json"
-OUTDIR = ROOT / "resources" / "img"
+OUTDIR = ROOT / "site" / "figures" / "img"
 
 # Single-quoted inner name: this string is interpolated into a double-quoted
 # XML attribute, so nested double quotes would break the document.

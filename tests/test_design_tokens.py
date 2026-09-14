@@ -13,10 +13,10 @@ import re
 
 import pytest
 
-from simulator.gui import STATIC_ROOT
+from simulator.gui import SITE_ROOT
 
-SPEC = STATIC_ROOT.parents[2] / "project_metadata" / "product_spec" / "simulator-spec.md"
-TOKENS = STATIC_ROOT / "tokens.css"
+SPEC = SITE_ROOT.parent / "project_metadata" / "product_spec" / "simulator-spec.md"
+TOKENS = SITE_ROOT / "tokens.css"
 
 HEX = re.compile(r"#[0-9A-Fa-f]{6}\b")
 

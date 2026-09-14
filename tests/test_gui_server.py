@@ -16,8 +16,8 @@ from http import HTTPStatus
 
 import pytest
 
-from simulator.gui import DEFAULT_HOST, FIGURE_ROOT, STATIC_ROOT
-from simulator.gui.server import build_app, build_server
+from simulator.gui import DEFAULT_HOST, FIGURE_ROOT, SITE_ROOT
+from simulator.gui.server import CONTENT_SECURITY_POLICY, build_app, build_server
 
 
 @pytest.fixture(scope="module")
@@ -102,6 +102,21 @@ def test_nothing_this_server_answers_takes_reader_supplied_text(server_url):
     assert declared == []
 
 
+def test_the_hosted_headers_file_restates_the_servers_policy():
+    """A static host has no middleware, so site/_headers has to carry the same policy.
+
+    The policy is copied rather than re-derived, so this asserts the two files agree
+    rather than asserting a string: a policy tightened in one place and not the other is
+    the failure, and it is invisible until someone inspects a response.
+    """
+    headers = (SITE_ROOT / "_headers").read_text()
+    for directive in CONTENT_SECURITY_POLICY.split("; "):
+        assert directive in headers, directive
+    assert "X-Content-Type-Options: nosniff" in headers
+    assert "Cache-Control" in headers
+    assert "no-store" not in headers
+
+
 # -- static assets ------------------------------------------------------------------
 
 
@@ -125,39 +140,39 @@ def test_html_and_svg_declare_utf8_so_nosniff_does_not_mojibake(server_url):
     assert "â€".encode() not in body
 
 
-def test_it_serves_the_section_a_illustration(server_url):
+def test_it_serves_the_section_problem_illustration(server_url):
     status, body, _ = fetch(f"{server_url}/figures/html/section-problem-illustration.html")
     assert status == HTTPStatus.OK
-    assert b"section_a_medical_cabinet.png" in body
-    assert b"section_a_smart_organizer.png" in body
+    assert b"section_problem_medical_cabinet.png" in body
+    assert b"section_problem_smart_organizer.png" in body
 
 
-def test_it_serves_the_section_d_illustration(server_url):
+def test_it_serves_the_section_gini_illustration(server_url):
     status, body, _ = fetch(f"{server_url}/figures/html/section-gini-illustration.html")
     assert status == HTTPStatus.OK
-    assert b"D.lorenz-wealth" in body
-    assert b"D.selective-tree" in body
-    assert b"D.tree-split-cycle" in body
+    assert b"gini.lorenz-wealth" in body
+    assert b"gini.selective-tree" in body
+    assert b"gini.tree-split-cycle" in body
     assert b"section_gini_tree_split_cycle.png" in body
     assert b"Exploring a Data Tree with Gini" in body
 
 
-def test_it_serves_the_section_e_illustration(server_url):
+def test_it_serves_the_section_budget_illustration(server_url):
     status, body, _ = fetch(f"{server_url}/figures/html/section-budget-illustration.html")
     assert status == HTTPStatus.OK
-    assert b"E.storage-limits" in body
-    assert b"E.knapsack-ladder" in body
-    assert b"E.greedy-guardrails" in body
-    assert b"section_e_greedy_guardrails.png" in body
+    assert b"budget.storage-limits" in body
+    assert b"budget.knapsack-ladder" in body
+    assert b"budget.greedy-guardrails" in body
+    assert b"section_budget_greedy_guardrails.png" in body
     assert b"Visualization placeholder" not in body
 
 
 def test_figures_are_served_from_the_repository_rather_than_a_copy(server_url):
     """One set of figures, two readers — the Markdown host and this page."""
-    figure = FIGURE_ROOT / "img" / "section_a_medical_cabinet.png"
+    figure = FIGURE_ROOT / "img" / "section_problem_medical_cabinet.png"
     assert figure.exists(), "fixture assumes the committed figures are present"
 
-    status, body, headers = fetch(f"{server_url}/figures/img/section_a_medical_cabinet.png")
+    status, body, headers = fetch(f"{server_url}/figures/img/section_problem_medical_cabinet.png")
     assert status == HTTPStatus.OK
     assert headers["Content-Type"].startswith("image/png")
     assert body == figure.read_bytes()
@@ -243,7 +258,7 @@ def test_the_server_module_computes_nothing_of_its_own():
     """
     import ast
 
-    source = (STATIC_ROOT.parent / "server.py").read_text()
+    source = (SITE_ROOT.parent / "simulator" / "gui" / "server.py").read_text()
     imported = {
         alias.name
         for node in ast.walk(ast.parse(source))

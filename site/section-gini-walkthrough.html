@@ -1,0 +1,236 @@
+<article class="formulation"><h2 id="1-explore-data-split-trees">1. Explore Data Split Trees</h2>
+<p>After defining a quantified data skipping goal, the research starts with a split search that identifies a partition of the input dataset that maximizes a value function, data-skipping potential. The search grows that partition as a logical tree and scores each leaf. Exact search for that partition is exponential in the corpus, so a cost-limited solver uses heuristics that return a cheaper, sub-optimal tree.</p>
+<p>A split search starts with the whole corpus as one uncut group, a leaf, and grows a grouping <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>S</mi></math> by cutting a current leaf into two or more children. A cut may be multi-way. After a cut, each child is packed into equal-size containers. A fitness is a number on that packing, or on the tree after the leaf is replaced. The fitness of the leaf is that packing scored with no further cut. OPT of the leaf is the best score still reachable from that leaf if further cuts remain allowed under the remaining evaluation budget. Every leaf packs at the same container size, the common packing budget. Compute and wall-clock are common evaluation budgets: they limit how many cuts are enumerated, not the packing. Each leaf is a subproblem on its own events plus that shared container size. Two leaves with the same contents are the same subproblem, regardless of the path that produced them.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>grouping</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>S</mi></math></td>
+<td>a partition of the events under consideration into terminal groups</td>
+</tr>
+<tr>
+<td>fitness of a leaf</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi><mo stretchy="false">(</mo><mi>&#x02113;</mi><mo stretchy="false">)</mo></mrow></math></td>
+<td>the leaf scored as packed at size <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>s</mi></math>, with no further cut</td>
+</tr>
+<tr>
+<td>OPT of a leaf</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>OPT</mi><mo stretchy="false">(</mo><mi>&#x02113;</mi><mo stretchy="false">)</mo></mrow></math></td>
+<td>the best score obtainable from the leaf if further cuts remain allowed under the remaining evaluation budget</td>
+</tr>
+<tr>
+<td>cut</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#x003B3;</mi></math></td>
+<td>a partition of one leaf into two or more children</td>
+</tr>
+<tr>
+<td>children of a cut</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo stretchy="false">(</mo><mi>&#x003B3;</mi><mo stretchy="false">)</mo></mrow></math></td>
+<td>the groups a cut <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#x003B3;</mi></math> produces</td>
+</tr>
+<tr>
+<td>leaf event count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>n</mi><mi>&#x02113;</mi></msub></math></td>
+<td>events in the leaf being cut</td>
+</tr>
+<tr>
+<td>child event count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>n</mi><mi>c</mi></msub></math></td>
+<td>events in child <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>c</mi></math>, so <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>c</mi></msub><mo>/</mo><msub><mi>n</mi><mi>&#x02113;</mi></msub></mrow></math> is that child’s population weight</td>
+</tr>
+<tr>
+<td>container size</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>s</mi></math></td>
+<td>event count of one packed container; the common packing budget</td>
+</tr>
+<tr>
+<td>evaluation budget</td>
+<td>—</td>
+<td>compute and wall-clock allowed for enumerating and scoring cuts</td>
+</tr>
+</tbody>
+</table>
+<p>Finding the best remaining cuts from an arbitrary leaf is the same search as the one that started at the corpus. The potential of a parent leaf can be expressed by the potentials of its immediate children:</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi>OPT</mi><mo stretchy="false">(</mo><mi>&#x02113;</mi><mo stretchy="false">)</mo></mrow><mo>=</mo><mi>max</mi><mo>(</mo><mrow><mi>v</mi><mo stretchy="false">(</mo><mi>&#x02113;</mi><mo stretchy="false">)</mo></mrow><mo>,</mo><msub><mi>max</mi><mi>&#x003B3;</mi></msub><msub><mo>&#x02211;</mo><mrow><mi>c</mi><mo>&#x02208;</mo><mrow><mi>C</mi><mo stretchy="false">(</mo><mi>&#x003B3;</mi><mo stretchy="false">)</mo></mrow></mrow></msub><mfrac><msub><mi>n</mi><mi>c</mi></msub><msub><mi>n</mi><mi>&#x02113;</mi></msub></mfrac><mrow><mi>OPT</mi><mo stretchy="false">(</mo><mi>c</mi><mo stretchy="false">)</mo></mrow><mo>)</mo></mrow></math></p>
+<p>A cut’s incremental value is the extra potential those children return over leaving the leaf packed. If the children do not raise the score, the recurrence keeps the packed fitness.</p>
+<p>That recurrence is the meaning of exact dynamic programming on the tree. The state space of possible leaf contents is exponential in the corpus, so the recurrence defines the problem; it does not claim a tractable solver. The figure <em>Recursive Partitioning with a Decision Tree</em> shows one cycle of listing cuts, scoring them, and replacing a leaf. The fitness <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi><mo stretchy="false">(</mo><mi>&#x02113;</mi><mo stretchy="false">)</mo></mrow></math> is left abstract here. Section 3 supplies three concrete readings.</p>
+<h2 id="2-practical-consideration">2. Practical Consideration</h2>
+<p>A real data storage system has to balance the cost of searching for a better layout against the I/O that layout is expected to save. It does not enumerate the exponential state space of §1. It spends a limited compute and time budget, at a fixed container size (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>s</mi></math>, defined in §1), to grow a tree whose later avoided I/O can repay the search. A cut is kept when the fitness change per extra group is large enough.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>extra groups</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>k</mi></mrow></math></td>
+<td>how many groups the cut adds; a binary cut has <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>k</mi></mrow></math> equal to 1</td>
+</tr>
+<tr>
+<td>incremental gain</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>v</mi><mo>/</mo><mi>&#x00394;</mi><mi>k</mi></mrow></math></td>
+<td>fitness change per extra group</td>
+</tr>
+</tbody>
+</table>
+<p>A cheap greedy top-down baseline grows the tree one accepted cut at a time, taking a locally improving cut while evaluation budget remains and incremental gain (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>v</mi><mo>/</mo><mi>&#x00394;</mi><mi>k</mi></mrow></math>, defined in this section) is large enough.</p>
+<p>Leftover budget can be spent looking for improvement in other directions. These techniques can be combined.</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Simulated_annealing" target="_blank" rel="noopener noreferrer">simulated annealing</a> and <a href="https://en.wikipedia.org/wiki/Evolutionary_algorithm" target="_blank" rel="noopener noreferrer">evolutionary search</a> balance exploitation against exploration.</li>
+<li><a href="https://en.wikipedia.org/wiki/Beam_search" target="_blank" rel="noopener noreferrer">beam search</a> or a priority queue keeps several intermediary solutions.</li>
+<li>A published query-data tree (qd-tree) study grows a layout tree so later queries can skip more of the table (<a href="https://arxiv.org/abs/2004.10898" target="_blank" rel="noopener noreferrer">Yang, Ding, Chaudhuri, and Argyraki, <cite>Qd-tree: Learning Data Layouts for Big Data Analytics</cite>, arXiv:2004.10898</a>).</li>
+</ul>
+<p>The compute and time spent searching are paid once, or on a rebuild, and recovered from expected future I/O that the layout avoids. Return on that investment is bounded by the data-retention policy in the deployed environment: a short retention window leaves fewer future fetches against which to charge the search. This page does not select, rank, or recommend a search method.</p>
+<h2 id="3-choosing-a-value-function-to-optimize">3. Choosing a Value function to Optimize</h2>
+<p>The recurrence in §1 leaves the fitness of a leaf (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi><mo stretchy="false">(</mo><mi>&#x02113;</mi><mo stretchy="false">)</mo></mrow></math>, defined in §1) as an abstract value function. The three readings below are candidate value functions for that fitness. They screen a logical grouping; a physical layout is scored by replay in the benchmark harness. None of them equals the aggregate waste of a physical assignment (defined in Problem Statement’s formal statement, §2.5).</p>
+<h3 id="31-group-wide-skipping-ratio">3.1 Group-wide skipping ratio</h3>
+<p>The group-wide skip ratio estimates the share of events a later query would leave unread after the leaf is packed at <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>s</mi></math>. It gives each packed container one selection rate: the average, across training queries, of the fraction of that container each query selected.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>grouping</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>S</mi></math></td>
+<td>a partition of the events under consideration into terminal groups</td>
+</tr>
+<tr>
+<td>parent event count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>n</mi></math></td>
+<td>the sum of the container event counts</td>
+</tr>
+<tr>
+<td>container</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>i</mi></math></td>
+<td>one of the equal-size containers after the grouping is packed at size <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>s</mi></math></td>
+</tr>
+<tr>
+<td>container event count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>n</mi><mi>i</mi></msub></math></td>
+<td>events in container <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>i</mi></math>; equal-size packing means <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>n</mi><mi>i</mi></msub></math> equals <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>s</mi></math></td>
+</tr>
+<tr>
+<td>per-query selected count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>k</mi><mrow><mi>q</mi><mo>,</mo><mi>i</mi></mrow></msub></math></td>
+<td>how many events training query <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>q</mi></math> selected in container <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>i</mi></math></td>
+</tr>
+<tr>
+<td>group-wide rate</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>=</mo><mfrac><mrow><msub><mi>avg</mi><mi>q</mi></msub><msub><mi>k</mi><mrow><mi>q</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow><msub><mi>n</mi><mi>i</mi></msub></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td>population weight</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>w</mi><mi>i</mi></msub></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>w</mi><mi>i</mi></msub><mo>=</mo><mfrac><msub><mi>n</mi><mi>i</mi></msub><mi>n</mi></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td>group-wide Poisson parameter</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>&#x003BB;</mi><mi>i</mi></msub></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mi>i</mi></msub><mo>=</mo><msub><mi>n</mi><mi>i</mi></msub><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>=</mo><msub><mi>avg</mi><mi>q</mi></msub><msub><mi>k</mi><mrow><mi>q</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow></math></td>
+</tr>
+<tr>
+<td>group-wide skip ratio</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>V</mi><mrow><mi>marg</mi></mrow></msub><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></math></td>
+<td>estimated skip ratio from the group-wide rates</td>
+</tr>
+</tbody>
+</table>
+<p>A container is skipped when it holds no selected event. Under independent selection that empty-container probability is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>&#x02212;</mo><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub><mo stretchy="false">)</mo></mrow><mi>s</mi></msup></math>. When the rate is small, the <a href="https://en.wikipedia.org/wiki/Poisson_distribution" target="_blank" rel="noopener noreferrer">Poisson</a> approximation of that empty-container probability is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msub><mi>&#x003BB;</mi><mi>i</mi></msub></mrow></msup></math>. The population-weighted skip ratio, exact and approximate, is</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><msub><mi>V</mi><mrow><mi>marg</mi></mrow></msub><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow><mo>=</mo><msub><mo>&#x02211;</mo><mi>i</mi></msub><msub><mi>w</mi><mi>i</mi></msub><msup><mrow><mo>(</mo><mn>1</mn><mo>&#x02212;</mo><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>)</mo></mrow><mi>s</mi></msup><mo>&#x02248;</mo><msub><mo>&#x02211;</mo><mi>i</mi></msub><msub><mi>w</mi><mi>i</mi></msub><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msub><mi>&#x003BB;</mi><mi>i</mi></msub></mrow></msup></mrow></math></p>
+<p>Both forms lie in the unit interval. The subscript names the group-wide rate, not an incremental gain. The fitness depends on <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>s</mi></math>: a finer packing changes the empty-container curve. Because every query is collapsed into one rate per container, two workloads that match on those averages receive the same score, even when they hit different containers on different queries.</p>
+<h3 id="32-query-conditional-skipping-ratio">3.2 Query-conditional skipping ratio</h3>
+<p>The query-conditional skip ratio uses the same empty-container model as the group-wide skip ratio (defined in §3.1), but keeps one selection rate per query instead of one query-averaged rate per container.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>query-conditional rate</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>p</mi><mrow><mi>i</mi><mo>,</mo><mi>q</mi></mrow></msub></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mrow><mi>i</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>=</mo><mfrac><msub><mi>k</mi><mrow><mi>q</mi><mo>,</mo><mi>i</mi></mrow></msub><msub><mi>n</mi><mi>i</mi></msub></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td>per-query Poisson parameter</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>&#x003BB;</mi><mrow><mi>i</mi><mo>,</mo><mi>q</mi></mrow></msub></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mrow><mi>i</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>=</mo><msub><mi>k</mi><mrow><mi>q</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow></math></td>
+</tr>
+<tr>
+<td>query count</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>Q</mi></math></td>
+<td>number of training queries</td>
+</tr>
+<tr>
+<td>query-conditional skip ratio</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>V</mi><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></math></td>
+<td>estimated skip ratio that keeps the query index</td>
+</tr>
+</tbody>
+</table>
+<p>The population-weighted skip ratio, exact and approximate, is</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi>V</mi><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow><mo>=</mo><mrow><mo>(</mo><mn>1</mn><mo>/</mo><mi>Q</mi><mo>)</mo></mrow><msub><mo>&#x02211;</mo><mi>q</mi></msub><msub><mo>&#x02211;</mo><mi>i</mi></msub><msub><mi>w</mi><mi>i</mi></msub><msup><mrow><mo>(</mo><mn>1</mn><mo>&#x02212;</mo><msub><mi>p</mi><mrow><mi>i</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>)</mo></mrow><mi>s</mi></msup><mo>&#x02248;</mo><mrow><mo>(</mo><mn>1</mn><mo>/</mo><mi>Q</mi><mo>)</mo></mrow><msub><mo>&#x02211;</mo><mi>q</mi></msub><msub><mo>&#x02211;</mo><mi>i</mi></msub><msub><mi>w</mi><mi>i</mi></msub><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msub><mi>&#x003BB;</mi><mrow><mi>i</mi><mo>,</mo><mi>q</mi></mrow></msub></mrow></msup></mrow></math></p>
+<p>Both forms lie in the unit interval. A query that never touches a container contributes that container’s full weight (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>w</mi><mi>i</mi></msub></math>, defined in §3.1) to the skip ratio. A cut that isolates a block some queries never enter can therefore raise <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>V</mi><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></math> even when the group-wide rates (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub></math>, defined in §3.1) are even across containers. The query-conditional skip ratio does not use which selected events share a container.</p>
+<h3 id="33-weighted-gini">3.3 Weighted Gini</h3>
+<p>The Gini coefficient summarizes how unevenly a non-negative quantity is shared across a population: a value near zero is even, and a larger value means a smaller share of the population holds more of the total (<a href="https://en.wikipedia.org/wiki/Gini_coefficient" target="_blank" rel="noopener noreferrer">Gini coefficient</a>).</p>
+<p>The weighted construction used here measures how unevenly the group-wide rate (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub></math>, defined in §3.1) sits across containers. A container with a smaller rate is poorer.</p>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>symbol</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>population weight</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>w</mi><mi>i</mi></msub></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>w</mi><mi>i</mi></msub><mo>=</mo><mfrac><msub><mi>n</mi><mi>i</mi></msub><mi>n</mi></mfrac></mrow></math>, as defined in §3.1</td>
+</tr>
+<tr>
+<td>usage share</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>q</mi><mi>i</mi></msub></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>q</mi><mi>i</mi></msub><mo>=</mo><mfrac><mrow><msub><mi>n</mi><mi>i</mi></msub><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow><mrow><msub><mo>&#x02211;</mo><mi>j</mi></msub><msub><mi>n</mi><mi>j</mi></msub><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow></mfrac></mrow></math>. This <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>q</mi><mi>i</mi></msub></math> is a usage share, not a query index; <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>Q</mi></math> remains the query count from §3.2</td>
+</tr>
+<tr>
+<td>cumulative usage share</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>CumQ</mi><mi>i</mi></msub></math></td>
+<td>a running sum of usage shares from the poorest container through <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>i</mi></math>, not a sum over the <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>Q</mi></math> queries</td>
+</tr>
+<tr>
+<td>weighted Gini</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">(</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></math></td>
+<td>inequality of the group-wide rate across containers</td>
+</tr>
+<tr>
+<td>incremental Gini gain</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>G</mi><mo>/</mo><mi>&#x00394;</mi><mi>k</mi></mrow></math></td>
+<td>Gini change per extra group</td>
+</tr>
+</tbody>
+</table>
+<p>Sort containers poorer-then-richer by the group-wide rate (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>i</mi></mrow></msub></math>, defined in §3.1). Then</p>
+<p class="scroll-x"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi>G</mi><mo stretchy="false">(</mo><mi>S</mi><mo stretchy="false">)</mo></mrow><mo>=</mo><mn>1</mn><mo>&#x02212;</mo><msub><mo>&#x02211;</mo><mi>i</mi></msub><msub><mi>w</mi><mi>i</mi></msub><mo>(</mo><mn>2</mn><mo>&#x000B7;</mo><msub><mrow><mi>CumQ</mi></mrow><mi>i</mi></msub><mo>&#x02212;</mo><msub><mi>q</mi><mi>i</mi></msub><mo>)</mo></mrow></math></p>
+<p>On the unsplit corpus every container shares one rate, so <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">(</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></math> is zero. After a cut, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">(</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></math> is large when a small population share holds most of the usage. A search that charges for extra groups compares the incremental Gini gain (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>G</mi><mo>/</mo><mi>&#x00394;</mi><mi>k</mi></mrow></math>, defined in this section). <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">(</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></math> screens inequality. It is not a skip ratio. The continued example <em>Exploring a Data Tree with Gini</em> draws that construction on an authored auto-parts partition. It shows an inequality diagram, two one-level splits, and a selective tree, and prints Gini per group so extra groups can be seen against the gain.</p>
+</article>

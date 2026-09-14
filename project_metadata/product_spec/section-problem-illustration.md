@@ -8,7 +8,7 @@ pointing the reader to the definitions and formula in the right pane.
 
 **Authority.** This document is the product spec for Problem Statement.
 [`simulator-spec.md`](simulator-spec.md) governs the application shell, theme, and layout.
-[`problem-statement.md`](../../resources/html/problem-statement.md) remains the
+[`problem-statement.md`](../../site/docs/problem-statement.md) remains the
 authority on the formal model. Where this document and the product spec disagree on
 shell, theme, or layout, the product spec wins. Where they disagree on this
 section's content, this document wins.
@@ -21,7 +21,7 @@ select, rank, or recommend an assignment strategy.
 
 ## 1. Role and reading order
 
-The illustration is the reader's first exposure to the problem. It teaches the problem
+The illustration is the reader's first exposure to the problem. It presents / introduces the problem
 as one ordered chain:
 
 1. a familiar medicine-cabinet retrieval establishes useful and wasted handling;
@@ -33,6 +33,8 @@ as one ordered chain:
 - Below the split breakpoint the panes stack in that order.
 - The pane is independently scrollable on a wide viewport.
 - The sequence is closed: it contains no outbound artifact links or alternate scenario.
+
+The illustration does not use the word *teach*.
 
 ---
 
@@ -107,11 +109,11 @@ formal statement. The left pane does not restate that list.
 
 ## 3. Medium and visual system
 
-The authored fragment lives under `resources/html/` and embeds these committed
+The authored fragment lives under `site/figures/html/` and embeds these committed
 raster figures:
 
-- `resources/img/section_a_medical_cabinet.png`;
-- `resources/img/section_a_smart_organizer.png`.
+- `site/figures/img/section_problem_medical_cabinet.png`;
+- `site/figures/img/section_problem_smart_organizer.png`.
 
 The two figures use:
 
@@ -146,9 +148,9 @@ the first figure's particular counter batch.
 The pane carries these four beats, in order:
 
 1. medicine-cabinet prose describing one counter batch and its wasted effort;
-2. `A.medical-cabinet`;
+2. `problem.medical-cabinet`;
 3. technical prose mapping the retrieval and introducing demand-informed restocking;
-4. `A.smart-organizer`.
+4. `problem.smart-organizer`.
 
 No other prose stage or illustration appears.
 
@@ -156,11 +158,11 @@ No other prose stage or illustration appears.
 
 ## 6. Illustration prompts
 
-### 6.1 After (1), before (2): `A.medical-cabinet`
+### 6.1 After (1), before (2): `problem.medical-cabinet`
 
 Visible raster title: *Fulfill Prescription Requests*.
 
-Embed `resources/img/section_a_medical_cabinet.png`. It shows one three-prescription
+Embed `site/figures/img/section_problem_medical_cabinet.png`. It shows one three-prescription
 ask, the inventory-catalog lookup, nine equal-capacity drawers, three drawers opened
 whole, and the split between three boxes kept and nine boxes put back. Its parenthetical
 labels introduce query, lookup table, storage containers, and query response at the
@@ -169,11 +171,11 @@ boundary between the ordinary story and the technical explanation.
 The caption states the observation: the catalog narrows which drawers to open, but each
 opened drawer brings every box inside it to the counter.
 
-### 6.2 After (2), before (3): `A.smart-organizer`
+### 6.2 After (2), before (3): `problem.smart-organizer`
 
 Visible raster title: *Optimize inventory layout by learning from demand history*.
 
-Embed `resources/img/section_a_smart_organizer.png`. It shows the usage report, average
+Embed `site/figures/img/section_problem_smart_organizer.png`. It shows the usage report, average
 pulls per hour, two demand thresholds, and a new equal-capacity drawer arrangement
 grouped into low, medium, and high demand bands.
 

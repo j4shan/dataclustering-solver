@@ -13,6 +13,10 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
+#: Authoring material — diagram sources, figure prompts, scenario data. Never served,
+#: never published, so no test may reach it through the site tree.
+RESOURCES = REPO_ROOT / "resources"
+
 
 def _git(*args) -> subprocess.CompletedProcess:
     if not (REPO_ROOT / ".git").exists():

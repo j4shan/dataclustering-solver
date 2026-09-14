@@ -1,0 +1,348 @@
+<article class="formulation"><details class="toc"><summary id="formulation-toc-heading">Table of Content<span class="toc-arrow" aria-hidden="true"></span></summary><ol><li class="toc-h2"><a href="#1-data-storage-and-fetch-model">1. Data storage and fetch model</a></li><li class="toc-h3"><a href="#11-predicate-to-container-resolution">1.1 Predicate-to-container resolution</a></li><li class="toc-h3"><a href="#12-custom-assignment-overhead">1.2 Custom assignment overhead</a></li><li class="toc-h2"><a href="#2-objective-function-and-system-wide-data-skipping">2. Objective function and system-wide data skipping</a></li><li class="toc-h3"><a href="#21-observed-workload">2.1 Observed workload</a></li><li class="toc-h3"><a href="#22-demand-derived-from-the-log">2.2 Demand derived from the log</a></li><li class="toc-h3"><a href="#23-predicate-and-observed-demand">2.3 Predicate and observed demand</a></li><li class="toc-h3"><a href="#24-container-activation-and-materialization">2.4 Container activation and materialization</a></li><li class="toc-h3"><a href="#25-aggregate-waste">2.5 Aggregate waste</a></li><li class="toc-h3"><a href="#26-a-patternless-query">2.6 A patternless query</a></li><li class="toc-h2"><a href="#3-the-effect-of-data-clustering">3. The effect of data clustering</a></li><li class="toc-h3"><a href="#31-distinct-subgroup-probabilities">3.1 Distinct subgroup probabilities</a></li><li class="toc-h3"><a href="#32-allocating-containers-among-groups">3.2 Allocating containers among groups</a></li><li class="toc-h2"><a href="#4-container-capacity-bounds">4. Container capacity bounds</a></li><li class="toc-h2"><a href="#5-problem-complexity-analysis">5. Problem Complexity Analysis</a></li><li class="toc-h3"><a href="#51-search-space-and-hardness">5.1 Search space and hardness</a></li><li class="toc-h3"><a href="#52-assignment-evaluation-cost">5.2 Assignment evaluation cost</a></li><li class="toc-h3"><a href="#53-impact-of-dynamic-query-patterns">5.3 Impact of dynamic query patterns</a></li></ol></details><h1>The Data Storage Layout Problem</h1>
+<hr />
+<h2 id="1-data-storage-and-fetch-model">1. Data storage and fetch model</h2>
+<p>This section describes the database operations that make event placement important. A data storage
+system holds events in containers and serves a query—a database request that retains selected
+events—by fetching entire containers. The layout question is how assigning events to those
+containers changes the volume of data the system must fetch.</p>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>E</mi></mrow></math> be the finite set of all stored events, and let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007C;</mo><mi>E</mi><mo stretchy="false">&#x0007C;</mo></mrow></math> be the number of events in that
+set.</p>
+<p><strong>Containers.</strong> Each event is stored in exactly one of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>K</mi></mrow></math> containers. The layout <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math>
+records this assignment:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mi>:</mi><mi>E</mi><mo>&#x02192;</mo><mo stretchy="false">&#x0007B;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><mi>K</mi><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>For an event <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi></mrow></math>, the value <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo></mrow></math> is the identifier of the container that holds it. The
+notation <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003BB;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00028;</mo><mi>c</mi><mo stretchy="false">&#x00029;</mo></mrow></math> reverses this view: it means the set of all events whose assigned
+container is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math>. The contents of container <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math> are therefore</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>E</mi><mi>c</mi></msub><mo>&#x0003D;</mo><msup><mi>&#x003BB;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00028;</mo><mi>c</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mspace width="0.167em" /><mi>e</mi><mo>&#x02208;</mo><mi>E</mi><mi>:</mi><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>c</mi><mspace width="0.167em" /><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>Because every event belongs to exactly one container, the containers partition the corpus and
+their event counts sum to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi></mrow></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x02211;</mo><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><mi>N</mi><mo>&#x0002E;</mo></mrow></math></p>
+<p>Both event count and byte size are useful measures of data-fetch overhead. When every event is
+treated as having size <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math>, the storage size of container <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math> is represented by its event count
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></math>. When events have different sizes, the container's storage size in bytes is represented by</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>bytes</mo><mo stretchy="false">&#x00028;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mrow><mi>e</mi><mo>&#x02208;</mo><msub><mi>E</mi><mi>c</mi></msub></mrow></msub><mo>size</mo><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>Later storage-volume formulas can use <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>bytes</mo><mo stretchy="false">&#x00028;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> instead of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></math>. This changes
+the unit of measurement, not the structure of the problem.</p>
+<p><strong>Container fetch.</strong> The storage system provides one data-fetch operation:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mtext mathvariant="monospace">FETCH</mtext><mo stretchy="false">&#x00028;</mo><mi>c</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02192;</mo><msub><mi>E</mi><mi>c</mi></msub><mo>&#x0002E;</mo></mrow></math></p>
+<p><code>FETCH(c)</code> returns every event stored in container <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math>. It cannot retrieve just one event from the
+container. The read cost is the volume returned by <code>FETCH</code>, even when the query keeps only some of
+those events.</p>
+<p>This restriction makes the layout matter. When a query needs one event, it must also read every
+other event in the same container. If individual events could be retrieved at no additional cost,
+their container assignment would not affect read cost.</p>
+<p>The system serves a query in two phases:</p>
+<ol>
+<li><strong>Resolve:</strong> evaluate the query predicate—the filter over indexed event attributes—to identify
+the containers the query must fetch.</li>
+<li><strong>Fetch:</strong> call <code>FETCH</code> on each identified container, then discard events the query did not
+select.</li>
+</ol>
+<h3 id="11-predicate-to-container-resolution">1.1 Predicate-to-container resolution</h3>
+<p>A columnar store can evaluate a predicate by reading only the columns named in that predicate.
+Other columns do not need to be materialized yet. This practice is <strong>late materialization</strong>:
+narrow filtering columns are processed first, while dense columns containing large payloads,
+nested context, or many attributes are fetched only after the system knows which containers it
+needs.</p>
+<p>Predicate-to-container resolution translates a query predicate into those container identifiers.
+The solution pattern used here is a narrow index table (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi></mrow></math>) with one row per event:</p>
+<table>
+<thead>
+<tr>
+<th>column</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>features</code></td>
+<td>event attributes that queries can filter on</td>
+</tr>
+<tr>
+<td><code>container_id</code></td>
+<td>the event's current container, equal to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+<tr>
+<td><code>record_id</code></td>
+<td>the event's identity</td>
+</tr>
+</tbody>
+</table>
+<p>To resolve a query, the system scans <code>features</code>, evaluates the predicate for every event, and
+collects the corresponding <code>container_id</code> values. The resulting set identifies the containers the
+query must fetch. No secondary structure allows the system to skip part of this index scan.</p>
+<figure class="figure"><img alt="Predicate-to-container resolution: a query scans the index table, collects container identifiers, and fetches only those containers from the event table." src="figures/img/demo_index_table.png" width="1920" height="1080" loading="lazy"></figure>
+<p><em>Scan the narrow index, collect container identifiers, and fetch only those containers.</em></p>
+<p>The index has as many rows as the corpus, but each row is narrower than a complete event. The
+index width ratio (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi></mrow></math>) compares their compressed sizes:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mfrac><mrow><mtext>compressed&#x000A0;bytes&#x000A0;per&#x000A0;index&#x000A0;row</mtext></mrow><mrow><mtext>compressed&#x000A0;bytes&#x000A0;per&#x000A0;complete&#x000A0;event</mtext></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x003C1;</mi><mo>&#x0226A;</mo><mn>1</mn><mo>&#x0002E;</mo></mrow></math></p>
+<p>An index table changes how the system locates data, not which records the query returns. Several
+index tables may coexist for different predicate families. Low-cardinality feature labels can
+make an index especially compressible because their values repeat often.</p>
+<p>Changing <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> rewrites <code>container_id</code> values but does not change the number of index rows or
+the feature columns scanned. Index cost is therefore real and recurring but constant across
+different assignments. Its central benefit is late materialization: the system resolves the predicate
+using narrow columns before fetching dense columns from the identified main-table containers.</p>
+<h3 id="12-custom-assignment-overhead">1.2 Custom assignment overhead</h3>
+<p>A custom assignment adds container-resolution work at two points in the data path.</p>
+<p>At ingest time, <strong>event-to-container resolution</strong> applies the assignment rule to an arriving
+event's features and produces its <code>container_id</code>. The rule must be deterministic, inexpensive,
+and evaluable from that event alone. An assignment represented only as the output of a batch
+computation over the complete corpus cannot route a new event without another global computation.</p>
+<p>At query time, <strong>predicate-to-container resolution</strong> performs the index-table process in §1.1. It
+evaluates the query predicate against indexed features and produces the container identifiers that
+must be fetched.</p>
+<p>Both steps consume compute, memory, and metadata capacity outside the container fetch itself.
+Their overhead can be prohibitive in a low-latency system or a resource-constrained deployment,
+even when the custom assignment would reduce main-table data fetched beyond the selected events. A deployable layout must
+therefore fit the ingest-time routing budget and the query-time resolution budget.</p>
+<hr />
+<h2 id="2-objective-function-and-system-wide-data-skipping">2. Objective function and system-wide data skipping</h2>
+<p>The objective is built from one observed relation. This section introduces that relation and shows
+how an assignment expands each query's fetch.</p>
+<h3 id="21-observed-workload">2.1 Observed workload</h3>
+<p>The workload is recorded in an append-only <strong>selection log</strong> with two columns:</p>
+<table>
+<thead>
+<tr>
+<th>column</th>
+<th>type</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>record_id</code></td>
+<td>bigint</td>
+<td>the event selected</td>
+</tr>
+<tr>
+<td><code>query_id</code></td>
+<td>bigint</td>
+<td>the query that selected it</td>
+</tr>
+</tbody>
+</table>
+<p>One row records one selection. A row's presence means that the query selected the event; its
+absence means that the query did not. The table stores no Boolean column and no negative rows.
+This keeps its size proportional to the selections actually observed instead of the much larger
+product of event count and query count.</p>
+<p>Formally, the selection log is a relation</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi><mo>&#x02286;</mo><mi>E</mi><mo>&#x000D7;</mo><mi>&#x1D4AC;</mi><mo>&#x0002C;</mo></mrow></math></p>
+<p>where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D4AC;</mi></mrow></math> is the set of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> distinct queries. Queries have no separate frequency
+weight. If the same query text runs repeatedly, each execution receives its own <code>query_id</code>, so
+repetition is represented directly in the log.</p>
+<h3 id="22-demand-derived-from-the-log">2.2 Demand derived from the log</h3>
+<p>For one query, collect the events it selected:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>S</mi><mi>q</mi></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mspace width="0.167em" /><mi>e</mi><mi>:</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo>&#x0002C;</mo><mi>q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02208;</mo><mi>L</mi><mspace width="0.167em" /><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>For one event, collect the queries that selected it:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>supp</mo><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mspace width="0.167em" /><mi>q</mi><mi>:</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo>&#x0002C;</mo><mi>q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02208;</mo><mi>L</mi><mspace width="0.167em" /><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>The total number of observed selections is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>L</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>q</mi></msub><mo stretchy="false">&#x0007C;</mo><msub><mi>S</mi><mi>q</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>The queries that must fetch a container are the union of the supports of its events:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>supp</mo><mo stretchy="false">&#x00028;</mo><mi>c</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x022C3;</mo><mrow><mi>e</mi><mo>&#x02208;</mo><msub><mi>E</mi><mi>c</mi></msub></mrow></msub><mo>supp</mo><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>For compact notation, let the selection indicator <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>u</mi><mrow><mi>e</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub></mrow></math> equal <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math> when <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo>&#x0002C;</mo><mi>q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02208;</mo><mi>L</mi></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>
+otherwise. Placing all indicators into a matrix gives the selection matrix</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi><mo>&#x02208;</mo><mo stretchy="false">&#x0007B;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">&#x0007D;</mo><mrow><mi>N</mi><mo>&#x000D7;</mo><mi>Q</mi></mrow></msup><mo>&#x0002C;</mo><mspace width="2em" /><mo>&#x02016;</mo><mi>U</mi><msub><mo>&#x02016;</mo><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x0007C;</mo><mi>L</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>The matrix is a mathematical view, not a stored object. The selection log is its sparse
+representation.</p>
+<p>An event selected by no observed query has no row in the log. It still exists in the corpus and
+must still be assigned to a container. Such events are easy to overlook because the workload
+contains no positive observation for them.</p>
+<h3 id="23-predicate-and-observed-demand">2.3 Predicate and observed demand</h3>
+<p>The selection log records which events a query selected, not why it selected them. A selection set
+need not be recoverable from the query's stated predicate over event attributes. Joins, lists of
+identifiers, and context outside the event row can all create demand that the event schema does
+not announce.</p>
+<p>The assignment is therefore fitted to observed demand in <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math>, not merely to columns named in query
+text.</p>
+<h3 id="24-container-activation-and-materialization">2.4 Container activation and materialization</h3>
+<p>A query <strong>activates</strong> a container when that container holds at least one selected event. The
+activation indicator is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mrow><mi>c</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub><mo>&#x0003D;</mo><msub><mo>max</mo><mrow><mi>e</mi><mo>&#x02208;</mo><msub><mi>E</mi><mi>c</mi></msub></mrow></msub><msub><mi>u</mi><mrow><mi>e</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub><mo>&#x02208;</mo><mo stretchy="false">&#x0007B;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>The system must fetch every activated container. The event count materialized for query <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>q</mi></mrow></math> is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>M</mi><mi>q</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mo>&#x02211;</mo><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mi>K</mi></mrow></msubsup><msub><mi>a</mi><mrow><mi>c</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>This count cannot be smaller than the query's selected-event count:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>M</mi><mi>q</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mo stretchy="false">&#x0007C;</mo><msub><mi>S</mi><mi>q</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>Equality holds only when every event in every activated container was selected by the query.</p>
+<p><strong>Index cost and skipping.</strong> A full index scan costs <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mi>N</mi></mrow></math> in event-volume units, while
+fetching the complete main table costs <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi></mrow></math>. Serving query <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>q</mi></mrow></math> adds its materialized event count
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>M</mi><mi>q</mi></msub></mrow></math>. The index saves work exactly when</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mi>N</mi><mo>&#x0002B;</mo><msub><mi>M</mi><mi>q</mi></msub><mo>&#x0003C;</mo><mi>N</mi><mo>&#x0002E;</mo></mrow></math></p>
+<p>The share of the corpus that query <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>q</mi></mrow></math> avoids reading is its skipping ratio <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mi>q</mi></msub></mrow></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mi>q</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mrow><msub><mi>M</mi><mi>q</mi></msub></mrow><mrow><mi>N</mi></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></p>
+<p>The index therefore saves work when</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mi>q</mi></msub><mo>&#x0003E;</mo><mi>&#x003C1;</mi><mo>&#x0002E;</mo></mrow></math></p>
+<p>The number of queries that activate container <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math> is its demand breadth:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>d</mi><mi>c</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>q</mi></msub><msub><mi>a</mi><mrow><mi>c</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub><mo>&#x0003D;</mo><mo stretchy="true" fence="true" minsize="1.2em" maxsize="1.2em">|</mo><mo>supp</mo><mo stretchy="false">&#x00028;</mo><mi>c</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" minsize="1.2em" maxsize="1.2em">|</mo><mo>&#x0002E;</mo></mrow></math></p>
+<figure class="figure"><img alt="Container activation for one query: one selected event activates its whole container, which is fetched entire; a container with no selected event is skipped." src="figures/img/demo_container_activation.png" width="1920" height="1080" loading="lazy"></figure>
+<p><em>One selected event activates the whole container. A container with no selected event is
+skipped.</em></p>
+<h3 id="25-aggregate-waste">2.5 Aggregate waste</h3>
+<p>A query pays for every materialized event but uses only the events in its selection set. The
+difference is that query's waste:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>w</mi><mi>q</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>M</mi><mi>q</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mo stretchy="false">&#x0007C;</mo><msub><mi>S</mi><mi>q</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></p>
+<p>Aggregate waste over the observed workload is the objective:</p>
+<p><math class="is-boxed" display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><menclose notation="box"><mrow><mi>&#x1D4B2;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>q</mi></msub><msub><mi>w</mi><mi>q</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>q</mi></msub><mo stretchy="true" fence="true" minsize="1.2em" maxsize="1.2em">(</mo><msub><mi>M</mi><mi>q</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mo stretchy="false">&#x0007C;</mo><msub><mi>S</mi><mi>q</mi></msub><mo stretchy="false">&#x0007C;</mo><mo stretchy="true" fence="true" minsize="1.2em" maxsize="1.2em">)</mo></mrow></menclose><mo>&#x0002E;</mo></mrow></math></p>
+<p>This is the complete abstract goal: choose an assignment <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> that minimizes
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D4B2;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>.</p>
+<p>The displayed objective uses event counts. Its byte-weighted form replaces each container count
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></math> inside <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>M</mi><mi>q</mi></msub></mrow></math> with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>bytes</mo><mo stretchy="false">&#x00028;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> and replaces the selected-event count
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>S</mi><mi>q</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></math> with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x02211;</mo><mrow><mi>e</mi><mo>&#x02208;</mo><msub><mi>S</mi><mi>q</mi></msub></mrow></msub><mo>size</mo><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo></mrow></math>. Both terms then use bytes.</p>
+<p>The total workload cost separates into three parts:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><munder><munder><mrow><mi>Q</mi><mi>&#x003C1;</mi><mi>N</mi></mrow><mo>&#x23DF;</mo></munder><mrow><mtext>index&#x000A0;scans</mtext></mrow></munder><mo>&#x0002B;</mo><munder><munder><mrow><mo stretchy="false">&#x0007C;</mo><mi>L</mi><mo stretchy="false">&#x0007C;</mo></mrow><mo>&#x23DF;</mo></munder><mrow><mtext>selected&#x000A0;events</mtext></mrow></munder><mo>&#x0002B;</mo><munder><munder><mrow><mi>&#x1D4B2;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow><mo>&#x23DF;</mo></munder><mrow><mtext>waste</mtext></mrow></munder><mo>&#x0002E;</mo></mrow></math></p>
+<p>Only waste changes with the assignment. Index-scan cost is constant across layouts, and the
+selected events are fixed by the observed log. Removing those constants does not change which
+layout minimizes total cost.</p>
+<p>The same objective has two useful interpretations. First, let the materialized selection matrix
+(<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>U</mi><mo stretchy="false">&#x0007E;</mo></mover></mrow></math>) mark event <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi></mrow></math> for query <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>q</mi></mrow></math> whenever that query activates the event's container:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mover><mi>u</mi><mo stretchy="false">&#x0007E;</mo></mover><mrow><mi>e</mi><mo>&#x0002C;</mo><mi>q</mi></mrow></msub><mo>&#x0003D;</mo><msub><mi>a</mi><mrow><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mi>q</mi></mrow></msub><mo>&#x0002E;</mo></mrow></math></p>
+<p>Then</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D4B2;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02016;</mo><mover><mi>U</mi><mo stretchy="false">&#x0007E;</mo></mover><msub><mo>&#x02016;</mo><mn>1</mn></msub><mo>&#x02212;</mo><mo>&#x02016;</mo><mi>U</mi><msub><mo>&#x02016;</mo><mn>1</mn></msub><mo>&#x0002E;</mo></mrow></math></p>
+<p>A layout spreads each observed selection across the selected event's container. Waste counts the
+zeros in <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi></mrow></math> that this spreading turns into ones.</p>
+<p>Second, exchanging the order of summation shows the cost accumulated by each container:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x02211;</mo><mi>q</mi></msub><msub><mi>M</mi><mi>q</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><mspace width="0.167em" /><msub><mi>d</mi><mi>c</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>Because <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>L</mi><mo stretchy="false">&#x0007C;</mo></mrow></math> is constant, minimizing waste is equivalent to</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>min</mo><mi>&#x003BB;</mi></msub><msubsup><mo>&#x02211;</mo><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mi>K</mi></mrow></msubsup><munder><munder><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow><mo>&#x23DF;</mo></munder><mrow><mtext>container&#x000A0;size</mtext></mrow></munder><mo>&#x000B7;</mo><munder><munder><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mo>&#x022C3;</mo><mrow><mi>e</mi><mo>&#x02208;</mo><msub><mi>E</mi><mi>c</mi></msub></mrow></msub><mo>supp</mo><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow><mo>&#x23DF;</mo></munder><mrow><mtext>demand&#x000A0;breadth</mtext></mrow></munder><mo>&#x0002E;</mo></mrow></math></p>
+<p>Each container is charged its event count multiplied by the number of queries that fetch it.</p>
+<h3 id="26-a-patternless-query">2.6 A patternless query</h3>
+<p>As a baseline with no demand structure, suppose one query selects every event independently with
+the same probability <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>. Events then differ only by chance, so their assignment provides no
+pattern to exploit.</p>
+<p>For container <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math>, the selected-event count (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>c</mi></msub></mrow></math>) is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>c</mi></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x0007C;</mo><msub><mi>S</mi><mi>q</mi></msub><mo>&#x02229;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>If the container holds <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></math> events, then</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>c</mi></msub><mi>&#x0007E;</mi><mo>Binomial</mo><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0002C;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>The container is skipped exactly when it contains no selected event. Its exact skip probability
+is therefore</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mi>c</mi></msub><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></msup><mo>&#x0002E;</mo></mrow></math></p>
+<p>The expected system-wide container-skipping ratio is the average of these probabilities:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mtext>container-skipping&#x000A0;ratio</mtext><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>K</mi></mrow></mfrac><msubsup><mo>&#x02211;</mo><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mi>K</mi></mrow></msubsup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></msup><mo>&#x0002E;</mo></mrow></math></p>
+<p>For a highly selective predicate—meaning a small selected fraction <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>—the binomial selected-event
+count can be approximated by a Poisson count. The skipping ratio then has the approximation</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mtext>container-skipping&#x000A0;ratio</mtext><mo stretchy="false">]</mo><mo>&#x02248;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>K</mi></mrow></mfrac><msubsup><mo>&#x02211;</mo><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mi>K</mi></mrow></msubsup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>p</mi><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo></mrow></msup><mo>&#x0002E;</mo></mrow></math></p>
+<p>The repository appendix derives the approximation error. Event count is used here to keep the
+model readable; when record sizes differ, a skipped-container ratio and skipped-byte ratio measure
+different outcomes.</p>
+<hr />
+<h2 id="3-the-effect-of-data-clustering">3. The effect of data clustering</h2>
+<p>The corpus-wide selected fraction does not change when events are clustered. Clustering replaces
+the patternless assumption of one universal probability with group-specific demand estimates and
+uses those differences when assigning container capacity.</p>
+<h3 id="31-distinct-subgroup-probabilities">3.1 Distinct subgroup probabilities</h3>
+<p>Suppose a predicate-to-group mapping partitions the corpus into <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> logical groups. Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>G</mi><mi>g</mi></msub></mrow></math>
+denote group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math>, let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>N</mi><mi>g</mi></msub></mrow></math> be its event count, and let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math> be the estimated probability that one
+of its events is selected by the query family being modeled.</p>
+<p>The corpus contains</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>g</mi></msub><msub><mi>N</mi><mi>g</mi></msub></mrow></math></p>
+<p>events. Its overall expected selected fraction remains the weighted average</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>p</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>N</mi></mrow></mfrac><msub><mo>&#x02211;</mo><mi>g</mi></msub><msub><mi>N</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub><mo>&#x0002E;</mo></mrow></math></p>
+<p>The mapping does not create or remove query demand. It exposes that demand is concentrated
+differently across logical groups.</p>
+<h3 id="32-allocating-containers-among-groups">3.2 Allocating containers among groups</h3>
+<p>Let <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></math> be the number of containers assigned to group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math>. The allocations use the available
+container budget:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x02211;</mo><mi>g</mi></msub><msub><mi>K</mi><mi>g</mi></msub><mo>&#x0003D;</mo><mi>K</mi><mo>&#x0002E;</mo></mrow></math></p>
+<p>For this analytical expression, assume <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></math> divides <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>N</mi><mi>g</mi></msub></mrow></math> and group <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math> is divided into
+equal-sized containers of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>N</mi><mi>g</mi></msub><mo>&#x0002F;</mo><msub><mi>K</mi><mi>g</mi></msub></mrow></math> events. Under independent selection within the group, the
+expected number of containers skipped across the system is</p>
+<p><math class="is-boxed" display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><menclose notation="box"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mtext>skipped&#x000A0;containers</mtext><mo stretchy="false">]</mo><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>g</mi></msub><msub><mi>K</mi><mi>g</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msub><mi>p</mi><mi>g</mi></msub><msup><mo stretchy="false">&#x00029;</mo><mrow><msub><mi>N</mi><mi>g</mi></msub><mo>&#x0002F;</mo><msub><mi>K</mi><mi>g</mi></msub></mrow></msup><mspace width="0.278em" /><mo>&#x02248;</mo><mspace width="0.278em" /><msub><mo>&#x02211;</mo><mi>g</mi></msub><msub><mi>K</mi><mi>g</mi></msub><mi>exp</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mrow><msub><mi>N</mi><mi>g</mi></msub><msub><mi>p</mi><mi>g</mi></msub></mrow><mrow><msub><mi>K</mi><mi>g</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></menclose><mo>&#x0002E;</mo></mrow></math></p>
+<p>The expression on the right is the small-<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math> Poisson approximation. Given the logical groups and
+their estimated demand, the allocation problem chooses how many containers each group receives.
+Assignments can improve skipping by concentrating demand that the universal-<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> baseline treated
+as indistinguishable.</p>
+<p>A single <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>g</mi></msub></mrow></math> describes marginal selection frequency, not correlations among events. Real
+clustering can also place events commonly selected together into the same containers; the observed
+selection log retains that richer information. Record sizes can differ as well, so the formal
+waste objective continues to count materialized volume rather than treating every skipped
+container as equally valuable.</p>
+<hr />
+<h2 id="4-container-capacity-bounds">4. Container capacity bounds</h2>
+<p>Container capacity determines how much data one fetch can materialize. It must remain between
+storage-system bounds:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>s</mi><mrow><mo>min</mo></mrow></msub><mo>&#x02264;</mo><mo stretchy="false">&#x0007C;</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><msub><mi>s</mi><mrow><mo>max</mo></mrow></msub><mo>&#x0002E;</mo></mrow></math></p>
+<p>The lower bound amortizes fixed request and bookkeeping cost across enough events. The upper bound
+prevents a container from becoming so large that almost every query activates it and data skipping
+loses its value.</p>
+<p>In a cloud data lake backed by object storage, very small containers create the familiar
+<strong>small-file problem</strong>. Every file adds object requests, transaction-log entries, metadata work,
+scan tasks, and eventual compaction work. The fixed cost can dominate the useful bytes read, so
+these systems need a substantial lower capacity bound.</p>
+<p>Distributed databases running on SSD-backed persistence can often tolerate smaller containers.
+Random access has lower latency, and storage metadata and scheduling are more tightly integrated
+with the database engine. Small units are still not free: they consume metadata, file handles,
+cache entries, and compaction or write-amplification budget. The acceptable lower bound is simply
+smaller and more system-dependent.</p>
+<p>At the extreme, assign every event to its own container. This layout produces zero waste because a
+query never fetches an unselected neighbor, but it also creates <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>K</mi><mo>&#x0003D;</mo><mi>N</mi></mrow></math> containers and pays the fixed
+management cost once per event. The closet analogy makes the failure immediate: one garment per
+drawer eliminates unwanted handling, but the number of drawers, labels, and drawer operations
+becomes unsustainable.</p>
+<p>Splitting a container cannot increase waste, so the objective alone always prefers finer
+containers. Capacity bounds supply the opposing production constraint. Their practical values are
+properties of the storage system, and real layouts evaluate the resulting size distribution
+rather than requiring every container to have exactly the same size.</p>
+<hr />
+<h2 id="5-problem-complexity-analysis">5. Problem Complexity Analysis</h2>
+<h3 id="51-search-space-and-hardness">5.1 Search space and hardness</h3>
+<p>A candidate layout partitions <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi></mrow></math> events into non-empty containers. Suppose a selected container
+capacity <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi></mrow></math> produces <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>s</mi></msub></mrow></math> containers. Before applying the size constraints, the number of
+partitions into exactly that many containers is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>S</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo>&#x0002C;</mo><msub><mi>K</mi><mi>s</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></p>
+<p>where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>S</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo>&#x0002C;</mo><mi>k</mi><mo stretchy="false">&#x00029;</mo></mrow></math> is a Stirling number of the second kind: the number of ways to partition <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi></mrow></math>
+distinct events into exactly <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> non-empty containers.</p>
+<p>Container capacity is itself adjustable. For a set of permitted capacities <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D49E;</mi></mrow></math>, the
+number of layout-and-capacity configurations is bounded above by</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x02211;</mo><mrow><mi>s</mi><mo>&#x02208;</mo><mi>&#x1D49E;</mi></mrow></msub><mi>S</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo>&#x0002C;</mo><msub><mi>K</mi><mi>s</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></p>
+<p>This sum expresses two coupled choices: select a capacity, then select a partition admissible at
+that capacity. Container-size constraints remove invalid partitions, and the same partition may be
+valid under more than one capacity, but neither fact makes exhaustive search practical. Even with
+fixed <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>K</mi><mi>s</mi></msub></mrow></math>, the Stirling count grows exponentially with the number of events. If the permitted
+capacities produce similarly large partition spaces, their count acts as another multiplicative
+search axis. Moving one event can also change the query demand of an entire container, so candidate
+costs cannot be evaluated as independent choices for each event.</p>
+<h3 id="52-assignment-evaluation-cost">5.2 Assignment evaluation cost</h3>
+<p>Evaluating one assignment requires a simulation with three stages.</p>
+<ol>
+<li><strong>Collect the workload.</strong> Record which events historical queries selected in the selection log.
+This input grows with the number of queries and the number of selected events.</li>
+<li><strong>Build the candidate mapping.</strong> Apply the assignment to every event and build the per-event
+mapping from <code>record_id</code> to <code>container_id</code>. A complete storage simulation may materialize this
+mapping as the index table; the mathematical score needs only the identity, container, and
+event-size columns.</li>
+<li><strong>Replay and aggregate.</strong> Join every selection-log row to the candidate mapping, identify each
+query–container activation, sum the activated container sizes, and subtract the selected event
+count.</li>
+</ol>
+<p>The scale of a modern data warehouse makes every stage consequential. The corpus may contain
+billions of events, the observation period may produce a selection log much larger than the
+corpus, and each candidate requires another assignment mapping and replay. Workload collection and
+index-table construction are preparation costs; replaying the selection log is the repeated
+evaluation cost. A search that scores many assignments pays that repeated cost for every candidate.</p>
+<h3 id="53-impact-of-dynamic-query-patterns">5.3 Impact of dynamic query patterns</h3>
+<p>Event selection changes over time as seasons, products, customers, and business functions change.
+A layout learned from an earlier workload therefore tends to lose skipping advantage as it ages,
+although recurring seasonal demand can temporarily make an older layout useful again. A closet
+has the same behavior: drawers arranged around winter outfits become less effective in summer,
+then may become useful when winter returns.</p>
+<p>For a simple comparison, assume the complete corpus is ingested once at the beginning of a fixed
+study period <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>T</mi></mrow></math>. No events arrive or expire during the period. The candidate layout <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> and
+a naive baseline layout <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mrow><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi></mrow></mrow></msub></mrow></math>, such as insertion-order partitioning with no
+feature learning, are each constructed once over the same corpus. Both then serve the same query
+stream until the study ends.</p>
+<p>The total data-skipping benefit is the difference between the baseline's total query-read cost and
+the candidate's total query-read cost over the whole study. The layout overhead is also measured
+comparatively: the candidate's one-time construction and enforcement cost minus the corresponding
+cost of creating the baseline.</p>
+<p>Write <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi></mrow></mrow><mi>&#x003BB;</mi></msubsup><mo stretchy="false">&#x00028;</mo><mi>T</mi><mo stretchy="false">&#x00029;</mo></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi></mrow></mrow><mrow><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi></mrow></mrow></msubsup><mo stretchy="false">&#x00028;</mo><mi>T</mi><mo stretchy="false">&#x00029;</mo></mrow></math> for the two total
+query-read costs. Write <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi></mrow></mrow><mi>&#x003BB;</mi></msubsup></mrow></math> and
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi></mrow></mrow><mrow><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi></mrow></mrow></msubsup></mrow></math> for their one-time layout costs.</p>
+<p>The candidate's total net advantage is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Advantage</mo><mo stretchy="false">&#x00028;</mo><mi>T</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi></mrow></mrow><mrow><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi></mrow></mrow></msubsup><mo stretchy="false">&#x00028;</mo><mi>T</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi></mrow></mrow><mrow><mi>&#x003BB;</mi></mrow></msubsup><mo stretchy="false">&#x00028;</mo><mi>T</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x02212;</mo><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi></mrow></mrow><mrow><mi>&#x003BB;</mi></mrow></msubsup><mo>&#x02212;</mo><msubsup><mi>C</mi><mrow><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi></mrow></mrow><mrow><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi></mrow></mrow></msubsup><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0002E;</mo></mrow></math></p>
+<p>A positive value means the accumulated skipping benefit repaid the candidate's additional layout
+overhead before the study ended. A negative value means the baseline cost less overall. The
+comparison evaluates the layout as one system-wide decision over the full retained corpus, so
+containers may hold events from any part of the bulk ingestion. Query-pattern drift appears through
+the read costs accumulated over time rather than through separate per-epoch layouts.</p>
+</article>

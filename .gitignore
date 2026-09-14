@@ -32,7 +32,7 @@ venv/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
-# setuptools' scratch tree, left behind by `pip install .` on some pip versions.
+# setuptools leaves a scratch tree here on some pip versions.
 /build/
 
 # Generated datasets, metric tables and rendered reports.  All reproducible from a

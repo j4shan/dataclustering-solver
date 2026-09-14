@@ -8,7 +8,7 @@ scroll independently on the same theme as Problem Statement.
 
 **Authority.** This document is the product spec for Measuring Data Layout
 Fitness. [`simulator-spec.md`](simulator-spec.md) governs the application shell, theme, and
-layout. [`problem-statement.md`](../../resources/html/problem-statement.md)
+layout. [`problem-statement.md`](../../site/docs/problem-statement.md)
 remains the authority on the formal model.
 [`technical_writing_instruction.md`](../instructions/technical_writing_instruction.md)
 is the writing contract for the left pane. Where this document and the product spec
@@ -25,7 +25,7 @@ an assignment strategy, a search method, or a fitness.
 
 ## 1. Role and reading order
 
-Measuring Data Layout Fitness teaches split search as one ordered chain:
+Measuring Data Layout Fitness presents / introduces split search as one ordered chain:
 
 1. **Explore Data Split Trees** — the objective (a partition that maximizes a
    value function, data-skipping potential), the exponential cost of exact
@@ -55,6 +55,7 @@ flow and live only on the right. Conclusions fold into the last paragraph
 of the section; there is no labeled takeaway. A learning graph used to
 order the sections is authoring metadata and does not appear in either pane.
 The walkthrough does not use the word *production*.
+The walkthrough does not use the word *teach*.
 
 None of the three fitnesses equals aggregate waste ($W(\lambda)$, defined in
 Problem Statement's formal statement, §2.5). The benchmark harness remains
@@ -84,7 +85,7 @@ The paragraphs together establish all of the following:
 
 - A search starts from the corpus as one leaf and grows a grouping by
   cutting a current leaf into two or more children. A cut may be multi-way.
-- After a cut, each child is packed into equal-size units of container
+- After a cut, each child is packed into equal-size containers at
   size $s$. Fitness is a number on that packing, or on the tree after the
   leaf is replaced.
 - **fitness(leaf)** — written $v(\ell)$ — is the leaf scored as packed,
@@ -94,6 +95,16 @@ The paragraphs together establish all of the following:
   remaining evaluation budget.
 - The recurrence is
   $\mathrm{OPT}(\ell)=\max\bigl(v(\ell),\;\max_{\gamma}\sum_{c\in C(\gamma)}(n_c/n_\ell)\,\mathrm{OPT}(c)\bigr)$.
+  The formula is introduced by the subproblem claim: finding the
+  best remaining cuts from an arbitrary leaf is the same search as the
+  one that started at the corpus, so the potential of a parent leaf can
+  be expressed by the potentials of its immediate children.
+- After the formula, a short paragraph states the **incremental value**
+  of a cut: the extra potential the children return over leaving the
+  leaf packed. If the children do not raise the score, the recurrence
+  keeps the packed fitness. The walkthrough does not call this increment
+  *marginal efficiency*; that name is the container-upgrade ratio on
+  Drawing Storage Boundary.
 - Container size $s$ is a **common packing budget**: every leaf packs at
   the same $s$. Compute and wall-clock are **common evaluation budgets**:
   they limit how many cuts are enumerated, not the packing.
@@ -153,7 +164,7 @@ Experiment is where a physical layout is scored by replay.
 #### 2.3.1 Group-wide skipping ratio
 
 The leaf fitness is the estimated share of events left unread when each
-unit is given one query-averaged selection rate.
+container is given one query-averaged selection rate.
 
 Definition table, then the weighted-average formula. The exact form and
 its Poisson approximation sit on the **same line**, joined by $\approx$:
@@ -165,7 +176,7 @@ $\lambda_i=n_i p_{g,i}=\mathrm{avg}_q\,k_{q,i}$. The subscript names the
 group-wide rate, not an incremental gain. Both forms lie in $[0,1]$.
 
 The subsection states that this fitness collapses every query into one
-rate per unit and depends on $s$.
+rate per container and depends on $s$.
 
 #### 2.3.2 Query-conditional skipping ratio
 
@@ -192,13 +203,13 @@ left, and no warehouse-free first stage.
 
 The rest of the subsection is the **weighted** construction used as a leaf
 fitness: $G(S)$ measures how unevenly the group-wide rate $p_{g,i}$ sits
-across units. A short definition table introduces $w_i$, usage share
+across containers. A short definition table introduces $w_i$, usage share
 $q_i$, and $G(S)$. The subsection names incremental gain $\Delta G/\Delta k$
 as the comparison that charges for extra groups. It states that $G(S)$
 screens inequality and is not a skip ratio.
 
 On this page, $\lambda$ in a formula is only the Poisson parameter
-(expected selected-event count in the modeled unit). The formal
+(expected selected-event count in the modeled container). The formal
 statement's layout letter is written in words.
 
 ---
@@ -223,16 +234,16 @@ relies on after §2.1, in an order that follows the left sequence:
 | Cut ($\gamma$) | A partition of one leaf into two or more children $C(\gamma)$. |
 | fitness(leaf) ($v(\ell)$) | The leaf scored as packed at size $s$, with no further cut. |
 | OPT(leaf) ($\mathrm{OPT}(\ell)$) | The best score obtainable from the leaf if further cuts remain allowed under the remaining evaluation budget. |
-| Container size ($s$) | Event count of one packed unit; the common packing budget. |
+| Container size ($s$) | Event count of one packed container; the common packing budget. |
 | Evaluation budget | Compute and wall-clock allowed for enumerating and scoring cuts. |
-| Unit ($i$) | One equal-size container after the grouping is packed at size $s$. |
-| Population weight ($w_i$) | Unit $i$'s share of the parent population, $n_i/n$. |
-| Group-wide rate ($p_{g,i}$) | One selection rate for unit $i$, averaged across training queries. |
-| Query-conditional rate ($p_{i,q}$) | Fraction of unit $i$ that query $q$ selected. |
-| Poisson parameter ($\lambda$) | Expected selected-event count in the unit being modeled. |
+| Container ($i$) | One of the equal-size containers after the grouping is packed at size $s$. |
+| Population weight ($w_i$) | Container $i$'s share of the parent population, $n_i/n$. |
+| Group-wide rate ($p_{g,i}$) | One selection rate for container $i$, averaged across training queries. |
+| Query-conditional rate ($p_{i,q}$) | Fraction of container $i$ that query $q$ selected. |
+| Poisson parameter ($\lambda$) | Expected selected-event count in the container being modeled. |
 | Group-wide skip ratio ($V_{\mathrm{marg}}(S,s)$) | Estimated skip ratio from the group-wide rates. |
 | Query-conditional skip ratio ($V(S,s)$) | Estimated skip ratio that keeps the query index. |
-| Weighted Gini ($G(S)$) | Inequality of the group-wide rate across units. |
+| Weighted Gini ($G(S)$) | Inequality of the group-wide rate across containers. |
 | Extra groups ($\Delta k$) | How many groups the cut adds. |
 | Incremental gain | Fitness change per extra group, $\Delta v/\Delta k$. |
 
@@ -255,15 +266,15 @@ No other illustration appears.
 
 ## 4. Medium and visual system
 
-The Gini example lives in one authored fragment under `resources/html/`.
+The Gini example lives in one authored fragment under `site/figures/html/`.
 Its medium is semantic HTML, CSS, and inline SVG: not a Cursor
 `canvas.tsx`, not an HTML5 `<canvas>`, and not three independent
 stage-matched pages.
 
 The APNG is a committed animated raster. The retained prompt is
-[`resources/img_prompt/d_tree_split_cycle_prompt.txt`](../../resources/img_prompt/d_tree_split_cycle_prompt.txt).
+[`resources/img_prompt/section_gini_tree_split_cycle_prompt.txt`](../../resources/img_prompt/section_gini_tree_split_cycle_prompt.txt).
 The figure is
-[`resources/img/section_gini_tree_split_cycle.png`](../../resources/img/section_gini_tree_split_cycle.png).
+[`site/figures/img/section_gini_tree_split_cycle.png`](../../site/figures/img/section_gini_tree_split_cycle.png).
 The right panel embeds that file. There is no titled placeholder.
 
 Every drawing uses:
@@ -328,7 +339,7 @@ phases, in order, each held long enough to read:
    by its children. The caption names it as the illustrated cut, not
    the winning cut.
 
-The drawing teaches the step, not a solver and not a recommended
+The drawing presents / introduces the step, not a solver and not a recommended
 policy. Timing, transitions, and keep-out rules live in the retained
 prompt.
 
@@ -342,7 +353,7 @@ the example.
 
 #### Beat 1 — Lorenz construction
 
-Former standalone figure `D.lorenz-wealth`.
+Former standalone figure `gini.lorenz-wealth`.
 
 Two aligned connected-scatter Lorenz diagrams of the same six
 neighborhoods N1–N6, ordered poorest to richest. A complete sentence
@@ -366,7 +377,7 @@ technical mapping labels.
 
 #### Beat 2 — two one-level splits
 
-Former standalone figure `D.split-comparison`.
+Former standalone figure `gini.split-comparison`.
 
 One sentence under the beat heading states that wealth is query
 selection rate — how often a stored sale is fetched — not the sale
@@ -393,7 +404,7 @@ live catalog score. Do not label either cut as best.
 
 #### Beat 3 — selective tree
 
-Former standalone figure `D.selective-tree`.
+Former standalone figure `gini.selective-tree`.
 
 One graph, grown from beat 2’s tenant-brand split. Circular root
 labelled Original Data, then the L1 brands A–E and Rest combined (35).
@@ -416,7 +427,7 @@ Do not draw a second, chain, panel.
 ## 7. Writing contract
 
 The left pane is
-[`section-gini-walkthrough.html`](../../simulator/gui/static/section-gini-walkthrough.html).
+[`section-gini-walkthrough.html`](../../site/section-gini-walkthrough.html).
 It is a technical presentation. Each section uses the six-step flow in
 [`technical_writing_instruction.md`](../instructions/technical_writing_instruction.md),
 except that step 6 is not a labeled takeaway: the conclusion sits in the
@@ -430,6 +441,10 @@ Later emphasis uses the citation form *the concept description*
 (`symbol`, defined in §X), naming the document when $X$ is not a
 section of this walkthrough. The walkthrough refers to the APNG and to
 the continued example by those names and contains no figure markup.
+The walkthrough does not use the word *teach*.
+The packed bin is a *container*. The first mention is *equal-size
+containers*; later mentions use *container*. The walkthrough does not
+use *unit* for that object. The phrase *unit interval* stays.
 
 On the left pane, every weighted-average skip-ratio formula prints its
 Poisson approximation on the same line, with $\approx$ between them.
@@ -443,7 +458,7 @@ weblink at the end of that account.
 | id | requirement |
 | --- | --- |
 | I1 | Walkthrough on the left; terminology then figures on the right; that order when stacked |
-| I2 | Left opens from the quantified data-skipping goal, then states the split-search partition, exponential complexity, and heuristics, then $v(\ell)$ versus $\mathrm{OPT}(\ell)$, shared budgets, subproblem |
+| I2 | Left opens from the quantified data-skipping goal, then states the split-search partition, exponential complexity, and heuristics, then $v(\ell)$ versus $\mathrm{OPT}(\ell)$, shared budgets, subproblem, recurrence, incremental value of a cut |
 | I3 | Left then names how a real data storage system spends limited compute and time: greedy baseline, complementary improvements, retention-bounded ROI; the walkthrough does not use the word *production* |
 | I4 | Section 3 presents the three metrics as 3.1, 3.2, 3.3: group-wide skip ratio, query-conditional skip ratio, weighted Gini |
 | I5 | Each weighted-average skip formula prints the Poisson form on the same line with $\approx$ |
@@ -458,4 +473,5 @@ weblink at the end of that account.
 | I14 | Left walkthrough fills the pane; type is one step above Problem Statement |
 | I15 | Figures use the wine / sage explainer family, not 12.7 gray |
 | I16 | Figure labels stay readable; drawings keep a minimum width |
-| I17 | APNG prompt is retained; the right panel embeds `resources/img/section_gini_tree_split_cycle.png` |
+| I17 | APNG prompt is retained; the right panel embeds `site/figures/img/section_gini_tree_split_cycle.png` |
+| I18 | The packed bin is a container; first mention is equal-size containers; *unit* is not used for that object; *unit interval* stays |

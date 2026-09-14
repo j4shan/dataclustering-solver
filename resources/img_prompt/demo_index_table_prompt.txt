@@ -3,7 +3,7 @@ One looping APNG, 1920 × 1080. Not a static PNG. Not a JPEG. 15 frames, uniform
 120 ms delay, period 1.8 s, linear, infinite play (num_plays = 0). The last frame
 is pixel-identical to the first, so the loop closes seamlessly. Only the three
 arrow shafts move; tables, titles, labels, Blob dots and all arrowheads are
-identical on every frame. File extension stays .png.
+identical on every frame.
 
 STYLE
 Editorial flat 2D vector diagram, landscape 16:9, warm off-white canvas #FCFCFB.
@@ -154,9 +154,7 @@ Semibold / chips mono 16 / count 12.5 · table captions 13.5 · legend 13.5 ·
 footnote 14.
 
 PRODUCTION
-Render each frame at 2× and downsample (LANCZOS) so small type and the 3px Blob
-dots stay clean. Draw the static scene once and redraw only the shafts per
-frame, so the frames differ in the arrow region alone and APNG inter-frame
-deltas keep the file near 1.2 MB. Every header name must clear its column, the
-card must keep ≥18px from both tables, and the event table must stay on canvas —
+Small type and the 3px Blob dots stay clean at final size. Between frames only
+the arrow shafts change; every other mark is identical throughout. Every
+header name must clear its column, the card must keep ≥18px from both tables, and the event table must stay on canvas —
 fail the render rather than clip.

@@ -50,6 +50,11 @@ class Element {
     this.classList = new ClassList(this);
     this.style = { properties: new Map(), setProperty: (n, v) => this.style.properties.set(n, v) };
     this._disabled = false;
+    this.parent = null;
+    this.scrollLeft = 0;
+    this.scrollTop = 0;
+    this.tabIndex = -1;
+    this.draggable = true;
     // `dataset` writes through to the attribute, the way the real one does, so a view can
     // set it either way and `[data-*]` selectors still find it.
     this.dataset = new Proxy(
@@ -74,12 +79,69 @@ class Element {
     return this.ownText + this.children.map((child) => child.textContent).join("");
   }
 
+  get parentNode() {
+    return this.parent;
+  }
+
+  remove() {
+    if (!this.parent) return;
+    this.parent.children = this.parent.children.filter((node) => node !== this);
+    this.parent = null;
+  }
+
   append(...nodes) {
-    for (const child of nodes) this.children.push(child);
+    for (const child of nodes) {
+      if (child.parent) child.remove();
+      child.parent = this;
+      this.children.push(child);
+    }
+  }
+
+  insertBefore(node, reference) {
+    if (node.parent) node.remove();
+    const index = this.children.indexOf(reference);
+    node.parent = this;
+    if (index === -1) this.children.push(node);
+    else this.children.splice(index, 0, node);
   }
 
   replaceChildren(...nodes) {
-    this.children = [...nodes];
+    this.children = [];
+    this.append(...nodes);
+  }
+
+  closest(selector) {
+    let node = this;
+    while (node) {
+      if (node.matches(selector)) return node;
+      node = node.parent;
+    }
+    return null;
+  }
+
+  removeAttribute(name) {
+    this.attributes.delete(name);
+  }
+
+  removeEventListener(type, handler) {
+    const list = this.listeners.get(type);
+    if (!list) return;
+    this.listeners.set(
+      type,
+      list.filter((item) => item !== handler),
+    );
+  }
+
+  setPointerCapture() {}
+
+  dispatch(type, event = {}) {
+    const payload = {
+      type,
+      button: 0,
+      preventDefault() {},
+      ...event,
+    };
+    for (const handler of this.listeners.get(type) ?? []) handler(payload);
   }
 
   set disabled(value) {
@@ -103,11 +165,6 @@ class Element {
   addEventListener(type, handler) {
     if (!this.listeners.has(type)) this.listeners.set(type, []);
     this.listeners.get(type).push(handler);
-  }
-
-  /** Fire every handler registered for `type`, so highlighting can be exercised. */
-  dispatch(type) {
-    for (const handler of this.listeners.get(type) ?? []) handler({});
   }
 
   /** `.class`, `tag`, and `[attr]` — the three forms the views actually use. */

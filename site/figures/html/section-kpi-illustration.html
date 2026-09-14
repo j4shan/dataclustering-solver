@@ -1,0 +1,40 @@
+<!--
+  Business Insights as Byproduct, single pane (12.10): the author's two
+  paragraphs, corrected for grammar only, then the ecommerce map. §2 of
+  the spec is the authority on that text.
+-->
+<div class="illustration-stack">
+  <p class="editorial-lede">
+    In this micro-container architecture, a data layout minimizes record
+    materialization waste by clustering together data points selected by future
+    queries. The research process constructs a decision-tree-based model to
+    predict query density conditioned on record features. Depending on the query
+    context, this type of query density insight can reveal different types of
+    business KPIs. For instance, a data layout optimized for ecommerce queries
+    showing warehouse shipment can reveal high volume SKUs; the evolution
+    history of such a layout, provided it adapts continuously to the latest
+    query patterns, can reflect product seasonal sales trends.
+  </p>
+
+  <p class="signal-beat">
+    A heatmap is a handy visualization tool to identify major hot and cold spots
+    with regard to data usefulness.
+  </p>
+
+  <figure
+    class="illustration raster-illustration"
+    id="signal.ecommerce"
+    aria-labelledby="signal-ecommerce-title"
+  >
+    <h3 id="signal-ecommerce-title">Ecommerce warehouse usage map</h3>
+    <div class="illustration-stage">
+      <img
+        src="figures/img/section_kpi_ecommerce.png"
+        alt="A treemap of an ecommerce warehouse. Sixteen departments are named on the map, each cut into product lines; a rectangle's area is its on-hand inventory and its fill is query demand, running from pale green at 0 percent to deep wine red at 25 percent. Fill is the only channel: every rectangle carries the same plain border, whatever its demand. Industrial and Scientific is the largest department and is pale green throughout, across Janitorial, Abrasives, Test Equipment, Packaging, Safety Gear, Bulk Fasteners, Lab Supplies and Material Handling. Grocery, Electronics, Beauty, Apparel, Health and Household, Kitchen and Dining and Pet Supplies run red. Books, Automotive, Furniture, Garden and Outdoor, Home Improvement, Toys and Games, Baby and Sports and Outdoors run green. The legend below is the colour scale alone, a horizontal axis labelled query demand percent with two weeks of ingestion."
+        width="1920"
+        height="1055"
+        loading="lazy"
+      />
+    </div>
+  </figure>
+</div>
