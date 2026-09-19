@@ -98,6 +98,11 @@ class Element {
   }
 
   insertBefore(node, reference) {
+    if (reference != null && !this.children.includes(reference)) {
+      throw new Error(
+        "Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.",
+      );
+    }
     if (node.parent) node.remove();
     const index = this.children.indexOf(reference);
     node.parent = this;

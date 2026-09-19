@@ -62,6 +62,7 @@ project_metadata/plans/
 docs/superpowers/
 .cursor/
 .agents/
+.codex/
 
 # Project-scope skills are installed per machine, not shipped.  `.claude/skills/` here is
 # symlinks into the ignored `.agents/` tree above, so committing them would hand a fresh

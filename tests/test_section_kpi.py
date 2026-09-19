@@ -1,7 +1,7 @@
-"""Business Insights as Byproduct — the single-pane illustration (12.10).
+"""Business Insights as Byproduct — the two-pane illustration (12.10).
 
 The prose is the author's own text, held in §2.2 of the spec and copied into the
-fragment.  These tests assert that copy relation and the figure contract.
+walkthrough.  These tests assert that copy relation and the figure contract.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from conftest import RESOURCES
 from simulator.gui import FIGURE_ROOT, SITE_ROOT
 
 ROOT = Path(__file__).resolve().parents[1]
+WALKTHROUGH = SITE_ROOT / "section-kpi-walkthrough.html"
 FRAGMENT = FIGURE_ROOT / "html" / "section-kpi-illustration.html"
 INDEX = SITE_ROOT / "index.html"
 SPEC = ROOT / "project_metadata" / "product_spec" / "section-kpi-illustration.md"
@@ -35,6 +36,11 @@ def text_of(element) -> str:
 
 
 @pytest.fixture(scope="module")
+def walkthrough():
+    return ET.fromstring(WALKTHROUGH.read_text())
+
+
+@pytest.fixture(scope="module")
 def pane():
     return ET.fromstring(FRAGMENT.read_text())
 
@@ -44,28 +50,29 @@ def fragment() -> str:
     return FRAGMENT.read_text()
 
 
-def test_the_beats_are_complete_and_ordered(pane):
-    """I2: the two paragraphs of §2.2, then the figure.  All prose above it."""
-    children = [child for child in pane if tag_of(child) in {"p", "figure"}]
-    assert [tag_of(child) for child in children] == ["p", "p", "figure"]
-    assert [child.get("id") for child in children if tag_of(child) == "figure"] == [
-        FIGURE_ID
-    ]
+def test_the_beats_are_complete_and_ordered(walkthrough, pane):
+    """I2: the two paragraphs of §2.2 on the left; the figure on the right."""
+    prose = [child for child in walkthrough if tag_of(child) == "p"]
+    assert [tag_of(child) for child in prose] == ["p", "p"]
+    assert not any(tag_of(child) == "figure" for child in walkthrough)
+    figures = [child for child in pane.iter() if tag_of(child) == "figure"]
+    assert [child.get("id") for child in figures] == [FIGURE_ID]
+    assert not any(tag_of(child) == "p" for child in pane.iter())
 
 
-def test_the_fragment_copies_the_authors_prose_verbatim(pane):
-    """I3: §2.2 is the author's text and the fragment reproduces it."""
+def test_the_fragment_copies_the_authors_prose_verbatim(walkthrough):
+    """I3: §2.2 is the author's text and the walkthrough reproduces it."""
     spec = SPEC.read_text()
     body = spec.split("### 2.2 Prose")[1].split("### 2.3")[0]
     authored = [line.strip() for line in body.splitlines() if line.strip()]
     assert len(authored) == 2, "§2.2 holds the two paragraphs"
-    rendered = [text_of(c) for c in pane if tag_of(c) == "p"]
+    rendered = [text_of(c) for c in walkthrough if tag_of(c) == "p"]
     assert rendered == authored
 
 
-def test_the_prose_asserts_no_number(pane):
+def test_the_prose_asserts_no_number(walkthrough):
     """I3.2."""
-    prose = " ".join(text_of(c) for c in pane if tag_of(c) == "p")
+    prose = " ".join(text_of(c) for c in walkthrough if tag_of(c) == "p")
     assert not re.search(r"\d", prose)
 
 
@@ -81,17 +88,19 @@ def test_the_locked_title_is_copied_verbatim_and_there_is_no_caption(pane):
 def test_the_raster_is_mounted_and_the_pane_does_not_reference_a_missing_file(
     fragment, pane
 ):
+    walkthrough = WALKTHROUGH.read_text()
     assert fragment.count("<img") == 1
     assert "<svg" not in fragment
     assert "Figure deferred" not in fragment
     assert "forthcoming" not in fragment
-    assert "teach" not in fragment.lower()
-    assert "production" not in fragment.lower()
-    assert "discovery surface" not in fragment
-    assert "business improvement" not in fragment
-    assert "—" not in fragment
-    assert "–" not in fragment
-    assert FOOTNOTE not in fragment
+    for text in (fragment, walkthrough):
+        assert "teach" not in text.lower()
+        assert "production" not in text.lower()
+        assert "discovery surface" not in text
+        assert "business improvement" not in text
+        assert "—" not in text
+        assert "–" not in text
+        assert FOOTNOTE not in text
     img = pane.find(".//img")
     assert img is not None
     assert img.get("src") == RASTER
@@ -137,23 +146,26 @@ def test_obsolete_domain_maps_are_not_kept_as_authoring():
         assert not (SITE_ROOT / "figures" / "img" / f"{stem}.png").exists()
 
 
-def test_section_signal_is_a_single_pane_after_databricks():
+def test_section_signal_is_a_two_pane_split_after_databricks():
     html = INDEX.read_text()
     ids = re.findall(r'<section class="section(?:\s[^"]*)?" id="([\w-]+)"', html)
     assert ids[-1] == "signal"
-    section = html.split('id="signal"')[1]
+    section = html.split('id="signal"')[1].split("</section>")[0]
     assert 'data-nav="signal">Business Insights as Byproduct</a>' in html
     assert '<h1 id="signal-heading">Business Insights as Byproduct</h1>' in section
-    assert 'class="section section-single"' in html
+    assert 'class="split"' in section
+    assert 'data-mount="section-kpi-walkthrough.html"' in section
     assert 'data-mount="figures/html/section-kpi-illustration.html"' in section
-    assert "split" not in section.split("</section>")[0]
+    assert section.index("section-kpi-walkthrough.html") < section.index(
+        "section-kpi-illustration.html"
+    )
 
 
-def test_section_signal_matches_the_walkthrough_type_and_fills_the_pane():
+def test_section_signal_matches_the_walkthrough_type_and_the_30_70_split():
     from tests.test_app_shell import rule_for
 
     css = (SITE_ROOT / "app.css").read_text()
-    declarations = rule_for(css, "#signal .pane-single")
+    declarations = rule_for(css, "#signal .pane-left")
     for declaration in (
         "--text-body: 15px",
         "--text-small: 13px",
@@ -161,6 +173,9 @@ def test_section_signal_matches_the_walkthrough_type_and_fills_the_pane():
         "--text-title: 24px",
     ):
         assert declaration in declarations
+    assert declarations == rule_for(css, "#signal .pane-right")
     assert "max-width: none" in rule_for(css, "#signal .illustration-stack")
-    assert "flex: 1" in rule_for(css, ".section-single > .pane-single")
-    assert "min-height: 0" in rule_for(css, ".section-single > .pane-single")
+    assert "max-width: none" in rule_for(css, "#signal .pane-left > .formulation")
+    assert "grid-template-columns: minmax(0, 30%) minmax(0, 70%)" in rule_for(
+        css, "#signal .split"
+    )

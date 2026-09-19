@@ -76,12 +76,12 @@ def test_there_are_five_sections_in_fixed_order(html):
     ]
 
 
-def test_the_first_four_sections_are_left_right_pairs(html):
-    assert html.count('class="split"') == 4
-    assert html.count("pane pane-left") == 4
-    assert html.count("pane-right") == 4
-    assert 'class="section section-single"' in html
-    assert html.count("pane pane-single") == 1
+def test_the_five_sections_are_left_right_pairs(html):
+    assert html.count('class="split"') == 5
+    assert html.count("pane pane-left") == 5
+    assert html.count("pane-right") == 5
+    assert "section-single" not in html
+    assert "pane-single" not in html
 
 
 def test_the_sections_are_individually_linkable(html):
@@ -126,10 +126,10 @@ def test_every_section_is_labelled_for_a_screen_reader(html):
     for target in labelled:
         assert f'id="{target}"' in html
     panes = re.findall(r'<div class="pane(?:\s[^"]*)?"[^>]*>', html)
-    assert len(panes) == 11
+    assert len(panes) == 12
     assert all('role="region"' in pane for pane in panes)
     assert all('aria-label="' in pane for pane in panes)
-    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 11
+    assert len(set(re.findall(r'aria-label="([^"]+)"', "\n".join(panes)))) == 12
 
 
 # -- the scroll model (12.1.2, 12.1.7) -----------------------------------------------

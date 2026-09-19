@@ -4,8 +4,8 @@
 
   Five sections in fixed order — understand, examine one screening search,
   draw a storage boundary, go live, then read query density as a business
-  insight. The first four are each a left/right pair on a wide viewport; the
-  fifth is one scrolling pane. One of them is displayed at a time (12.1.1).
+  insight. Each is a left/right pair on a wide viewport. One of them is
+  displayed at a time (12.1.1).
   Measuring Data Layout Fitness, Drawing Storage Boundary, Go Live on
   Databricks Lakehouse, and Business Insights as Byproduct are authored
   `hidden` so the page opens on Problem Statement without a frame of all
@@ -152,13 +152,19 @@
       </section>
 
       <!-- cold data --------------------------------------------------------- -->
-      <section class="section section-single" id="signal" tabindex="-1" hidden aria-labelledby="signal-heading">
+      <section class="section" id="signal" tabindex="-1" hidden aria-labelledby="signal-heading">
         <header class="section-head">
           <h1 id="signal-heading">Business Insights as Byproduct</h1>
         </header>
-        <div class="pane pane-single" role="region" aria-label="Business Insights as Byproduct"
-             data-mount="figures/html/section-kpi-illustration.html">
-          <p class="empty">Loading the walkthrough…</p>
+        <div class="split">
+          <div class="pane pane-left" role="region" aria-label="Business Insights as Byproduct walkthrough"
+               data-mount="section-kpi-walkthrough.html">
+            <p class="empty">Loading the walkthrough…</p>
+          </div>
+          <div class="pane pane-right" role="region" aria-label="Business Insights as Byproduct figures"
+               data-mount="figures/html/section-kpi-illustration.html">
+            <p class="empty">Loading the figures…</p>
+          </div>
         </div>
       </section>
     </main>

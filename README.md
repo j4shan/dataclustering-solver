@@ -22,7 +22,7 @@ selects a section. A link to a section's anchor opens the page on that section.
 | Measuring Data Layout Fitness | a text-only walkthrough of split-search fitness (skip ratios and weighted Gini) beside a terminology dictionary, an abstracted split-cycle figure, and one continued Gini example on an authored auto-parts partition. The walkthrough stops at the measure. It runs no search. |
 | Drawing Storage Boundary | a static multiple-choice-knapsack feasibility walkthrough beside three deferred-visualization placeholders, one per section. The walkthrough illustrates the constraint. It allocates no storage. |
 | Go Live on Databricks Lakehouse | the six-step go-live process beside three figures: the process, ingestion into a narrow index and a wide event table, and Spark Dynamic Partition Pruning |
-| Business Insights as Byproduct | one scrolling pane: the layout pass already collects the selection log and counts per-group demand, so reading those same counts as a statement about the catalog costs nothing extra; one ecommerce map, and the limits of what it can be asked |
+| Business Insights as Byproduct | two independently scrolling panes (text 30%, figures 70%): the layout pass already collects the selection log and counts per-group demand, so reading those same counts as a statement about the catalog costs nothing extra; one ecommerce map, and the limits of what it can be asked |
 
 The formal statement behind the first section is
 [problem-statement.md](site/docs/problem-statement.md). The engine mapping behind the

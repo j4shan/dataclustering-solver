@@ -53,7 +53,7 @@ function enhance(stage) {
 
   const drawing = drawingOf(stage);
   if (drawing) drawing.draggable = false;
-  const viewport = wrapDrawing(stage, drawing);
+  const viewport = wrapDrawing(stage);
 
   const widget = document.createElement("div");
   widget.className = "zoom-widget";
@@ -70,17 +70,15 @@ function enhance(stage) {
   apply(stage);
 }
 
-function wrapDrawing(stage, drawing) {
+function wrapDrawing(stage) {
   const existing = viewportOf(stage);
   if (existing !== stage) return existing;
   const viewport = document.createElement("div");
   viewport.className = "zoom-viewport";
-  if (drawing) {
-    stage.insertBefore(viewport, drawing);
-    viewport.append(drawing);
-  } else {
-    stage.append(viewport);
-  }
+  // The first img/svg may be nested (the Gini split-comparison stage wraps
+  // two trees). Move the stage's own children, never insertBefore a descendant.
+  for (const child of [...stage.children]) viewport.append(child);
+  stage.append(viewport);
   return viewport;
 }
 

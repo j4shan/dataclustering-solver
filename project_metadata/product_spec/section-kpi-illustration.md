@@ -1,9 +1,10 @@
 # Business Insights as Byproduct illustration
 
 Product requirements for the Business Insights as Byproduct section
-of the demonstration GUI: one scrolling pane that states how tuning a
+of the demonstration GUI: a left walkthrough that states how tuning a
 layout from query usage packs idle records for skipping and names which
-records are useful, then shows that reading on one domain map.
+records are useful, beside a right pane that shows that reading on one
+domain map.
 
 **Authority.** This document is the product spec for Business Insights as
 Byproduct. [`simulator-spec.md`](simulator-spec.md) governs the
@@ -28,16 +29,16 @@ Business Insights as Byproduct is the fifth section. It sits after
 Go Live on Databricks Lakehouse. The section heading is the navigation
 label.
 
-One pane, independently scrollable on a wide viewport. No left/right
-split. Below the split breakpoint the pane grows with its content and
-the page scrolls once.
+Two panes, each independently scrollable on a wide viewport. The
+walkthrough sits on the **left**; figure `signal.ecommerce` sits on the
+**right**. On a wide viewport the left pane is **30%** of the split and
+the right pane is **70%**. Below the split breakpoint the panes stack in
+that order and the page scrolls once.
 
 Sequence:
 
-1. the two paragraphs of §2.2;
-2. figure `signal.ecommerce`.
-
-All prose sits above the figure.
+1. the two paragraphs of §2.2, on the left;
+2. figure `signal.ecommerce`, on the right.
 
 The pane does not use the word *teach*. The pane does not use the word
 *production*. Conclusions stay in the last sentence of each paragraph.
@@ -83,7 +84,7 @@ The prose asserts no number and contains no digit.
 
 ## 3. Figures
 
-The pane contains exactly one figure. Its raster is rendered and mounted
+The right pane contains exactly one figure. Its raster is rendered and mounted
 at `site/figures/img/section_kpi_ecommerce.png`. The figure is a title
 and the stage carrying that raster. The prompt is the authority on what
 the raster shows.
@@ -146,9 +147,9 @@ construction.
 
 | id | requirement |
 | --- | --- |
-| I1 | One scrolling pane; no left/right split |
-| I2 | The two paragraphs of §2.2, then figure `signal.ecommerce`. All prose sits above the figure |
-| I3 | The fragment copies §2.2 verbatim. The figure title in §3 stays fixed |
+| I1 | Two independently scrolling panes; left 30% / right 70% on a wide viewport |
+| I2 | The two paragraphs of §2.2 on the left; figure `signal.ecommerce` on the right |
+| I3 | The walkthrough copies §2.2 verbatim. The figure title in §3 stays fixed |
 | I3.1 | No paragraph or title instructs the reader in decoding a figure; the map carries its own legend |
 | I3.2 | The prose contains no digit |
 | I4 | Figure id `signal.ecommerce` |
@@ -160,4 +161,4 @@ construction.
 | I8 | No assignment strategy, search method, or fitness is selected or recommended |
 | I9 | The pane does not use *teach* or *production* |
 | I10 | The raster is rendered and mounted from `site/figures/img/` |
-| I11 | Type is the 15px walkthrough size; the stack fills the pane |
+| I11 | Type is the 15px walkthrough size; the walkthrough fills the left pane |

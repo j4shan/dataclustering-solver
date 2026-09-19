@@ -7,10 +7,10 @@
  * The scroll model is 12.1.7's, stated rather than left to emerge:
  *
  *   wide    the selected section fills the height below the top bar; each pane is
- *           bounded to that height and scrolls inside it. On the paired sections the
- *           left explanation stays put while the right one is read (12.1.2). The
- *           fifth section has one pane. The shell has nothing to scroll through:
- *           the sections the nav did not select are not laid out (12.1.1)
+ *           bounded to that height and scrolls inside it. The left explanation
+ *           stays put while the right one is read (12.1.2). The shell has
+ *           nothing to scroll through: the sections the nav did not select are
+ *           not laid out (12.1.1)
  *
  *   narrow  the bound is released.  Panes grow to their content and the page scrolls
  *           once, so a stacked reader never meets a scroll inside a scroll (12.1.6)
@@ -147,13 +147,6 @@
 }
 
 
-/* -- The single-pane section (12.1.1, 12.10) -------------------------------------- */
-
-.section-single > .pane-single {
-  flex: 1;
-  min-height: 0;
-}
-
 /* -- The left/right split (12.1.1) ------------------------------------------------ */
 
 .split {
@@ -162,6 +155,11 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-3);
+}
+
+/* Business Insights as Byproduct: text 30%, figures 70% (12.10). */
+#signal .split {
+  grid-template-columns: minmax(0, 30%) minmax(0, 70%);
 }
 
 .pane {
@@ -260,7 +258,8 @@
 #knapsack .pane-right,
 #design .pane-left,
 #design .pane-right,
-#signal .pane-single {
+#signal .pane-left,
+#signal .pane-right {
   --text-body: 15px;
   --text-small: 13px;
   --text-heading: 19px;
@@ -270,7 +269,8 @@
 
 #gini .pane-left > .formulation,
 #knapsack .pane-left > .formulation,
-#design .pane-left > .formulation {
+#design .pane-left > .formulation,
+#signal .pane-left > .formulation {
   max-width: none;
 }
 
@@ -379,7 +379,8 @@
     min-height: 0;
   }
 
-  .split {
+  .split,
+  #signal .split {
     grid-template-columns: minmax(0, 1fr); /* right beneath left, in section order */
   }
 

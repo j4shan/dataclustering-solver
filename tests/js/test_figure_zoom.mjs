@@ -94,4 +94,22 @@ empty.className = "illustration-stage";
 attachZoom(empty);
 if (empty.querySelector(".zoom-widget")) fail("a stage with no drawing grew a widget");
 
+const nested = document.createElement("div");
+nested.className = "illustration-stage";
+const pair = document.createElement("div");
+pair.className = "split-tree-pair";
+const nestedSvg = document.createElement("svg");
+pair.append(nestedSvg);
+nested.append(pair);
+try {
+  attachZoom(nested);
+} catch (failure) {
+  fail(`nested drawing threw: ${failure.message}`);
+}
+if (!nested.querySelector(".zoom-widget")) fail("nested drawing did not get a widget");
+const nestedViewport = nested.querySelector(".zoom-viewport");
+if (!nestedViewport) fail("nested stage was not wrapped");
+if (pair.parent !== nestedViewport) fail("nested stage contents were not moved into the viewport");
+if (nestedSvg.parent !== pair) fail("a nested drawing was pulled out of its host");
+
 process.stdout.write(`${JSON.stringify({ ok: true, steps: ZOOM_STEPS })}\n`);
